@@ -9,6 +9,7 @@ import { ExportDialog } from "@/components/export-dialog"
 import { UserManagement } from "@/components/user-management"
 import { BudgetDialog } from "@/components/budget-dialog"
 import { BudgetProgress } from "@/components/budget-progress"
+import { MonthSelector } from "@/components/month-selector"
 import { Button } from "@/components/ui/button"
 import { Wallet } from "lucide-react"
 
@@ -53,9 +54,16 @@ interface Stats {
 }
 
 export default function Home() {
+  // Get current month in YYYY-MM format
+  const getCurrentMonth = () => {
+    const today = new Date()
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
+  }
+
   const [users, setUsers] = useState<User[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [budgets, setBudgets] = useState<Budget[]>([])
+  const [selectedMonth, setSelectedMonth] = useState<string>(getCurrentMonth())
   const [stats, setStats] = useState<Stats>({
     totalSpent: 0,
     sharedExpenses: 0,
@@ -67,12 +75,16 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const currentMonth = new Date().toISOString().slice(0, 7)
+      // Calculate start and end dates for the selected month
+      const [year, month] = selectedMonth.split('-').map(Number)
+      const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0] // First day
+      const endDate = new Date(year, month, 0).toISOString().split('T')[0] // Last day
+
       const [usersRes, expensesRes, statsRes, budgetsRes] = await Promise.all([
         fetch('/api/users'),
-        fetch('/api/expenses'),
-        fetch('/api/stats'),
-        fetch(`/api/budgets?month=${currentMonth}`),
+        fetch(`/api/expenses?startDate=${startDate}&endDate=${endDate}`),
+        fetch(`/api/stats?startDate=${startDate}&endDate=${endDate}`),
+        fetch(`/api/budgets?month=${selectedMonth}`),
       ])
 
       const [usersData, expensesData, statsData, budgetsData] = await Promise.all([
@@ -95,7 +107,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [selectedMonth])
 
   const handleAddExpense = async (expense: Omit<Expense, 'id' | 'user'>) => {
     const response = await fetch('/api/expenses', {
@@ -161,10 +173,16 @@ export default function Home() {
             </h1>
             <p className="text-muted-foreground mt-2">Track your spending and watch your dough rise</p>
           </div>
-          <div className="flex gap-3">
-            <BudgetDialog users={users} onBudgetSet={fetchData} />
-            <ExportDialog users={users} />
-            <ExpenseForm users={users} onSubmit={handleAddExpense} />
+          <div className="flex items-center gap-4">
+            <MonthSelector
+              selectedMonth={selectedMonth}
+              onMonthChange={setSelectedMonth}
+            />
+            <div className="flex gap-3">
+              <BudgetDialog users={users} onBudgetSet={fetchData} />
+              <ExportDialog users={users} />
+              <ExpenseForm users={users} onSubmit={handleAddExpense} />
+            </div>
           </div>
         </div>
 

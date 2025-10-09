@@ -103,12 +103,12 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="category">Category</Label>
+              <Label htmlFor="category" className="text-amber-900 font-semibold">Category</Label>
               <Select value={category} onValueChange={setCategory} required>
-                <SelectTrigger id="category">
+                <SelectTrigger id="category" className="bg-white border-2 border-amber-300 text-amber-900">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
                   {categories.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value}>
                       <div className="flex items-center gap-2">
@@ -125,7 +125,7 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="amount">Budget Amount</Label>
+              <Label htmlFor="amount" className="text-amber-900 font-semibold">Budget Amount</Label>
               <Input
                 id="amount"
                 type="number"
@@ -134,17 +134,18 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
                 placeholder="500.00"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
+                className="bg-white border-2 border-amber-300 text-amber-900"
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="user">Apply To</Label>
+              <Label htmlFor="user" className="text-amber-900 font-semibold">Apply To</Label>
               <Select value={userId} onValueChange={setUserId} required>
-                <SelectTrigger id="user">
+                <SelectTrigger id="user" className="bg-white border-2 border-amber-300 text-amber-900">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
                   <SelectItem value="shared">Shared (All Users)</SelectItem>
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
@@ -162,7 +163,11 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit" disabled={loading}>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold shadow-lg"
+            >
               {loading ? "Setting..." : "Set Budget"}
             </Button>
           </DialogFooter>
