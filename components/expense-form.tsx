@@ -94,7 +94,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormPr
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button>
+          <Button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold shadow-lg">
             <Plus className="mr-2 h-4 w-4" /> Add Expense
           </Button>
         )}
@@ -106,7 +106,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormPr
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount</Label>
+              <Label htmlFor="amount" className="text-amber-900 font-semibold">Amount</Label>
               <Input
                 id="amount"
                 type="number"
@@ -114,28 +114,30 @@ export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormPr
                 placeholder="0.00"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                className="bg-white border-2 border-amber-300 text-amber-900"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="date">Date</Label>
+              <Label htmlFor="date" className="text-amber-900 font-semibold">Date</Label>
               <Input
                 id="date"
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                className="bg-white border-2 border-amber-300 text-amber-900"
                 required
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Category</Label>
+            <Label htmlFor="category" className="text-amber-900 font-semibold">Category</Label>
             <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white border-2 border-amber-300 text-amber-900">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
                 {categories.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value}>
                     <div className="flex items-center gap-2">
@@ -149,23 +151,24 @@ export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormPr
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description" className="text-amber-900 font-semibold">Description</Label>
             <Input
               id="description"
               placeholder="What was this expense for?"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              className="bg-white border-2 border-amber-300 text-amber-900 placeholder:text-amber-600"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="user">User</Label>
+            <Label htmlFor="user" className="text-amber-900 font-semibold">User</Label>
             <Select value={formData.userId} onValueChange={(value) => setFormData({ ...formData, userId: value })}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white border-2 border-amber-300 text-amber-900">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
                 {users.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     <div className="flex items-center gap-2">
@@ -184,18 +187,27 @@ export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormPr
               type="checkbox"
               checked={formData.isShared}
               onChange={(e) => setFormData({ ...formData, isShared: e.target.checked })}
-              className="rounded border-gray-300"
+              className="rounded border-amber-400"
             />
-            <Label htmlFor="shared" className="cursor-pointer">
+            <Label htmlFor="shared" className="cursor-pointer text-amber-900">
               This is a shared expense (split among all users)
             </Label>
           </div>
 
           <div className="flex gap-3 justify-end pt-4">
-            <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setOpen(false)}
+              className="border-2 border-amber-500 text-amber-900 hover:bg-amber-100 font-semibold"
+            >
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold shadow-lg"
+            >
               {loading ? 'Saving...' : expense ? 'Update' : 'Add Expense'}
             </Button>
           </div>

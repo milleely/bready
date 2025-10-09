@@ -5,7 +5,8 @@ import { MetricsCards } from "@/components/metrics-cards"
 import { SpendingCharts } from "@/components/spending-charts"
 import { RecentExpenses } from "@/components/recent-expenses"
 import { ExpenseForm } from "@/components/expense-form"
-import { ThemeToggle } from "@/components/theme-toggle"
+import { ExportDialog } from "@/components/export-dialog"
+import { UserManagement } from "@/components/user-management"
 import { Button } from "@/components/ui/button"
 import { Wallet } from "lucide-react"
 
@@ -136,7 +137,7 @@ export default function Home() {
     : 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50/30 via-orange-50/20 to-yellow-50/30 dark:from-amber-950/30 dark:via-orange-950/20 dark:to-yellow-950/30">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50/30 via-orange-50/20 to-yellow-50/30">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -146,7 +147,7 @@ export default function Home() {
             <p className="text-muted-foreground mt-2">Track your spending and watch your dough rise</p>
           </div>
           <div className="flex gap-3">
-            <ThemeToggle />
+            <ExportDialog users={users} />
             <ExpenseForm users={users} onSubmit={handleAddExpense} />
           </div>
         </div>
@@ -163,6 +164,8 @@ export default function Home() {
             spendingByCategory={stats.spendingByCategory}
             spendingPerPerson={stats.spendingPerPerson}
           />
+
+          <UserManagement users={users} onRefresh={fetchData} />
 
           <RecentExpenses
             expenses={expenses}

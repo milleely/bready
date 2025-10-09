@@ -1,0 +1,148 @@
+"use client"
+
+import { useState } from "react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { UserForm } from "@/components/user-form"
+import { Edit, Trash2, Users as UsersIcon } from "lucide-react"
+
+interface User {
+  id: string
+  name: string
+  email: string
+  color: string
+}
+
+interface UserManagementProps {
+  users: User[]
+  onRefresh: () => Promise<void>
+}
+
+export function UserManagement({ users, onRefresh }: UserManagementProps) {
+  const [editingUser, setEditingUser] = useState<User | undefined>()
+
+  const handleAddUser = async (userData: Omit<User, 'id'>) => {
+    const response = await fetch('/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    })
+
+    if (response.ok) {
+      await onRefresh()
+    } else {
+      const error = await response.json()
+      alert(error.error || 'Failed to add user')
+      throw new Error(error.error)
+    }
+  }
+
+  const handleEditUser = async (userData: Omit<User, 'id'>) => {
+    if (!editingUser) return
+
+    const response = await fetch(`/api/users/${editingUser.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    })
+
+    if (response.ok) {
+      setEditingUser(undefined)
+      await onRefresh()
+    } else {
+      const error = await response.json()
+      alert(error.error || 'Failed to update user')
+      throw new Error(error.error)
+    }
+  }
+
+  const handleDeleteUser = async (user: User) => {
+    const confirmMessage = `Are you sure you want to delete ${user.name}? This will also delete all their expenses. This action cannot be undone.`
+
+    if (!confirm(confirmMessage)) return
+
+    const response = await fetch(`/api/users/${user.id}`, {
+      method: 'DELETE',
+    })
+
+    if (response.ok) {
+      const result = await response.json()
+      alert(result.message)
+      await onRefresh()
+    } else {
+      const error = await response.json()
+      alert(error.error || 'Failed to delete user')
+    }
+  }
+
+  return (
+    <Card className="bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-sm">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <UsersIcon className="h-5 w-5" />
+              User Management
+            </CardTitle>
+            <CardDescription className="mt-1.5">
+              Manage household members ({users.length} active)
+            </CardDescription>
+          </div>
+          <UserForm onSubmit={handleAddUser} />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-3">
+          {users.map((user) => (
+            <div
+              key={user.id}
+              className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <div
+                  className="h-10 w-10 rounded-full border-2 border-border flex items-center justify-center"
+                  style={{ backgroundColor: user.color }}
+                >
+                  <span className="text-white font-semibold text-sm">
+                    {user.name.charAt(0).toUpperCase()}
+                  </span>
+                </div>
+                <div>
+                  <p className="font-medium">{user.name}</p>
+                  <p className="text-sm text-muted-foreground">{user.email}</p>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setEditingUser(user)}
+                  title="Edit user"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => handleDeleteUser(user)}
+                  title="Delete user"
+                  className="text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {editingUser && (
+          <UserForm
+            user={editingUser}
+            onSubmit={handleEditUser}
+            trigger={<Button className="hidden" />}
+          />
+        )}
+      </CardContent>
+    </Card>
+  )
+}

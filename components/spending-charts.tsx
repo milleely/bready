@@ -30,9 +30,9 @@ export function SpendingCharts({ spendingByCategory, spendingPerPerson }: Spendi
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
-          <p className="font-semibold">{payload[0].name}</p>
-          <p className="text-sm text-muted-foreground">
+        <div className="bg-gradient-to-br from-amber-100 to-orange-100 border-2 border-amber-300 rounded-lg p-3 shadow-xl">
+          <p className="font-bold text-amber-900">{payload[0].name}</p>
+          <p className="text-sm font-semibold text-amber-800">
             {formatCurrency(payload[0].value)}
           </p>
         </div>
@@ -44,10 +44,10 @@ export function SpendingCharts({ spendingByCategory, spendingPerPerson }: Spendi
   const BarTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
-          <p className="font-semibold mb-2">{payload[0].payload.name}</p>
+        <div className="bg-gradient-to-br from-amber-100 to-orange-100 border-2 border-amber-300 rounded-lg p-3 shadow-xl">
+          <p className="font-bold text-amber-900 mb-2">{payload[0].payload.name}</p>
           {payload.map((entry: any, index: number) => (
-            <p key={index} className="text-sm" style={{ color: entry.color }}>
+            <p key={index} className="text-sm font-semibold text-amber-800">
               {entry.dataKey}: {formatCurrency(entry.value)}
             </p>
           ))}
@@ -59,9 +59,9 @@ export function SpendingCharts({ spendingByCategory, spendingPerPerson }: Spendi
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      <Card>
+      <Card className="bg-gradient-to-br from-orange-50 to-amber-100 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle>Spending by Category</CardTitle>
+          <CardTitle className="text-amber-900">Spending by Category</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
@@ -86,17 +86,17 @@ export function SpendingCharts({ spendingByCategory, spendingPerPerson }: Spendi
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-gradient-to-br from-yellow-50 to-amber-100 border-0 shadow-sm">
         <CardHeader>
-          <CardTitle>Spending per Person</CardTitle>
+          <CardTitle className="text-amber-900">Spending per Person</CardTitle>
         </CardHeader>
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={personData}>
-              <XAxis dataKey="name" />
-              <YAxis />
+              <XAxis dataKey="name" stroke="#78350f" />
+              <YAxis stroke="#78350f" />
               <Tooltip content={<BarTooltip />} />
-              <Legend />
+              <Legend iconType="square" />
               <Bar dataKey="Personal" stackId="a" fill="#f59e0b" />
               <Bar dataKey="Shared" stackId="a" fill="#d97706" />
             </BarChart>

@@ -37,7 +37,7 @@ export function RecentExpenses({ expenses, onEdit, onDelete }: RecentExpensesPro
   }
 
   return (
-    <Card>
+    <Card className="bg-gradient-to-br from-orange-50 to-amber-100 border-0 shadow-sm">
       <CardHeader>
         <CardTitle>Recent Expenses</CardTitle>
       </CardHeader>
@@ -89,9 +89,9 @@ export function RecentExpenses({ expenses, onEdit, onDelete }: RecentExpensesPro
                     </TableCell>
                     <TableCell>
                       {expense.isShared ? (
-                        <span className="text-xs text-green-600 dark:text-green-400 font-medium">Shared</span>
+                        <span className="text-xs text-green-600 font-medium">Shared</span>
                       ) : (
-                        <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">Personal</span>
+                        <span className="text-xs text-blue-600 font-medium">Personal</span>
                       )}
                     </TableCell>
                     <TableCell className="text-right font-semibold">
