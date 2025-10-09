@@ -7,6 +7,8 @@ import { RecentExpenses } from "@/components/recent-expenses"
 import { ExpenseForm } from "@/components/expense-form"
 import { ExportDialog } from "@/components/export-dialog"
 import { UserManagement } from "@/components/user-management"
+import { BudgetDialog } from "@/components/budget-dialog"
+import { BudgetProgress } from "@/components/budget-progress"
 import { Button } from "@/components/ui/button"
 import { Wallet } from "lucide-react"
 
@@ -15,6 +17,14 @@ interface User {
   name: string
   email: string
   color: string
+}
+
+interface Budget {
+  id: string
+  category: string
+  amount: number
+  month: string
+  userId: string | null
 }
 
 interface Expense {
@@ -45,6 +55,7 @@ interface Stats {
 export default function Home() {
   const [users, setUsers] = useState<User[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
+  const [budgets, setBudgets] = useState<Budget[]>([])
   const [stats, setStats] = useState<Stats>({
     totalSpent: 0,
     sharedExpenses: 0,
@@ -56,21 +67,25 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
-      const [usersRes, expensesRes, statsRes] = await Promise.all([
+      const currentMonth = new Date().toISOString().slice(0, 7)
+      const [usersRes, expensesRes, statsRes, budgetsRes] = await Promise.all([
         fetch('/api/users'),
         fetch('/api/expenses'),
         fetch('/api/stats'),
+        fetch(`/api/budgets?month=${currentMonth}`),
       ])
 
-      const [usersData, expensesData, statsData] = await Promise.all([
+      const [usersData, expensesData, statsData, budgetsData] = await Promise.all([
         usersRes.json(),
         expensesRes.json(),
         statsRes.json(),
+        budgetsRes.json(),
       ])
 
       setUsers(usersData)
       setExpenses(expensesData)
       setStats(statsData)
+      setBudgets(budgetsData)
     } catch (error) {
       console.error('Failed to fetch data:', error)
     } finally {
@@ -147,6 +162,7 @@ export default function Home() {
             <p className="text-muted-foreground mt-2">Track your spending and watch your dough rise</p>
           </div>
           <div className="flex gap-3">
+            <BudgetDialog users={users} onBudgetSet={fetchData} />
             <ExportDialog users={users} />
             <ExpenseForm users={users} onSubmit={handleAddExpense} />
           </div>
@@ -158,6 +174,11 @@ export default function Home() {
             sharedExpenses={stats.sharedExpenses}
             userCount={users.length}
             avgPerPerson={avgPerPerson}
+          />
+
+          <BudgetProgress
+            budgets={budgets}
+            spendingByCategory={stats.spendingByCategory}
           />
 
           <SpendingCharts
