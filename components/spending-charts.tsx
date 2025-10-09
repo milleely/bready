@@ -97,8 +97,8 @@ export function SpendingCharts({ spendingByCategory, spendingPerPerson }: Spendi
               <YAxis />
               <Tooltip content={<BarTooltip />} />
               <Legend />
-              <Bar dataKey="Personal" stackId="a" fill="#3b82f6" />
-              <Bar dataKey="Shared" stackId="a" fill="#10b981" />
+              <Bar dataKey="Personal" stackId="a" fill="#f59e0b" />
+              <Bar dataKey="Shared" stackId="a" fill="#d97706" />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

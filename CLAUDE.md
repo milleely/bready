@@ -151,6 +151,13 @@ import { prisma } from '@/lib/db'
 
 The singleton pattern in `lib/db.ts` prevents multiple instances in development with hot reloading.
 
+###Development Notes
+
+- Auto-save occurs on editor content changes
+- Theme switching supports light/dark/system modes
+- Responsive design optimized for desktop use
+
+
 ### Additional Rules
 
 1. First think through the problem, read the codebase for relevant files, and write a plan to tasks/todo.md.

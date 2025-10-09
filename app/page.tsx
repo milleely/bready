@@ -136,14 +136,14 @@ export default function Home() {
     : 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50/30 via-orange-50/20 to-yellow-50/30 dark:from-amber-950/30 dark:via-orange-950/20 dark:to-yellow-950/30">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
-              Expense Tracker
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 bg-clip-text text-transparent">
+              Bready
             </h1>
-            <p className="text-muted-foreground mt-2">Track your monthly expenses with ease</p>
+            <p className="text-muted-foreground mt-2">Track your spending and watch your dough rise</p>
           </div>
           <div className="flex gap-3">
             <ThemeToggle />

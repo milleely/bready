@@ -1,49 +1,49 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: 0 0% 100%;
-  --color-foreground: 0 0% 3.9%;
-  --color-card: 0 0% 100%;
-  --color-card-foreground: 0 0% 3.9%;
-  --color-popover: 0 0% 100%;
-  --color-popover-foreground: 0 0% 3.9%;
-  --color-primary: 0 0% 9%;
-  --color-primary-foreground: 0 0% 98%;
-  --color-secondary: 0 0% 96.1%;
-  --color-secondary-foreground: 0 0% 9%;
-  --color-muted: 0 0% 96.1%;
-  --color-muted-foreground: 0 0% 45.1%;
-  --color-accent: 0 0% 96.1%;
-  --color-accent-foreground: 0 0% 9%;
-  --color-destructive: 0 84.2% 60.2%;
-  --color-destructive-foreground: 0 0% 98%;
-  --color-border: 0 0% 89.8%;
-  --color-input: 0 0% 89.8%;
-  --color-ring: 0 0% 3.9%;
-  --radius: 0.5rem;
+  --color-background: 42 40% 97%;
+  --color-foreground: 25 30% 20%;
+  --color-card: 40 35% 98%;
+  --color-card-foreground: 25 30% 20%;
+  --color-popover: 40 35% 98%;
+  --color-popover-foreground: 25 30% 20%;
+  --color-primary: 25 75% 47%;
+  --color-primary-foreground: 40 35% 98%;
+  --color-secondary: 38 50% 90%;
+  --color-secondary-foreground: 25 30% 20%;
+  --color-muted: 38 40% 92%;
+  --color-muted-foreground: 25 15% 50%;
+  --color-accent: 38 60% 88%;
+  --color-accent-foreground: 25 30% 20%;
+  --color-destructive: 0 70% 55%;
+  --color-destructive-foreground: 40 35% 98%;
+  --color-border: 38 30% 88%;
+  --color-input: 38 30% 88%;
+  --color-ring: 25 75% 47%;
+  --radius: 1rem;
 }
 
 @media (prefers-color-scheme: dark) {
   @theme {
-    --color-background: 0 0% 3.9%;
-    --color-foreground: 0 0% 98%;
-    --color-card: 0 0% 3.9%;
-    --color-card-foreground: 0 0% 98%;
-    --color-popover: 0 0% 3.9%;
-    --color-popover-foreground: 0 0% 98%;
-    --color-primary: 0 0% 98%;
-    --color-primary-foreground: 0 0% 9%;
-    --color-secondary: 0 0% 14.9%;
-    --color-secondary-foreground: 0 0% 98%;
-    --color-muted: 0 0% 14.9%;
-    --color-muted-foreground: 0 0% 63.9%;
-    --color-accent: 0 0% 14.9%;
-    --color-accent-foreground: 0 0% 98%;
-    --color-destructive: 0 62.8% 30.6%;
-    --color-destructive-foreground: 0 0% 98%;
-    --color-border: 0 0% 14.9%;
-    --color-input: 0 0% 14.9%;
-    --color-ring: 0 0% 83.1%;
+    --color-background: 25 35% 12%;
+    --color-foreground: 40 25% 92%;
+    --color-card: 25 30% 15%;
+    --color-card-foreground: 40 25% 92%;
+    --color-popover: 25 30% 15%;
+    --color-popover-foreground: 40 25% 92%;
+    --color-primary: 38 85% 60%;
+    --color-primary-foreground: 25 35% 12%;
+    --color-secondary: 25 25% 22%;
+    --color-secondary-foreground: 40 25% 92%;
+    --color-muted: 25 20% 20%;
+    --color-muted-foreground: 40 15% 65%;
+    --color-accent: 25 30% 25%;
+    --color-accent-foreground: 40 25% 92%;
+    --color-destructive: 0 65% 45%;
+    --color-destructive-foreground: 40 25% 92%;
+    --color-border: 25 20% 25%;
+    --color-input: 25 20% 25%;
+    --color-ring: 38 85% 60%;
   }
 }
 

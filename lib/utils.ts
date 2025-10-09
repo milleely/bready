@@ -6,13 +6,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const categories = [
-  { value: 'groceries', label: 'Groceries', color: '#10b981' },
+  { value: 'groceries', label: 'Groceries', color: '#16a34a' },
   { value: 'utilities', label: 'Utilities', color: '#3b82f6' },
-  { value: 'subscriptions', label: 'Subscriptions', color: '#8b5cf6' },
-  { value: 'dining', label: 'Dining Out', color: '#f59e0b' },
-  { value: 'transportation', label: 'Transportation', color: '#ef4444' },
+  { value: 'subscriptions', label: 'Subscriptions', color: '#a855f7' },
+  { value: 'dining', label: 'Dining Out', color: '#f97316' },
+  { value: 'transportation', label: 'Transportation', color: '#dc2626' },
   { value: 'entertainment', label: 'Entertainment', color: '#ec4899' },
-  { value: 'other', label: 'Other', color: '#6b7280' },
+  { value: 'other', label: 'Other', color: '#78716c' },
 ] as const
 
 export type Category = typeof categories[number]['value']
