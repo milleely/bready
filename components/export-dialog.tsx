@@ -85,12 +85,12 @@ export function ExportDialog({ users }: ExportDialogProps) {
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="user-filter" className="text-amber-900 font-semibold">Filter by User (Optional)</Label>
+            <Label htmlFor="user-filter" className="text-golden-crust-dark font-semibold">Filter by User (Optional)</Label>
             <Select value={filters.userId} onValueChange={(value) => setFilters({ ...filters, userId: value })}>
-              <SelectTrigger id="user-filter" className="bg-white border-2 border-amber-300 text-amber-900">
+              <SelectTrigger id="user-filter" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                 <SelectValue placeholder="All users" />
               </SelectTrigger>
-              <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
+              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
                 {users.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.name}
@@ -101,12 +101,12 @@ export function ExportDialog({ users }: ExportDialogProps) {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="category-filter" className="text-amber-900 font-semibold">Filter by Category (Optional)</Label>
+            <Label htmlFor="category-filter" className="text-golden-crust-dark font-semibold">Filter by Category (Optional)</Label>
             <Select value={filters.category} onValueChange={(value) => setFilters({ ...filters, category: value })}>
-              <SelectTrigger id="category-filter" className="bg-white border-2 border-amber-300 text-amber-900">
+              <SelectTrigger id="category-filter" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
-              <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
+              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
                 {categories.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value}>
                     <div className="flex items-center gap-2">
@@ -120,24 +120,24 @@ export function ExportDialog({ users }: ExportDialogProps) {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="start-date" className="text-amber-900 font-semibold">Start Date (Optional)</Label>
+            <Label htmlFor="start-date" className="text-golden-crust-dark font-semibold">Start Date (Optional)</Label>
             <Input
               id="start-date"
               type="date"
               value={filters.startDate}
               onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-              className="bg-white border-2 border-amber-300 text-amber-900"
+              className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
             />
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="end-date" className="text-amber-900 font-semibold">End Date (Optional)</Label>
+            <Label htmlFor="end-date" className="text-golden-crust-dark font-semibold">End Date (Optional)</Label>
             <Input
               id="end-date"
               type="date"
               value={filters.endDate}
               onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-              className="bg-white border-2 border-amber-300 text-amber-900"
+              className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
             />
           </div>
         </div>
@@ -147,7 +147,7 @@ export function ExportDialog({ users }: ExportDialogProps) {
             variant="outline"
             onClick={() => setOpen(false)}
             disabled={exporting}
-            className="border-2 border-amber-500 text-amber-900 hover:bg-amber-100 font-semibold"
+            className="border border-golden-crust-medium text-golden-crust-dark hover:bg-amber-100 font-semibold"
           >
             Cancel
           </Button>

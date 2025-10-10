@@ -65,7 +65,7 @@ export function UserForm({ user, onSubmit, trigger }: UserFormProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger || (
-          <Button>
+          <Button className="bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 hover:from-amber-700 hover:via-orange-600 hover:to-amber-800 text-white font-semibold shadow-lg transform hover:scale-105 transition-all duration-200">
             <UserPlus className="mr-2 h-4 w-4" />
             Add User
           </Button>

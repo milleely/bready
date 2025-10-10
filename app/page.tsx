@@ -1,16 +1,17 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { MetricsCards } from "@/components/metrics-cards"
-import { SpendingCharts } from "@/components/spending-charts"
-import { RecentExpenses } from "@/components/recent-expenses"
+import { EnhancedMetricsCards } from "@/components/enhanced-metrics-cards"
+import { EnhancedSpendingCharts } from "@/components/enhanced-spending-charts"
+import { EnhancedRecentExpenses } from "@/components/enhanced-recent-expenses"
 import { ExpenseForm } from "@/components/expense-form"
 import { ExportDialog } from "@/components/export-dialog"
 import { UserManagement } from "@/components/user-management"
 import { BudgetDialog } from "@/components/budget-dialog"
-import { BudgetProgress } from "@/components/budget-progress"
+import { EnhancedBudgetProgress } from "@/components/enhanced-budget-progress"
 import { MonthSelector } from "@/components/month-selector"
 import { RecurringExpenseDialog } from "@/components/recurring-expense-dialog"
+import { BreadyLogo } from "@/components/bready-logo"
 import { Button } from "@/components/ui/button"
 import { Wallet } from "lucide-react"
 
@@ -171,14 +172,19 @@ export default function Home() {
     : 0
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50/30 via-orange-50/20 to-yellow-50/30">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 bg-clip-text text-transparent">
-              Bready
-            </h1>
-            <p className="text-muted-foreground mt-2">Track your spending and watch your dough rise</p>
+          <div className="flex items-start gap-3">
+            <BreadyLogo size={56} />
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 bg-clip-text text-transparent">
+                Bready
+              </h1>
+              <p className="text-muted-foreground mt-2 text-sm">
+                Track your dough
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <MonthSelector
@@ -194,26 +200,26 @@ export default function Home() {
         </div>
 
         <div className="space-y-6">
-          <MetricsCards
+          <EnhancedMetricsCards
             totalSpent={stats.totalSpent}
             sharedExpenses={stats.sharedExpenses}
             userCount={users.length}
             avgPerPerson={avgPerPerson}
           />
 
-          <BudgetProgress
+          <EnhancedBudgetProgress
             budgets={budgets}
             spendingByCategory={stats.spendingByCategory}
           />
 
-          <SpendingCharts
+          <EnhancedSpendingCharts
             spendingByCategory={stats.spendingByCategory}
             spendingPerPerson={stats.spendingPerPerson}
           />
 
           <UserManagement users={users} onRefresh={fetchData} />
 
-          <RecentExpenses
+          <EnhancedRecentExpenses
             expenses={expenses}
             users={users}
             onEdit={(expense) => setEditingExpense(expense)}

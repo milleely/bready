@@ -117,7 +117,7 @@ export function RecurringExpenseDialog({ users, onRecurringExpenseAdded }: Recur
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4 max-h-[60vh] overflow-y-auto">
             <div className="grid gap-2">
-              <Label htmlFor="amount" className="text-amber-900 font-semibold">Amount</Label>
+              <Label htmlFor="amount" className="text-golden-crust-dark font-semibold">Amount</Label>
               <Input
                 id="amount"
                 type="number"
@@ -126,18 +126,18 @@ export function RecurringExpenseDialog({ users, onRecurringExpenseAdded }: Recur
                 placeholder="50.00"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="bg-white border-2 border-amber-300 text-amber-900"
+                className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="category" className="text-amber-900 font-semibold">Category</Label>
+              <Label htmlFor="category" className="text-golden-crust-dark font-semibold">Category</Label>
               <Select value={category} onValueChange={setCategory} required>
-                <SelectTrigger id="category" className="bg-white border-2 border-amber-300 text-amber-900">
+                <SelectTrigger id="category" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
+                <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
                   {categories.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value}>
                       <div className="flex items-center gap-2">
@@ -154,25 +154,25 @@ export function RecurringExpenseDialog({ users, onRecurringExpenseAdded }: Recur
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="description" className="text-amber-900 font-semibold">Description</Label>
+              <Label htmlFor="description" className="text-golden-crust-dark font-semibold">Description</Label>
               <Input
                 id="description"
                 type="text"
                 placeholder="Netflix subscription"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="bg-white border-2 border-amber-300 text-amber-900"
+                className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="frequency" className="text-amber-900 font-semibold">Frequency</Label>
+              <Label htmlFor="frequency" className="text-golden-crust-dark font-semibold">Frequency</Label>
               <Select value={frequency} onValueChange={setFrequency} required>
-                <SelectTrigger id="frequency" className="bg-white border-2 border-amber-300 text-amber-900">
+                <SelectTrigger id="frequency" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
+                <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
                   <SelectItem value="weekly">Weekly</SelectItem>
                   <SelectItem value="monthly">Monthly</SelectItem>
                   <SelectItem value="yearly">Yearly</SelectItem>
@@ -182,12 +182,12 @@ export function RecurringExpenseDialog({ users, onRecurringExpenseAdded }: Recur
 
             {frequency === 'weekly' && (
               <div className="grid gap-2">
-                <Label htmlFor="dayOfWeek" className="text-amber-900 font-semibold">Day of Week</Label>
+                <Label htmlFor="dayOfWeek" className="text-golden-crust-dark font-semibold">Day of Week</Label>
                 <Select value={dayOfWeek} onValueChange={setDayOfWeek} required>
-                  <SelectTrigger id="dayOfWeek" className="bg-white border-2 border-amber-300 text-amber-900">
+                  <SelectTrigger id="dayOfWeek" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
+                  <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
                     <SelectItem value="0">Sunday</SelectItem>
                     <SelectItem value="1">Monday</SelectItem>
                     <SelectItem value="2">Tuesday</SelectItem>
@@ -202,7 +202,7 @@ export function RecurringExpenseDialog({ users, onRecurringExpenseAdded }: Recur
 
             {(frequency === 'monthly' || frequency === 'yearly') && (
               <div className="grid gap-2">
-                <Label htmlFor="dayOfMonth" className="text-amber-900 font-semibold">Day of Month</Label>
+                <Label htmlFor="dayOfMonth" className="text-golden-crust-dark font-semibold">Day of Month</Label>
                 <Input
                   id="dayOfMonth"
                   type="number"
@@ -210,7 +210,7 @@ export function RecurringExpenseDialog({ users, onRecurringExpenseAdded }: Recur
                   max="31"
                   value={dayOfMonth}
                   onChange={(e) => setDayOfMonth(e.target.value)}
-                  className="bg-white border-2 border-amber-300 text-amber-900"
+                  className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
                   required
                 />
               </div>
@@ -218,12 +218,12 @@ export function RecurringExpenseDialog({ users, onRecurringExpenseAdded }: Recur
 
             {frequency === 'yearly' && (
               <div className="grid gap-2">
-                <Label htmlFor="monthOfYear" className="text-amber-900 font-semibold">Month</Label>
+                <Label htmlFor="monthOfYear" className="text-golden-crust-dark font-semibold">Month</Label>
                 <Select value={monthOfYear} onValueChange={setMonthOfYear} required>
-                  <SelectTrigger id="monthOfYear" className="bg-white border-2 border-amber-300 text-amber-900">
+                  <SelectTrigger id="monthOfYear" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
+                  <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
                     <SelectItem value="1">January</SelectItem>
                     <SelectItem value="2">February</SelectItem>
                     <SelectItem value="3">March</SelectItem>
@@ -242,12 +242,12 @@ export function RecurringExpenseDialog({ users, onRecurringExpenseAdded }: Recur
             )}
 
             <div className="grid gap-2">
-              <Label htmlFor="user" className="text-amber-900 font-semibold">User</Label>
+              <Label htmlFor="user" className="text-golden-crust-dark font-semibold">User</Label>
               <Select value={userId} onValueChange={setUserId} required>
-                <SelectTrigger id="user" className="bg-white border-2 border-amber-300 text-amber-900">
+                <SelectTrigger id="user" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                   <SelectValue placeholder="Select user" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
+                <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
                       <div className="flex items-center gap-2">
@@ -269,9 +269,9 @@ export function RecurringExpenseDialog({ users, onRecurringExpenseAdded }: Recur
                 type="checkbox"
                 checked={isShared}
                 onChange={(e) => setIsShared(e.target.checked)}
-                className="h-4 w-4 rounded border-amber-300 text-amber-600 focus:ring-amber-500"
+                className="h-4 w-4 rounded border-golden-crust-medium text-golden-crust-primary focus:ring-golden-crust-primary"
               />
-              <Label htmlFor="isShared" className="text-amber-900 font-semibold cursor-pointer">
+              <Label htmlFor="isShared" className="text-golden-crust-dark font-semibold cursor-pointer">
                 Shared expense (split among all users)
               </Label>
             </div>

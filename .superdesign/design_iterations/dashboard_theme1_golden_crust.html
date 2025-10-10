@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bready Dashboard - Golden Crust Theme</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #e3c462, #604b21);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 min-h-screen">
+  <div class="container mx-auto px-8 py-8 max-w-7xl">
+
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div class="flex items-center gap-4">
+        <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-4xl shadow-xl" style="background: linear-gradient(135deg, #e3c462, #fdf885);">
+          🍞
+        </div>
+        <div>
+          <h1 class="text-4xl font-bold gradient-text leading-tight">Bready</h1>
+          <p class="text-sm font-medium mt-1" style="color: #604b21;">Track your spending and watch your dough rise</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <!-- Month Selector -->
+        <div class="flex items-center gap-2 bg-white border-2 rounded-lg px-4 py-2.5 shadow-sm" style="border-color: #e3c462;">
+          <button class="text-gray-600 hover:text-gray-900 font-bold leading-none">←</button>
+          <span class="font-medium px-3" style="color: #604b21;">October 2025</span>
+          <button class="text-gray-600 hover:text-gray-900 font-bold leading-none">→</button>
+          <button class="ml-2 px-4 py-1.5 text-white text-sm rounded-md font-semibold hover:opacity-90 transition" style="background: linear-gradient(135deg, #e3c462, #e7d791);">Today</button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+          <button class="px-5 py-2.5 text-white font-semibold rounded-lg shadow-lg transition-all duration-150 hover:scale-105" style="background: linear-gradient(135deg, #e7d791, #e3c462);">
+            🎯 Set Budget
+          </button>
+          <button class="px-5 py-2.5 font-semibold rounded-lg shadow-lg transition-all duration-150 hover:scale-105" style="background: #fdf885; color: #604b21;">
+            🔁 Add Recurring
+          </button>
+          <button class="px-5 py-2.5 text-white font-semibold rounded-lg shadow-lg transition-all duration-150 hover:scale-105" style="background: linear-gradient(135deg, #e3c462, #604b21);">
+            ➕ Add Expense
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-4 gap-6 mb-8">
+      <div class="rounded-2xl p-6 transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl shadow-md" style="background: linear-gradient(135deg, #e3c462 0%, #fdf885 100%);">
+        <div class="flex items-center gap-2.5 text-sm mb-4" style="color: #604b21;">
+          <span class="text-2xl leading-none">💰</span>
+          <span class="font-semibold">Total Spent</span>
+        </div>
+        <div class="text-3xl font-bold" style="color: #604b21;">$1,234.56</div>
+      </div>
+
+      <div class="rounded-2xl p-6 transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl shadow-md" style="background: linear-gradient(135deg, #fdf885 0%, #e7d791 100%);">
+        <div class="flex items-center gap-2.5 text-sm mb-4" style="color: #604b21;">
+          <span class="text-2xl leading-none">🤝</span>
+          <span class="font-semibold">Shared Expenses</span>
+        </div>
+        <div class="text-3xl font-bold" style="color: #604b21;">$567.89</div>
+      </div>
+
+      <div class="rounded-2xl p-6 transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl shadow-md" style="background: linear-gradient(135deg, #e7d791 0%, #e3c462 100%);">
+        <div class="flex items-center gap-2.5 text-sm mb-4" style="color: #604b21;">
+          <span class="text-2xl leading-none">👥</span>
+          <span class="font-semibold">Active Users</span>
+        </div>
+        <div class="text-3xl font-bold" style="color: #604b21;">4</div>
+      </div>
+
+      <div class="rounded-2xl p-6 transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl shadow-md" style="background: linear-gradient(135deg, #e3c462 0%, #e7d791 100%);">
+        <div class="flex items-center gap-2.5 text-sm mb-4" style="color: #604b21;">
+          <span class="text-2xl leading-none">📊</span>
+          <span class="font-semibold">Avg Per Person</span>
+        </div>
+        <div class="text-3xl font-bold" style="color: #604b21;">$308.64</div>
+      </div>
+    </div>
+
+    <!-- Budget Progress -->
+    <div class="bg-white rounded-2xl p-6 mb-8 shadow-md border-2" style="border-color: #e3c462;">
+      <h3 class="font-bold text-lg mb-6" style="color: #604b21;">Budget Tracker</h3>
+
+      <div class="space-y-6">
+        <div>
+          <div class="flex items-center justify-between text-sm mb-2">
+            <span class="font-semibold flex items-center gap-2.5" style="color: #604b21;">
+              <span class="text-xl leading-none">🍞</span>
+              <span>Groceries</span>
+            </span>
+            <span class="font-semibold text-gray-700">$450 / $500</span>
+          </div>
+          <div class="w-full rounded-full h-4 overflow-hidden mb-2" style="background-color: #fdf88540;">
+            <div class="h-full rounded-full transition-all duration-300" style="width: 90%; background: linear-gradient(90deg, #e3c462, #fdf885);"></div>
+          </div>
+          <div class="text-xs font-medium text-gray-500">90% used • $50 remaining</div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between text-sm mb-2">
+            <span class="font-semibold flex items-center gap-2.5" style="color: #604b21;">
+              <span class="text-xl leading-none">🔌</span>
+              <span>Utilities</span>
+            </span>
+            <span class="font-semibold text-gray-700">$120 / $200</span>
+          </div>
+          <div class="w-full rounded-full h-4 overflow-hidden mb-2" style="background-color: #e7d79140;">
+            <div class="h-full rounded-full transition-all duration-300" style="width: 60%; background: linear-gradient(90deg, #e7d791, #e3c462);"></div>
+          </div>
+          <div class="text-xs font-medium text-gray-500">60% used • $80 remaining</div>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between text-sm mb-2">
+            <span class="font-semibold flex items-center gap-2.5" style="color: #604b21;">
+              <span class="text-xl leading-none">🍽️</span>
+              <span>Dining Out</span>
+            </span>
+            <span class="font-semibold" style="color: #e3c462;">$350 / $300</span>
+          </div>
+          <div class="w-full rounded-full h-4 overflow-hidden mb-2" style="background-color: #604b2140;">
+            <div class="h-full rounded-full transition-all duration-300" style="width: 100%; background: linear-gradient(90deg, #e3c462, #604b21);"></div>
+          </div>
+          <div class="text-xs font-semibold" style="color: #e3c462;">117% used • $50 over budget!</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-2 gap-6 mb-8">
+      <div class="bg-white rounded-2xl p-6 shadow-md border-2" style="border-color: #e3c462;">
+        <h3 class="font-bold text-lg mb-6" style="color: #604b21;">Spending by Category</h3>
+        <div class="flex items-center justify-center mb-6" style="height: 240px;">
+          <svg viewBox="0 0 200 200" class="w-full h-full max-w-[240px] max-h-[240px]">
+            <!-- Pie chart segments -->
+            <circle cx="100" cy="100" r="80" fill="none" stroke="#e3c462" stroke-width="40" stroke-dasharray="175 315" transform="rotate(-90 100 100)" />
+            <circle cx="100" cy="100" r="80" fill="none" stroke="#e7d791" stroke-width="40" stroke-dasharray="125 365" stroke-dashoffset="-175" transform="rotate(-90 100 100)" />
+            <circle cx="100" cy="100" r="80" fill="none" stroke="#604b21" stroke-width="40" stroke-dasharray="65 425" stroke-dashoffset="-300" transform="rotate(-90 100 100)" />
+          </svg>
+        </div>
+        <div class="space-y-4 text-sm">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-4 h-4 rounded-full flex-shrink-0" style="background-color: #e3c462;"></div>
+              <span class="font-medium" style="color: #604b21;">Groceries</span>
+            </div>
+            <span class="font-semibold" style="color: #604b21;">35%</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-4 h-4 rounded-full flex-shrink-0" style="background-color: #e7d791;"></div>
+              <span class="font-medium" style="color: #604b21;">Utilities</span>
+            </div>
+            <span class="font-semibold" style="color: #604b21;">25%</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-4 h-4 rounded-full flex-shrink-0" style="background-color: #604b21;"></div>
+              <span class="font-medium" style="color: #604b21;">Dining</span>
+            </div>
+            <span class="font-semibold" style="color: #604b21;">15%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 shadow-md border-2" style="border-color: #e3c462;">
+        <h3 class="font-bold text-lg mb-6" style="color: #604b21;">Spending per Person</h3>
+        <div class="space-y-6">
+          <div>
+            <div class="flex items-center justify-between text-sm mb-2">
+              <span class="font-semibold" style="color: #604b21;">John</span>
+              <span class="font-semibold text-gray-700">$425.00</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-300" style="width: 85%; background: linear-gradient(90deg, #e3c462, #fdf885);"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between text-sm mb-2">
+              <span class="font-semibold" style="color: #604b21;">Sarah</span>
+              <span class="font-semibold text-gray-700">$380.00</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-300" style="width: 76%; background: linear-gradient(90deg, #e7d791, #e3c462);"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between text-sm mb-2">
+              <span class="font-semibold" style="color: #604b21;">Alex</span>
+              <span class="font-semibold text-gray-700">$290.00</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-300" style="width: 58%; background: #e7d791;"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex items-center justify-between text-sm mb-2">
+              <span class="font-semibold" style="color: #604b21;">Emma</span>
+              <span class="font-semibold text-gray-700">$139.56</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+              <div class="h-full rounded-full transition-all duration-300" style="width: 28%; background: linear-gradient(90deg, #e3c462, #e7d791);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Expenses Table -->
+    <div class="bg-white rounded-2xl p-6 shadow-md border-2" style="border-color: #e3c462;">
+      <div class="flex justify-between items-center mb-6">
+        <div>
+          <h3 class="font-bold text-lg" style="color: #604b21;">Recent Expenses</h3>
+          <p class="text-sm text-gray-500 mt-1">Latest transactions from your household</p>
+        </div>
+        <button class="px-5 py-2.5 border-2 rounded-lg font-semibold hover:bg-gray-50 transition flex items-center gap-2" style="border-color: #e3c462; color: #604b21;">
+          <span>📥</span>
+          <span>Export CSV</span>
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b-2" style="border-color: #e3c462;">
+              <th class="text-left py-4 px-4 text-xs font-bold uppercase tracking-wide" style="color: #604b21;">Date</th>
+              <th class="text-left py-4 px-4 text-xs font-bold uppercase tracking-wide" style="color: #604b21;">Description</th>
+              <th class="text-left py-4 px-4 text-xs font-bold uppercase tracking-wide" style="color: #604b21;">Category</th>
+              <th class="text-left py-4 px-4 text-xs font-bold uppercase tracking-wide" style="color: #604b21;">User</th>
+              <th class="text-left py-4 px-4 text-xs font-bold uppercase tracking-wide" style="color: #604b21;">Type</th>
+              <th class="text-right py-4 px-4 text-xs font-bold uppercase tracking-wide" style="color: #604b21;">Amount</th>
+              <th class="text-center py-4 px-4 text-xs font-bold uppercase tracking-wide" style="color: #604b21;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100 hover:bg-amber-50 transition">
+              <td class="py-4 px-4 text-sm font-semibold" style="color: #604b21;">Oct 9</td>
+              <td class="py-4 px-4 text-sm">
+                <div class="flex items-center gap-2">
+                  <span class="text-lg leading-none">🔁</span>
+                  <span class="font-medium" style="color: #604b21;">Netflix Subscription</span>
+                </div>
+              </td>
+              <td class="py-4 px-4">
+                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold" style="background-color: #e7d791; color: #604b21;">
+                  Subscriptions
+                </span>
+              </td>
+              <td class="py-4 px-4 text-sm">
+                <div class="flex items-center gap-2">
+                  <div class="w-4 h-4 rounded-full flex-shrink-0" style="background-color: #e3c462;"></div>
+                  <span class="font-medium" style="color: #604b21;">John</span>
+                </div>
+              </td>
+              <td class="py-4 px-4 text-sm font-semibold" style="color: #e3c462;">Shared</td>
+              <td class="py-4 px-4 text-sm text-right font-bold" style="color: #604b21;">$15.99</td>
+              <td class="py-4 px-4 text-sm">
+                <div class="flex items-center justify-center gap-2">
+                  <button class="hover:bg-gray-200 p-2 rounded-lg transition text-base leading-none" title="Edit">✏️</button>
+                  <button class="hover:bg-red-50 p-2 rounded-lg transition text-base leading-none" style="color: #e3c462;" title="Delete">🗑️</button>
+                </div>
+              </td>
+            </tr>
+
+            <tr class="border-b border-gray-100 hover:bg-amber-50 transition">
+              <td class="py-4 px-4 text-sm font-semibold" style="color: #604b21;">Oct 8</td>
+              <td class="py-4 px-4 text-sm font-medium" style="color: #604b21;">Whole Foods Groceries</td>
+              <td class="py-4 px-4">
+                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold" style="background-color: #fdf885; color: #604b21;">
+                  Groceries
+                </span>
+              </td>
+              <td class="py-4 px-4 text-sm">
+                <div class="flex items-center gap-2">
+                  <div class="w-4 h-4 rounded-full flex-shrink-0" style="background-color: #e7d791;"></div>
+                  <span class="font-medium" style="color: #604b21;">Sarah</span>
+                </div>
+              </td>
+              <td class="py-4 px-4 text-sm font-semibold" style="color: #604b21;">Personal</td>
+              <td class="py-4 px-4 text-sm text-right font-bold" style="color: #604b21;">$87.45</td>
+              <td class="py-4 px-4 text-sm">
+                <div class="flex items-center justify-center gap-2">
+                  <button class="hover:bg-gray-200 p-2 rounded-lg transition text-base leading-none" title="Edit">✏️</button>
+                  <button class="hover:bg-red-50 p-2 rounded-lg transition text-base leading-none" style="color: #e3c462;" title="Delete">🗑️</button>
+                </div>
+              </td>
+            </tr>
+
+            <tr class="border-b border-gray-100 hover:bg-amber-50 transition">
+              <td class="py-4 px-4 text-sm font-semibold" style="color: #604b21;">Oct 7</td>
+              <td class="py-4 px-4 text-sm font-medium" style="color: #604b21;">Electric Bill</td>
+              <td class="py-4 px-4">
+                <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold" style="background-color: #e3c462; color: white;">
+                  Utilities
+                </span>
+              </td>
+              <td class="py-4 px-4 text-sm">
+                <div class="flex items-center gap-2">
+                  <div class="w-4 h-4 rounded-full flex-shrink-0" style="background-color: #604b21;"></div>
+                  <span class="font-medium" style="color: #604b21;">Alex</span>
+                </div>
+              </td>
+              <td class="py-4 px-4 text-sm font-semibold" style="color: #e3c462;">Shared</td>
+              <td class="py-4 px-4 text-sm text-right font-bold" style="color: #604b21;">$125.00</td>
+              <td class="py-4 px-4 text-sm">
+                <div class="flex items-center justify-center gap-2">
+                  <button class="hover:bg-gray-200 p-2 rounded-lg transition text-base leading-none" title="Edit">✏️</button>
+                  <button class="hover:bg-red-50 p-2 rounded-lg transition text-base leading-none" style="color: #e3c462;" title="Delete">🗑️</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

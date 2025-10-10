@@ -106,7 +106,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormPr
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="amount" className="text-amber-900 font-semibold">Amount</Label>
+              <Label htmlFor="amount" className="text-golden-crust-dark font-semibold">Amount</Label>
               <Input
                 id="amount"
                 type="number"
@@ -114,30 +114,30 @@ export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormPr
                 placeholder="0.00"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                className="bg-white border-2 border-amber-300 text-amber-900"
+                className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="date" className="text-amber-900 font-semibold">Date</Label>
+              <Label htmlFor="date" className="text-golden-crust-dark font-semibold">Date</Label>
               <Input
                 id="date"
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="bg-white border-2 border-amber-300 text-amber-900"
+                className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
                 required
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category" className="text-amber-900 font-semibold">Category</Label>
+            <Label htmlFor="category" className="text-golden-crust-dark font-semibold">Category</Label>
             <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-              <SelectTrigger className="bg-white border-2 border-amber-300 text-amber-900">
+              <SelectTrigger className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
+              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
                 {categories.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value}>
                     <div className="flex items-center gap-2">
@@ -151,24 +151,24 @@ export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormPr
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-amber-900 font-semibold">Description</Label>
+            <Label htmlFor="description" className="text-golden-crust-dark font-semibold">Description</Label>
             <Input
               id="description"
               placeholder="What was this expense for?"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="bg-white border-2 border-amber-300 text-amber-900 placeholder:text-amber-600"
+              className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark placeholder:text-golden-crust-dark/60"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="user" className="text-amber-900 font-semibold">User</Label>
+            <Label htmlFor="user" className="text-golden-crust-dark font-semibold">User</Label>
             <Select value={formData.userId} onValueChange={(value) => setFormData({ ...formData, userId: value })}>
-              <SelectTrigger className="bg-white border-2 border-amber-300 text-amber-900">
+              <SelectTrigger className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
+              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
                 {users.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     <div className="flex items-center gap-2">
@@ -187,9 +187,9 @@ export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormPr
               type="checkbox"
               checked={formData.isShared}
               onChange={(e) => setFormData({ ...formData, isShared: e.target.checked })}
-              className="rounded border-amber-400"
+              className="rounded border-golden-crust-medium"
             />
-            <Label htmlFor="shared" className="cursor-pointer text-amber-900">
+            <Label htmlFor="shared" className="cursor-pointer text-golden-crust-dark">
               This is a shared expense (split among all users)
             </Label>
           </div>
@@ -199,7 +199,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormPr
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="border-2 border-amber-500 text-amber-900 hover:bg-amber-100 font-semibold"
+              className="border border-golden-crust-medium text-golden-crust-dark hover:bg-amber-100 font-semibold"
             >
               Cancel
             </Button>

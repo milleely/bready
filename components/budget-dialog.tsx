@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Target } from "lucide-react"
+import { Croissant } from "lucide-react"
 import { categories } from "@/lib/utils"
 
 interface User {
@@ -88,8 +88,8 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg">
-          <Target className="h-4 w-4" />
+        <Button className="gap-2 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 hover:from-amber-700 hover:via-orange-600 hover:to-amber-800 text-white font-semibold shadow-lg transform hover:scale-105 transition-all duration-200">
+          <Croissant className="h-4 w-4" />
           Set Budget
         </Button>
       </DialogTrigger>
@@ -103,12 +103,12 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="category" className="text-amber-900 font-semibold">Category</Label>
+              <Label htmlFor="category" className="text-golden-crust-dark font-semibold">Category</Label>
               <Select value={category} onValueChange={setCategory} required>
-                <SelectTrigger id="category" className="bg-white border-2 border-amber-300 text-amber-900">
+                <SelectTrigger id="category" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
+                <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
                   {categories.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value}>
                       <div className="flex items-center gap-2">
@@ -125,7 +125,7 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="amount" className="text-amber-900 font-semibold">Budget Amount</Label>
+              <Label htmlFor="amount" className="text-golden-crust-dark font-semibold">Budget Amount</Label>
               <Input
                 id="amount"
                 type="number"
@@ -134,18 +134,18 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
                 placeholder="500.00"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="bg-white border-2 border-amber-300 text-amber-900"
+                className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="user" className="text-amber-900 font-semibold">Apply To</Label>
+              <Label htmlFor="user" className="text-golden-crust-dark font-semibold">Apply To</Label>
               <Select value={userId} onValueChange={setUserId} required>
-                <SelectTrigger id="user" className="bg-white border-2 border-amber-300 text-amber-900">
+                <SelectTrigger id="user" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-2 border-amber-300 text-amber-900">
+                <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
                   <SelectItem value="shared">Shared (All Users)</SelectItem>
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id}>

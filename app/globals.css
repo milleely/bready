@@ -1,26 +1,34 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: 42 40% 97%;
-  --color-foreground: 25 30% 20%;
-  --color-card: 40 35% 98%;
-  --color-card-foreground: 25 30% 20%;
-  --color-popover: 40 35% 98%;
-  --color-popover-foreground: 25 30% 20%;
-  --color-primary: 25 75% 47%;
-  --color-primary-foreground: 40 35% 98%;
-  --color-secondary: 38 50% 90%;
-  --color-secondary-foreground: 25 30% 20%;
-  --color-muted: 38 40% 92%;
-  --color-muted-foreground: 25 15% 50%;
-  --color-accent: 38 60% 88%;
-  --color-accent-foreground: 25 30% 20%;
+  /* Golden Crust Theme - Light Mode */
+  --color-background: 42 50% 97%;
+  --color-foreground: 33 60% 17%; /* #604b21 equivalent */
+  --color-card: 40 100% 99%;
+  --color-card-foreground: 33 60% 17%;
+  --color-popover: 40 100% 99%;
+  --color-popover-foreground: 33 60% 17%;
+  --color-primary: 43 75% 63%; /* #e3c462 equivalent */
+  --color-primary-foreground: 0 0% 100%;
+  --color-secondary: 48 60% 87%; /* #e7d791 equivalent */
+  --color-secondary-foreground: 33 60% 17%;
+  --color-muted: 48 95% 76%; /* #fdf885 equivalent */
+  --color-muted-foreground: 33 30% 45%;
+  --color-accent: 43 75% 63%;
+  --color-accent-foreground: 0 0% 100%;
   --color-destructive: 0 70% 55%;
-  --color-destructive-foreground: 40 35% 98%;
-  --color-border: 38 30% 88%;
-  --color-input: 38 30% 88%;
-  --color-ring: 25 75% 47%;
+  --color-destructive-foreground: 0 0% 100%;
+  --color-border: 43 60% 80%;
+  --color-input: 43 60% 80%;
+  --color-ring: 43 75% 63%;
   --radius: 1rem;
+
+  /* Chart colors */
+  --chart-1: 43 75% 63%; /* #e3c462 */
+  --chart-2: 48 60% 87%; /* #e7d791 */
+  --chart-3: 33 60% 17%; /* #604b21 */
+  --chart-4: 48 95% 76%; /* #fdf885 */
+  --chart-5: 40 90% 70%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -49,4 +57,12 @@
 
 body {
   font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Golden Crust Gradient Text */
+.gradient-text-golden {
+  background: linear-gradient(135deg, #e3c462, #604b21);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
