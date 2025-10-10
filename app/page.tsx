@@ -10,6 +10,7 @@ import { UserManagement } from "@/components/user-management"
 import { BudgetDialog } from "@/components/budget-dialog"
 import { BudgetProgress } from "@/components/budget-progress"
 import { MonthSelector } from "@/components/month-selector"
+import { RecurringExpenseDialog } from "@/components/recurring-expense-dialog"
 import { Button } from "@/components/ui/button"
 import { Wallet } from "lucide-react"
 
@@ -36,6 +37,7 @@ interface Expense {
   date: Date | string
   isShared: boolean
   userId: string
+  recurringExpenseId?: string | null
   user: User
 }
 
@@ -75,6 +77,11 @@ export default function Home() {
 
   const fetchData = async () => {
     try {
+      // First, generate any due recurring expenses
+      await fetch('/api/recurring-expenses/generate', {
+        method: 'POST',
+      })
+
       // Calculate start and end dates for the selected month
       const [year, month] = selectedMonth.split('-').map(Number)
       const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0] // First day
@@ -180,6 +187,7 @@ export default function Home() {
             />
             <div className="flex gap-3">
               <BudgetDialog users={users} onBudgetSet={fetchData} />
+              <RecurringExpenseDialog users={users} onRecurringExpenseAdded={fetchData} />
               <ExportDialog users={users} />
               <ExpenseForm users={users} onSubmit={handleAddExpense} />
             </div>

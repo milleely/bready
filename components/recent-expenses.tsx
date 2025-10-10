@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { formatCurrency, formatDate, categories } from "@/lib/utils"
-import { Pencil, Trash2 } from "lucide-react"
+import { Pencil, Trash2, Repeat } from "lucide-react"
 
 interface Expense {
   id: string
@@ -14,6 +14,7 @@ interface Expense {
   description: string
   date: Date | string
   isShared: boolean
+  recurringExpenseId?: string | null
   user: {
     id: string
     name: string
@@ -66,7 +67,14 @@ export function RecentExpenses({ expenses, onEdit, onDelete }: RecentExpensesPro
                 expenses.map((expense) => (
                   <TableRow key={expense.id}>
                     <TableCell className="font-medium">{formatDate(expense.date)}</TableCell>
-                    <TableCell>{expense.description}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        {expense.recurringExpenseId && (
+                          <Repeat className="h-4 w-4 text-purple-600" title="Recurring expense" />
+                        )}
+                        {expense.description}
+                      </div>
+                    </TableCell>
                     <TableCell>
                       <span
                         className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
