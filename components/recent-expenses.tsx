@@ -4,8 +4,16 @@ import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { ExportDialog } from "@/components/export-dialog"
 import { formatCurrency, formatDate, categories } from "@/lib/utils"
 import { Pencil, Trash2, Repeat } from "lucide-react"
+
+interface User {
+  id: string
+  name: string
+  email: string
+  color: string
+}
 
 interface Expense {
   id: string
@@ -24,11 +32,12 @@ interface Expense {
 
 interface RecentExpensesProps {
   expenses: Expense[]
+  users: User[]
   onEdit?: (expense: Expense) => void
   onDelete?: (id: string) => void
 }
 
-export function RecentExpenses({ expenses, onEdit, onDelete }: RecentExpensesProps) {
+export function RecentExpenses({ expenses, users, onEdit, onDelete }: RecentExpensesProps) {
   const getCategoryLabel = (value: string) => {
     return categories.find(c => c.value === value)?.label || value
   }
@@ -39,8 +48,9 @@ export function RecentExpenses({ expenses, onEdit, onDelete }: RecentExpensesPro
 
   return (
     <Card className="bg-gradient-to-br from-orange-50 to-amber-100 border-0 shadow-sm">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Recent Expenses</CardTitle>
+        <ExportDialog users={users} />
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">

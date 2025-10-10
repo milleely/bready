@@ -188,7 +188,6 @@ export default function Home() {
             <div className="flex gap-3">
               <BudgetDialog users={users} onBudgetSet={fetchData} />
               <RecurringExpenseDialog users={users} onRecurringExpenseAdded={fetchData} />
-              <ExportDialog users={users} />
               <ExpenseForm users={users} onSubmit={handleAddExpense} />
             </div>
           </div>
@@ -216,6 +215,7 @@ export default function Home() {
 
           <RecentExpenses
             expenses={expenses}
+            users={users}
             onEdit={(expense) => setEditingExpense(expense)}
             onDelete={handleDeleteExpense}
           />

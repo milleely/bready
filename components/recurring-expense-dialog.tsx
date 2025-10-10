@@ -102,7 +102,7 @@ export function RecurringExpenseDialog({ users, onRecurringExpenseAdded }: Recur
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2">
+        <Button className="gap-2 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-semibold shadow-lg">
           <Repeat className="h-4 w-4" />
           Add Recurring
         </Button>

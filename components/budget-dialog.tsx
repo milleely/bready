@@ -88,7 +88,7 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2">
+        <Button className="gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold shadow-lg">
           <Target className="h-4 w-4" />
           Set Budget
         </Button>
