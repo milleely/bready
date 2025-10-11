@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { TrendingUp } from "lucide-react"
-import { Bar, BarChart, CartesianGrid, XAxis, Pie, PieChart, Label } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Pie, PieChart, Label } from "recharts"
 
 import {
   Card,
@@ -123,43 +123,54 @@ export function EnhancedSpendingCharts({ spendingByCategory, spendingPerPerson }
         </CardContent>
       </Card>
 
-      {/* Horizontal Bar Chart for Per-Person Spending */}
+      {/* Card-Based Layout for Per-Person Spending */}
       <Card className="bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-md">
         <CardHeader>
           <CardTitle className="text-golden-crust-dark">Spending per Person</CardTitle>
+          <CardDescription className="text-golden-crust-dark/70">Personal and shared expenses breakdown</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {spendingPerPerson.map((person) => {
-            const maxSpending = Math.max(...spendingPerPerson.map(p => p.total))
-            const percentage = (person.total / maxSpending) * 100
-            const personalPercentage = (person.personal / person.total) * 100
-
-            return (
-              <div key={person.name} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-base font-semibold text-golden-crust-dark">{person.name}</span>
-                  <span className="text-base font-bold text-golden-crust-dark">{formatCurrency(person.total)}</span>
+        <CardContent className="grid gap-4">
+          {spendingPerPerson.map((person) => (
+            <div
+              key={person.name}
+              className="bg-white/60 backdrop-blur-sm border-2 border-golden-crust-primary/40 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md"
+                  style={{ backgroundColor: person.color }}
+                >
+                  {person.name.charAt(0).toUpperCase()}
                 </div>
-                <div className="relative w-full h-8 bg-gray-200/50 rounded-full overflow-hidden">
-                  <div
-                    className="absolute top-0 left-0 h-full rounded-full transition-all"
-                    style={{
-                      width: `${percentage}%`,
-                      background: 'linear-gradient(to right, #e3c462, #fdf885)'
-                    }}
-                  >
-                    <div
-                      className="absolute top-0 right-0 h-full rounded-r-full"
-                      style={{
-                        width: `${100 - personalPercentage}%`,
-                        backgroundColor: '#e7d791'
-                      }}
-                    />
+                <div className="flex-1">
+                  <h3 className="text-lg font-bold text-golden-crust-dark">{person.name}</h3>
+                  <p className="text-2xl font-extrabold text-golden-crust-primary">
+                    {formatCurrency(person.total)}
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-golden-crust-primary/30">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-sm bg-amber-600" />
+                  <div>
+                    <p className="text-xs font-semibold text-golden-crust-dark/70">Personal</p>
+                    <p className="text-sm font-bold text-golden-crust-dark">
+                      {formatCurrency(person.personal)}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-sm bg-emerald-600" />
+                  <div>
+                    <p className="text-xs font-semibold text-golden-crust-dark/70">Shared</p>
+                    <p className="text-sm font-bold text-golden-crust-dark">
+                      {formatCurrency(person.shared)}
+                    </p>
                   </div>
                 </div>
               </div>
-            )
-          })}
+            </div>
+          ))}
         </CardContent>
       </Card>
     </div>

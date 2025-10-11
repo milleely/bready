@@ -81,7 +81,7 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
             <CalendarIcon className="h-4 w-4 text-amber-700 cursor-pointer" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-4 bg-white border-2 border-amber-200" align="start">
+        <PopoverContent className="w-80 p-4 bg-white border-2 border-amber-200" align="center">
           <div className="space-y-4">
             {/* Year selector */}
             <div className="flex items-center justify-between">
@@ -180,17 +180,6 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
         aria-label="Next month"
       >
         <ChevronRight className="h-4 w-4 text-amber-700" />
-      </Button>
-
-      <Button
-        variant="outline"
-        size="sm"
-        className={`h-7 text-xs border-amber-400 text-amber-800 hover:bg-amber-100 transition-all ${
-          isCurrentMonth ? 'opacity-0 pointer-events-none' : 'opacity-100'
-        }`}
-        onClick={goToCurrentMonth}
-      >
-        Today
       </Button>
     </div>
   )

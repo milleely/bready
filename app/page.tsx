@@ -12,6 +12,7 @@ import { EnhancedBudgetProgress } from "@/components/enhanced-budget-progress"
 import { MonthSelector } from "@/components/month-selector"
 import { RecurringExpenseDialog } from "@/components/recurring-expense-dialog"
 import { BreadyLogo } from "@/components/bready-logo"
+import { SettlementCard } from "@/components/settlement-card"
 import { Button } from "@/components/ui/button"
 import { Wallet } from "lucide-react"
 
@@ -56,6 +57,20 @@ interface Stats {
   spendingByCategory: Array<{ category: string; amount: number }>
 }
 
+interface Settlement {
+  from: {
+    id: string
+    name: string
+    color: string
+  }
+  to: {
+    id: string
+    name: string
+    color: string
+  }
+  amount: number
+}
+
 export default function Home() {
   // Get current month in YYYY-MM format
   const getCurrentMonth = () => {
@@ -66,6 +81,7 @@ export default function Home() {
   const [users, setUsers] = useState<User[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [budgets, setBudgets] = useState<Budget[]>([])
+  const [settlements, setSettlements] = useState<Settlement[]>([])
   const [selectedMonth, setSelectedMonth] = useState<string>(getCurrentMonth())
   const [stats, setStats] = useState<Stats>({
     totalSpent: 0,
@@ -88,24 +104,27 @@ export default function Home() {
       const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0] // First day
       const endDate = new Date(year, month, 0).toISOString().split('T')[0] // Last day
 
-      const [usersRes, expensesRes, statsRes, budgetsRes] = await Promise.all([
+      const [usersRes, expensesRes, statsRes, budgetsRes, settlementsRes] = await Promise.all([
         fetch('/api/users'),
         fetch(`/api/expenses?startDate=${startDate}&endDate=${endDate}`),
         fetch(`/api/stats?startDate=${startDate}&endDate=${endDate}`),
         fetch(`/api/budgets?month=${selectedMonth}`),
+        fetch(`/api/settlements?startDate=${startDate}&endDate=${endDate}`),
       ])
 
-      const [usersData, expensesData, statsData, budgetsData] = await Promise.all([
+      const [usersData, expensesData, statsData, budgetsData, settlementsData] = await Promise.all([
         usersRes.json(),
         expensesRes.json(),
         statsRes.json(),
         budgetsRes.json(),
+        settlementsRes.json(),
       ])
 
       setUsers(usersData)
       setExpenses(expensesData)
       setStats(statsData)
       setBudgets(budgetsData)
+      setSettlements(settlementsData)
     } catch (error) {
       console.error('Failed to fetch data:', error)
     } finally {
@@ -149,6 +168,23 @@ export default function Home() {
 
     const response = await fetch(`/api/expenses/${id}`, {
       method: 'DELETE',
+    })
+
+    if (response.ok) {
+      await fetchData()
+    }
+  }
+
+  const handleMarkSettlementAsPaid = async (settlement: Settlement) => {
+    const response = await fetch('/api/settlements', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        fromUserId: settlement.from.id,
+        toUserId: settlement.to.id,
+        amount: settlement.amount,
+        month: selectedMonth,
+      }),
     })
 
     if (response.ok) {
@@ -217,6 +253,11 @@ export default function Home() {
             spendingPerPerson={stats.spendingPerPerson}
           />
 
+          <SettlementCard
+            settlements={settlements}
+            onMarkAsPaid={handleMarkSettlementAsPaid}
+          />
+
           <UserManagement users={users} onRefresh={fetchData} />
 
           <EnhancedRecentExpenses
@@ -232,7 +273,12 @@ export default function Home() {
             users={users}
             expense={editingExpense}
             onSubmit={handleEditExpense}
-            trigger={<Button className="hidden" />}
+            open={!!editingExpense}
+            onOpenChange={(open) => {
+              if (!open) {
+                setEditingExpense(undefined)
+              }
+            }}
           />
         )}
       </div>

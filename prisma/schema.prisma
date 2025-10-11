@@ -77,3 +77,19 @@ model RecurringExpense {
   @@index([nextDate])
   @@index([isActive])
 }
+
+model Settlement {
+  id          String   @id @default(cuid())
+  fromUserId  String   // User who owes money
+  toUserId    String   // User who receives money
+  amount      Float    // Amount paid
+  date        DateTime @default(now()) // When the payment was made
+  month       String   // Format: "YYYY-MM" - which month this settlement applies to
+  note        String?  // Optional note about the payment
+  createdAt   DateTime @default(now())
+
+  @@index([fromUserId])
+  @@index([toUserId])
+  @@index([month])
+  @@index([date])
+}

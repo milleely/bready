@@ -96,40 +96,41 @@ export function UserManagement({ users, onRefresh }: UserManagementProps) {
           {users.map((user) => (
             <div
               key={user.id}
-              className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+              className="bg-white/60 backdrop-blur-sm border-2 border-golden-crust-primary/40 rounded-lg p-4 hover:shadow-md transition-shadow"
             >
-              <div className="flex items-center gap-4">
-                <div
-                  className="h-10 w-10 rounded-full border-2 border-border flex items-center justify-center"
-                  style={{ backgroundColor: user.color }}
-                >
-                  <span className="text-white font-semibold text-sm">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div
+                    className="h-10 w-10 rounded-full flex items-center justify-center text-white font-semibold text-lg shadow-md flex-shrink-0"
+                    style={{ backgroundColor: user.color }}
+                  >
                     {user.name.charAt(0).toUpperCase()}
-                  </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-golden-crust-dark truncate">{user.name}</p>
+                    <p className="text-sm text-golden-crust-dark/70 truncate">{user.email}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-medium">{user.name}</p>
-                  <p className="text-sm text-muted-foreground">{user.email}</p>
+                <div className="flex gap-2 flex-shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setEditingUser(user)}
+                    title="Edit user"
+                    className="h-8 w-8 hover:bg-amber-100 text-golden-crust-dark"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleDeleteUser(user)}
+                    title="Delete user"
+                    className="h-8 w-8 hover:bg-red-100 text-red-600 hover:text-red-700"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setEditingUser(user)}
-                  title="Edit user"
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => handleDeleteUser(user)}
-                  title="Delete user"
-                  className="text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
               </div>
             </div>
           ))}

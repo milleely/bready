@@ -22,6 +22,7 @@ interface Expense {
   description: string
   date: Date | string
   isShared: boolean
+  userId: string
   recurringExpenseId?: string | null
   user: {
     id: string

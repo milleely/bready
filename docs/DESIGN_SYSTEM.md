@@ -39,10 +39,14 @@ Orange 600: #ea580c  /* Gradient mid-point */
 ### Functional Colors
 ```css
 /* Status Colors */
-Success (Green):   #10b981 → #059669
-Warning (Amber):   #f59e0b → #d97706
-Error (Red):       #ef4444 → #dc2626
-Info (Blue):       #3b82f6 → #2563eb
+Success (Emerald): #10b981 → #059669  /* Settlements, shared expenses */
+Warning (Amber):   #f59e0b → #d97706  /* Personal expenses */
+Error (Red):       #ef4444 → #dc2626  /* Destructive actions */
+Info (Blue):       #3b82f6 → #2563eb  /* Informational */
+
+/* Emerald (Settlements & Shared) */
+Emerald 600: #10b981  /* Settlement buttons, shared badges */
+Emerald 700: #059669  /* Hover states */
 
 /* Neutrals */
 Gray 50:   #f9fafb  /* Lightest background */
@@ -148,7 +152,17 @@ className="h-7 w-7 hover:bg-amber-100"
   border-0 shadow-md">
 ```
 
-**Usage:** Budget tracker, user management, charts
+**Usage:** Budget tracker, user management, charts, settlements
+
+#### Glassmorphic Card (Inner Elements)
+```jsx
+<div className="bg-white/60 backdrop-blur-sm border-2
+  border-golden-crust-primary/40 rounded-lg p-4
+  hover:shadow-md transition-shadow">
+```
+
+**Usage:** Settlement items, user management items, nested content cards
+**Features:** Semi-transparent white background, blur effect, subtle borders
 
 #### Elevated Card (Budget Progress Items)
 ```jsx
@@ -289,6 +303,110 @@ xl: 1280px  /* Large desktop */
 - Selected: Amber background, white text
 - Current month: Amber ring
 - Year navigation: Up/down arrows
+- Popover alignment: Centered under trigger
+
+### Settlement Card
+```jsx
+/* 3-column grid layout for perfect centering */
+<div className="grid grid-cols-3 items-center gap-4">
+  {/* Column 1: From User (left) */}
+  <div className="flex items-center gap-3 flex-1">
+    <Avatar /> <UserInfo />
+  </div>
+
+  {/* Column 2: Amount + Arrow (centered) */}
+  <div className="flex items-center justify-center gap-3">
+    <Amount /> <Arrow />
+  </div>
+
+  {/* Column 3: To User + Button (right) */}
+  <div className="flex items-center gap-4 flex-1">
+    <UserInfo /> <Avatar /> <Button />
+  </div>
+</div>
+```
+
+**Layout Features:**
+- 3-column grid ensures true centering of amount/arrow
+- Equal-width columns (1fr) for symmetrical balance
+- Amount column uses `justify-center` for perfect alignment
+- Button included in right column for proper spacing consideration
+
+**Button Styling:**
+```jsx
+<Button className="bg-emerald-600 hover:bg-emerald-700
+  text-white font-semibold shadow-md flex-shrink-0">
+  <Check className="h-4 w-4 mr-1" />
+  Mark as Paid
+</Button>
+```
+
+### User Management Card
+```jsx
+/* Updated glassmorphic style matching Settlement card */
+<div className="bg-white/60 backdrop-blur-sm border-2
+  border-golden-crust-primary/40 rounded-lg p-4
+  hover:shadow-md transition-shadow">
+
+  <div className="flex items-center justify-between gap-4">
+    {/* Left: Avatar + Info */}
+    <div className="flex items-center gap-3 flex-1">
+      <Avatar className="shadow-md" />
+      <UserInfo />
+    </div>
+
+    {/* Right: Ghost Buttons */}
+    <div className="flex gap-2 flex-shrink-0">
+      <Button variant="ghost" className="h-8 w-8
+        hover:bg-amber-100 text-golden-crust-dark">
+        <Edit />
+      </Button>
+      <Button variant="ghost" className="h-8 w-8
+        hover:bg-red-100 text-red-600">
+        <Trash2 />
+      </Button>
+    </div>
+  </div>
+</div>
+```
+
+**Features:**
+- Ghost buttons reduce visual clutter
+- Contextual hover colors (amber for edit, red for delete)
+- Buttons right-aligned for consistency
+- Content truncation with `flex-1 min-w-0`
+
+### Data Tables (Recent Expenses)
+```jsx
+/* Sortable Headers - Zero Padding Pattern */
+<Button variant="ghost"
+  className="h-auto p-0 hover:bg-transparent font-medium">
+  Column Name
+  <ArrowUpDown className="ml-2 h-4 w-4" />
+</Button>
+```
+
+**Header Alignment:** All columns use button headers with `p-0` for consistent alignment with cell content
+
+**Badge Colors (Type Column):**
+```jsx
+/* Personal Expenses */
+<Badge className="bg-amber-600 hover:bg-amber-700">
+  Personal
+</Badge>
+
+/* Shared Expenses */
+<Badge className="bg-emerald-600 hover:bg-emerald-700">
+  Shared
+</Badge>
+```
+
+**Color Consistency:** Matches Spending Per Person card indicators
+
+**Actions Menu:**
+- Edit expense (pencil icon)
+- Delete expense (trash icon, red destructive styling)
+- Removed: "Copy expense ID" for cleaner UX
 
 ---
 

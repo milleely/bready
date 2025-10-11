@@ -30,10 +30,12 @@ interface ExpenseFormProps {
   expense?: Expense
   onSubmit: (expense: Omit<Expense, 'id'>) => Promise<void>
   trigger?: React.ReactNode
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
 }
 
-export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormProps) {
-  const [open, setOpen] = useState(false)
+export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlledOpen, onOpenChange: controlledOnOpenChange }: ExpenseFormProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
   const [formData, setFormData] = useState({
     amount: expense?.amount?.toString() || '',
     category: expense?.category || 'groceries',
@@ -43,6 +45,10 @@ export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormPr
     userId: expense?.userId || users[0]?.id || '',
   })
   const [loading, setLoading] = useState(false)
+
+  // Use controlled open state if provided, otherwise use internal state
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setInternalOpen
 
   useEffect(() => {
     if (expense) {
@@ -54,6 +60,8 @@ export function ExpenseForm({ users, expense, onSubmit, trigger }: ExpenseFormPr
         isShared: expense.isShared,
         userId: expense.userId,
       })
+      // Auto-open dialog when editing
+      setOpen(true)
     }
   }, [expense])
 

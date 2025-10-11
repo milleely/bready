@@ -51,6 +51,7 @@ interface Expense {
   description: string
   date: Date | string
   isShared: boolean
+  userId: string
   recurringExpenseId?: string | null
   user: {
     id: string
@@ -87,7 +88,7 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-golden-crust-light/20"
+            className="h-auto p-0 hover:bg-transparent font-medium"
           >
             Date
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -105,7 +106,7 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-golden-crust-light/20"
+            className="h-auto p-0 hover:bg-transparent font-medium"
           >
             Description
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -131,7 +132,7 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
           <Button
             variant="ghost"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="hover:bg-golden-crust-light/20"
+            className="h-auto p-0 hover:bg-transparent font-medium"
           >
             Category
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -160,7 +161,18 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
     },
     {
       accessorKey: "user",
-      header: "User",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="h-auto p-0 hover:bg-transparent font-medium"
+          >
+            User
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
       cell: ({ row }) => {
         const user = row.getValue("user") as { id: string; name: string; color: string }
         return (
@@ -176,11 +188,24 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
     },
     {
       accessorKey: "isShared",
-      header: "Type",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="h-auto p-0 hover:bg-transparent font-medium"
+          >
+            Type
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
       cell: ({ row }) => {
         const isShared = row.getValue("isShared")
         return (
-          <Badge variant={isShared ? "default" : "secondary"}>
+          <Badge
+            className={isShared ? "bg-emerald-600 hover:bg-emerald-700" : "bg-amber-600 hover:bg-amber-700"}
+          >
             {isShared ? "Shared" : "Personal"}
           </Badge>
         )
@@ -190,11 +215,11 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
       accessorKey: "amount",
       header: ({ column }) => {
         return (
-          <div className="text-right">
+          <div className="flex justify-end">
             <Button
               variant="ghost"
               onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-              className="hover:bg-golden-crust-light/20"
+              className="h-auto p-0 hover:bg-transparent font-medium"
             >
               Amount
               <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -223,12 +248,6 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(expense.id)}
-              >
-                Copy expense ID
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
               {onEdit && (
                 <DropdownMenuItem onClick={() => onEdit(expense)}>
                   <Pencil className="mr-2 h-4 w-4" />
