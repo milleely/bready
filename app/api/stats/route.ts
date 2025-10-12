@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { getHouseholdId } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   try {
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
+
     const searchParams = request.nextUrl.searchParams
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
 
-    const where: any = {}
+    const where: any = {
+      user: { householdId }, // Only expenses from user's household
+    }
     if (startDate || endDate) {
       where.date = {}
       if (startDate) where.date.gte = new Date(startDate)
@@ -19,7 +26,9 @@ export async function GET(request: NextRequest) {
       include: { user: true },
     })
 
-    const users = await prisma.user.findMany()
+    const users = await prisma.user.findMany({
+      where: { householdId }, // Only users from user's household
+    })
 
     // Calculate total spent
     const totalSpent = expenses.reduce((sum, exp) => sum + exp.amount, 0)
@@ -66,6 +75,13 @@ export async function GET(request: NextRequest) {
       spendingByCategory,
     })
   } catch (error) {
+    // Secure error logging
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to fetch statistics:', error)
+    } else {
+      console.error('API error:', error instanceof Error ? error.message : 'Unknown error')
+    }
+
     return NextResponse.json(
       { error: 'Failed to fetch statistics' },
       { status: 500 }

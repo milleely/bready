@@ -129,7 +129,7 @@ export function EnhancedSpendingCharts({ spendingByCategory, spendingPerPerson }
           <CardTitle className="text-golden-crust-dark">Spending per Person</CardTitle>
           <CardDescription className="text-golden-crust-dark/70">Personal and shared expenses breakdown</CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-4">
+        <CardContent className={`grid gap-4 ${spendingPerPerson.length >= 3 ? 'md:grid-cols-2' : ''}`}>
           {spendingPerPerson.map((person) => (
             <div
               key={person.name}

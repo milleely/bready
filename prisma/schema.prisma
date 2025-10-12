@@ -6,19 +6,33 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Household {
+  id                String             @id @default(cuid())
+  clerkId           String             @unique // Clerk user ID (household owner)
+  name              String             // Household name
+  users             User[]             // Household members (up to 4)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 }
 
 model User {
   id                String             @id @default(cuid())
   name              String
-  email             String             @unique
+  email             String?            // Optional: only owner has Clerk email
   avatar            String?
   color             String             // For UI theming
+  isOwner           Boolean            @default(false) // True for household owner
+  householdId       String             // Foreign key to Household
+  household         Household          @relation(fields: [householdId], references: [id], onDelete: Cascade)
   expenses          Expense[]
   recurringExpenses RecurringExpense[]
   createdAt         DateTime           @default(now())
+
+  @@index([householdId])
 }
 
 model Expense {

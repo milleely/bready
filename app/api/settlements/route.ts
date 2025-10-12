@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { getHouseholdId } from '@/lib/auth'
+import { validateAmount } from '@/lib/utils'
 
 interface Settlement {
   from: {
@@ -27,12 +29,30 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Verify both users belong to the authenticated user's household
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
+
+    const users = await prisma.user.findMany({
+      where: {
+        id: { in: [fromUserId, toUserId] },
+        householdId,
+      },
+    })
+
+    if (users.length !== 2) {
+      return NextResponse.json(
+        { error: 'One or both users not found in your household' },
+        { status: 403 }
+      )
+    }
+
     // Create settlement record
     const settlement = await prisma.settlement.create({
       data: {
         fromUserId,
         toUserId,
-        amount: parseFloat(amount),
+        amount: validateAmount(amount),
         month,
         note: note || null,
       },
@@ -40,9 +60,15 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(settlement)
   } catch (error) {
-    console.error('Failed to create settlement:', error)
+    // Secure error logging
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to create settlement:', error)
+    } else {
+      console.error('API error:', error instanceof Error ? error.message : 'Unknown error')
+    }
+
     return NextResponse.json(
-      { error: 'Failed to create settlement' },
+      { error: error instanceof Error ? error.message : 'Failed to create settlement' },
       { status: 500 }
     )
   }
@@ -50,6 +76,10 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
+
     const { searchParams } = new URL(request.url)
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
@@ -61,7 +91,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get all shared expenses in the date range
+    // Get all shared expenses in the date range from user's household
     const expenses = await prisma.expense.findMany({
       where: {
         isShared: true,
@@ -69,14 +99,17 @@ export async function GET(request: NextRequest) {
           gte: new Date(startDate),
           lte: new Date(endDate + 'T23:59:59.999Z'),
         },
+        user: { householdId },
       },
       include: {
         user: true,
       },
     })
 
-    // Get all users
-    const users = await prisma.user.findMany()
+    // Get all users from the household
+    const users = await prisma.user.findMany({
+      where: { householdId },
+    })
     const userCount = users.length
 
     if (userCount === 0) {
@@ -195,7 +228,13 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(settlements)
   } catch (error) {
-    console.error('Failed to calculate settlements:', error)
+    // Secure error logging
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to calculate settlements:', error)
+    } else {
+      console.error('API error:', error instanceof Error ? error.message : 'Unknown error')
+    }
+
     return NextResponse.json(
       { error: 'Failed to calculate settlements' },
       { status: 500 }

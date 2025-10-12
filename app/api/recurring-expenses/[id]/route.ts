@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { getHouseholdId } from '@/lib/auth'
+import { validateAmount } from '@/lib/utils'
 
 // PUT /api/recurring-expenses/[id]
 export async function PUT(
@@ -7,6 +9,25 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
+
+    // Verify recurring expense belongs to household
+    const existingRecurringExpense = await prisma.recurringExpense.findFirst({
+      where: {
+        id: params.id,
+        user: { householdId },
+      },
+    })
+
+    if (!existingRecurringExpense) {
+      return NextResponse.json(
+        { error: 'Recurring expense not found in your household' },
+        { status: 404 }
+      )
+    }
+
     const body = await request.json()
     const {
       amount,
@@ -23,7 +44,7 @@ export async function PUT(
     const recurringExpense = await prisma.recurringExpense.update({
       where: { id: params.id },
       data: {
-        ...(amount !== undefined && { amount: parseFloat(amount) }),
+        ...(amount !== undefined && { amount: validateAmount(amount) }),
         ...(category && { category }),
         ...(description && { description }),
         ...(frequency && { frequency }),
@@ -38,7 +59,12 @@ export async function PUT(
 
     return NextResponse.json(recurringExpense)
   } catch (error: any) {
-    console.error('Failed to update recurring expense:', error)
+    // Secure error logging
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to update recurring expense:', error)
+    } else {
+      console.error('API error:', error instanceof Error ? error.message : 'Unknown error')
+    }
 
     if (error.code === 'P2025') {
       return NextResponse.json(
@@ -48,7 +74,7 @@ export async function PUT(
     }
 
     return NextResponse.json(
-      { error: 'Failed to update recurring expense' },
+      { error: error instanceof Error ? error.message : 'Failed to update recurring expense' },
       { status: 500 }
     )
   }
@@ -60,13 +86,37 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
+
+    // Verify recurring expense belongs to household
+    const existingRecurringExpense = await prisma.recurringExpense.findFirst({
+      where: {
+        id: params.id,
+        user: { householdId },
+      },
+    })
+
+    if (!existingRecurringExpense) {
+      return NextResponse.json(
+        { error: 'Recurring expense not found in your household' },
+        { status: 404 }
+      )
+    }
+
     await prisma.recurringExpense.delete({
       where: { id: params.id },
     })
 
     return NextResponse.json({ success: true }, { status: 200 })
   } catch (error: any) {
-    console.error('Failed to delete recurring expense:', error)
+    // Secure error logging
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to delete recurring expense:', error)
+    } else {
+      console.error('API error:', error instanceof Error ? error.message : 'Unknown error')
+    }
 
     if (error.code === 'P2025') {
       return NextResponse.json(

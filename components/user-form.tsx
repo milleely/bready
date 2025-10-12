@@ -109,7 +109,11 @@ export function UserForm({ user, onSubmit, trigger }: UserFormProps) {
             <Button type="button" variant="outline" onClick={() => setOpen(false)} disabled={loading}>
               Cancel
             </Button>
-            <Button type="submit" disabled={loading}>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 hover:from-amber-700 hover:via-orange-600 hover:to-amber-800 text-white font-semibold shadow-lg"
+            >
               {loading ? 'Saving...' : user ? 'Update User' : 'Add User'}
             </Button>
           </div>

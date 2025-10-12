@@ -12,6 +12,12 @@ Bready is a warm and welcoming multi-user expense tracker designed for household
 
 ## Features
 
+### 🔐 Secure Authentication
+- **User Accounts:** Secure authentication powered by Clerk
+- **Household Model:** Each account manages a household with up to 4 members
+- **Data Isolation:** Complete privacy - households can only access their own data
+- **Easy Sign-In:** Social logins and email authentication supported
+
 ### 💰 Smart Expense Tracking
 - **Multi-User Support:** Track expenses for up to 4 household members
 - **Shared Expenses:** Mark expenses as "shared" to automatically split costs
@@ -43,6 +49,7 @@ Bready is a warm and welcoming multi-user expense tracker designed for household
 ### Prerequisites
 - Node.js 20+ installed
 - npm, yarn, pnpm, or bun package manager
+- [Clerk Account](https://clerk.com) (free tier available)
 
 ### Installation
 
@@ -57,23 +64,35 @@ Bready is a warm and welcoming multi-user expense tracker designed for household
    npm install
    ```
 
-3. **Set up the database:**
+3. **Set up Clerk Authentication:**
+   - Create a free account at [clerk.com](https://clerk.com)
+   - Create a new application
+   - Copy your API keys
+
+4. **Configure environment variables:**
+   ```bash
+   cp .env.example .env
+   ```
+   Then edit `.env` with your Clerk keys:
+   ```env
+   DATABASE_URL="file:./dev.db"
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_publishable_key
+   CLERK_SECRET_KEY=your_secret_key
+   # (other Clerk URLs are pre-configured)
+   ```
+
+5. **Set up the database:**
    ```bash
    npx prisma migrate dev
    ```
 
-4. **Seed with sample data:**
-   ```bash
-   npm run seed
-   ```
-
-5. **Start the development server:**
+6. **Start the development server:**
    ```bash
    npm run dev
    ```
 
-6. **Open your browser:**
-   Navigate to [http://localhost:3000](http://localhost:3000)
+7. **Open your browser:**
+   Navigate to [http://localhost:3000](http://localhost:3000) and sign up!
 
 ---
 
@@ -90,8 +109,10 @@ Bready is a warm and welcoming multi-user expense tracker designed for household
 
 ### Backend
 - **Runtime:** Next.js API Routes
-- **Database:** SQLite (via Prisma)
+- **Database:** PostgreSQL (via Prisma) - SQLite for local dev
 - **ORM:** [Prisma](https://www.prisma.io/) 6.17.0
+- **Authentication:** [Clerk](https://clerk.com/) - Secure user authentication
+- **Deployment:** [Vercel](https://vercel.com/) with Postgres
 
 ### Development
 - **Bundler:** Turbopack (Next.js 15 default)
@@ -236,33 +257,62 @@ Theme customization uses `@theme` directives in `app/globals.css`. Note: This is
 
 ---
 
+## Deployment
+
+Ready to deploy to production?
+
+### Vercel + PostgreSQL (Recommended)
+
+See our comprehensive deployment guides:
+
+- **[📋 Deployment Checklist](./docs/DEPLOYMENT_CHECKLIST.md)** - Step-by-step checklist
+- **[🚀 Vercel Deployment Guide](./docs/VERCEL_DEPLOYMENT.md)** - Complete deployment walkthrough
+
+**Quick Deploy:**
+1. Push code to GitHub
+2. Import to Vercel
+3. Add Vercel Postgres
+4. Configure Clerk production keys
+5. Deploy!
+
+Your app will be live with automatic HTTPS, global CDN, and managed database.
+
+---
+
 ## Documentation
 
-- **[PRD.md](./PRD.md)** - Product vision, roadmap, and requirements
+- **[DEPLOYMENT_CHECKLIST.md](./docs/DEPLOYMENT_CHECKLIST.md)** - Production deployment checklist
+- **[VERCEL_DEPLOYMENT.md](./docs/VERCEL_DEPLOYMENT.md)** - Vercel deployment guide
+- **[CLERK_SETUP.md](./docs/CLERK_SETUP.md)** - Clerk authentication setup
 - **[CLAUDE.md](./CLAUDE.md)** - Technical guide for AI-assisted development
-- **[CHANGELOG.md](./CHANGELOG.md)** - Version history and release notes
 
 ---
 
 ## Roadmap
 
-### v1.1 (Planned)
-- Date range filtering
-- Monthly spending trends
-- CSV/PDF export
-- Advanced search & filters
+### ✅ v1.0 (Complete)
+- ✅ User authentication with Clerk
+- ✅ Multi-household support
+- ✅ Secure API routes
+- ✅ Production deployment ready
+
+### v1.1 (In Progress)
+- Budget tracking and alerts
+- Settlement calculations
+- CSV export
+- Monthly trends
 
 ### v1.2 (Planned)
-- Budget alerts
 - Recurring expenses
+- Advanced analytics
+- Mobile optimization
 - AI spending insights
 
 ### v2.0 (Future)
-- User authentication
-- Multi-household support
-- Mobile app
-
-*See [PRD.md](./PRD.md) for detailed roadmap*
+- Mobile app (React Native)
+- Receipt scanning
+- Bank integration
+- Multi-currency support
 
 ---
 

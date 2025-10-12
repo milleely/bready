@@ -3,8 +3,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { formatCurrency, categories } from "@/lib/utils"
-import { Target, AlertTriangle, CheckCircle2, AlertCircle } from "lucide-react"
+import { Target, AlertTriangle, CheckCircle2, AlertCircle, Trash2 } from "lucide-react"
 
 interface Budget {
   id: string
@@ -22,9 +23,10 @@ interface CategorySpending {
 interface BudgetProgressProps {
   budgets: Budget[]
   spendingByCategory: CategorySpending[]
+  onDelete: (id: string) => Promise<void>
 }
 
-export function EnhancedBudgetProgress({ budgets, spendingByCategory }: BudgetProgressProps) {
+export function EnhancedBudgetProgress({ budgets, spendingByCategory, onDelete }: BudgetProgressProps) {
   if (budgets.length === 0) {
     return null
   }
@@ -98,6 +100,14 @@ export function EnhancedBudgetProgress({ budgets, spendingByCategory }: BudgetPr
                       </p>
                     </div>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDelete(budget.id)}
+                    className="h-8 w-8 hover:bg-red-100 text-red-600 hover:text-red-700"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
 
                 <div className="space-y-2">

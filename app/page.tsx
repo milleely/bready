@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { UserButton } from "@clerk/nextjs"
 import { EnhancedMetricsCards } from "@/components/enhanced-metrics-cards"
 import { EnhancedSpendingCharts } from "@/components/enhanced-spending-charts"
 import { EnhancedRecentExpenses } from "@/components/enhanced-recent-expenses"
@@ -10,7 +11,6 @@ import { UserManagement } from "@/components/user-management"
 import { BudgetDialog } from "@/components/budget-dialog"
 import { EnhancedBudgetProgress } from "@/components/enhanced-budget-progress"
 import { MonthSelector } from "@/components/month-selector"
-import { RecurringExpenseDialog } from "@/components/recurring-expense-dialog"
 import { BreadyLogo } from "@/components/bready-logo"
 import { SettlementCard } from "@/components/settlement-card"
 import { Button } from "@/components/ui/button"
@@ -192,6 +192,18 @@ export default function Home() {
     }
   }
 
+  const handleDeleteBudget = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this budget?')) return
+
+    const response = await fetch(`/api/budgets/${id}`, {
+      method: 'DELETE',
+    })
+
+    if (response.ok) {
+      await fetchData()
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -223,13 +235,20 @@ export default function Home() {
             </div>
           </div>
           <div className="flex items-center gap-4">
+            <UserButton
+              afterSignOutUrl="/sign-in"
+              appearance={{
+                elements: {
+                  avatarBox: "w-10 h-10"
+                }
+              }}
+            />
             <MonthSelector
               selectedMonth={selectedMonth}
               onMonthChange={setSelectedMonth}
             />
             <div className="flex gap-3">
               <BudgetDialog users={users} onBudgetSet={fetchData} />
-              <RecurringExpenseDialog users={users} onRecurringExpenseAdded={fetchData} />
               <ExpenseForm users={users} onSubmit={handleAddExpense} />
             </div>
           </div>
@@ -246,6 +265,7 @@ export default function Home() {
           <EnhancedBudgetProgress
             budgets={budgets}
             spendingByCategory={stats.spendingByCategory}
+            onDelete={handleDeleteBudget}
           />
 
           <EnhancedSpendingCharts

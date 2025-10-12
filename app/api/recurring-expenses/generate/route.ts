@@ -1,18 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { getHouseholdId } from '@/lib/auth'
 
 // POST /api/recurring-expenses/generate
 export async function POST(request: NextRequest) {
   try {
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
+
     const now = new Date()
 
     // Find all active recurring expenses where nextDate is today or earlier
+    // Only process recurring expenses from user's household
     const dueRecurringExpenses = await prisma.recurringExpense.findMany({
       where: {
         isActive: true,
         nextDate: {
           lte: now,
         },
+        user: { householdId },
       },
       include: { user: true },
     })
@@ -68,7 +75,13 @@ export async function POST(request: NextRequest) {
       updated: updatedRecurringExpenses,
     })
   } catch (error) {
-    console.error('Failed to generate recurring expenses:', error)
+    // Secure error logging
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to generate recurring expenses:', error)
+    } else {
+      console.error('API error:', error instanceof Error ? error.message : 'Unknown error')
+    }
+
     return NextResponse.json(
       { error: 'Failed to generate recurring expenses' },
       { status: 500 }

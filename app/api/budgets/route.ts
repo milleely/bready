@@ -1,14 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
+import { getHouseholdId } from '@/lib/auth'
+import { validateAmount } from '@/lib/utils'
 
 // GET /api/budgets?month=YYYY-MM&userId=xxx
 export async function GET(request: NextRequest) {
   try {
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
+
     const { searchParams } = new URL(request.url)
     const month = searchParams.get('month')
     const userId = searchParams.get('userId')
 
-    const where: any = {}
+    // Get all user IDs from the household
+    const householdUsers = await prisma.user.findMany({
+      where: { householdId },
+      select: { id: true },
+    })
+    const householdUserIds = householdUsers.map((u) => u.id)
+
+    const where: any = {
+      OR: [
+        { userId: null }, // Shared budgets
+        { userId: { in: householdUserIds } }, // User-specific budgets in household
+      ],
+    }
     if (month) where.month = month
     if (userId) where.userId = userId
 
@@ -19,7 +37,13 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(budgets)
   } catch (error) {
-    console.error('Failed to fetch budgets:', error)
+    // Secure error logging
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to fetch budgets:', error)
+    } else {
+      console.error('API error:', error instanceof Error ? error.message : 'Unknown error')
+    }
+
     return NextResponse.json(
       { error: 'Failed to fetch budgets' },
       { status: 500 }
@@ -30,6 +54,10 @@ export async function GET(request: NextRequest) {
 // POST /api/budgets
 export async function POST(request: NextRequest) {
   try {
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
+
     const body = await request.json()
     const { category, amount, month, userId } = body
 
@@ -40,10 +68,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // If userId provided, verify it belongs to household
+    if (userId) {
+      const user = await prisma.user.findFirst({
+        where: { id: userId, householdId },
+      })
+      if (!user) {
+        return NextResponse.json(
+          { error: 'User not found in your household' },
+          { status: 403 }
+        )
+      }
+    }
+
     const budget = await prisma.budget.create({
       data: {
         category,
-        amount: parseFloat(amount),
+        amount: validateAmount(amount),
         month,
         userId: userId || null,
       },
@@ -51,7 +92,12 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(budget, { status: 201 })
   } catch (error: any) {
-    console.error('Failed to create budget:', error)
+    // Secure error logging
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Failed to create budget:', error)
+    } else {
+      console.error('API error:', error instanceof Error ? error.message : 'Unknown error')
+    }
 
     // Handle unique constraint violation
     if (error.code === 'P2002') {
@@ -62,7 +108,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Failed to create budget' },
+      { error: error instanceof Error ? error.message : 'Failed to create budget' },
       { status: 500 }
     )
   }
