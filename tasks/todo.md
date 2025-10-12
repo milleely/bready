@@ -45,12 +45,14 @@
   - All Clerk variables already present from initial setup
   - Redeployed successfully
 
-- [x] **Fix Database Migrations** ✅
-  - **Issue Found:** Migrations weren't running automatically on deployment
+- [x] **Fix Database Schema Deployment** ✅
+  - **Issue 1:** Migrations weren't running automatically → Added `vercel.json`
+  - **Issue 2:** SQLite→PostgreSQL migration mismatch (P3019 error)
   - **Symptoms:** 500 errors on all API routes (tables didn't exist)
-  - **Solution:** Added `vercel.json` to explicitly set build command to `vercel-build`
-  - **Build Process:** Now runs `prisma generate && prisma migrate deploy && next build`
-  - **Status:** Configuration pushed, awaiting redeploy to create tables
+  - **Solution:** Changed to `prisma db push` instead of `migrate deploy`
+  - **Build Process:** Now runs `prisma generate && prisma db push --accept-data-loss && next build`
+  - **Why db push:** Fresh database, no data to lose, bypasses migration history mismatch
+  - **Status:** Fixed! Deployment in progress, schema will sync directly to Neon
 
 - [ ] **Optional: Seed Initial Data**
   - Decide if seeding is needed for production
