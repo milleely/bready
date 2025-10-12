@@ -14,18 +14,9 @@ export async function GET(request: NextRequest) {
     const month = searchParams.get('month')
     const userId = searchParams.get('userId')
 
-    // Get all user IDs from the household
-    const householdUsers = await prisma.user.findMany({
-      where: { householdId },
-      select: { id: true },
-    })
-    const householdUserIds = householdUsers.map((u) => u.id)
-
+    // Build where clause - filter by householdId for complete isolation
     const where: any = {
-      OR: [
-        { userId: null }, // Shared budgets
-        { userId: { in: householdUserIds } }, // User-specific budgets in household
-      ],
+      householdId, // All budgets must belong to this household
     }
     if (month) where.month = month
     if (userId) where.userId = userId
@@ -87,6 +78,7 @@ export async function POST(request: NextRequest) {
         amount: validateAmount(amount),
         month,
         userId: userId || null,
+        householdId, // Add householdId for proper isolation
       },
     })
 

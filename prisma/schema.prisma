@@ -15,6 +15,7 @@ model Household {
   clerkId           String             @unique // Clerk user ID (household owner)
   name              String             // Household name
   users             User[]             // Household members (up to 4)
+  budgets           Budget[]           // Household budgets
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 }
@@ -56,17 +57,20 @@ model Expense {
 }
 
 model Budget {
-  id        String   @id @default(cuid())
-  category  String
-  amount    Float
-  month     String   // Format: "YYYY-MM"
-  userId    String?  // Optional: null means shared budget for all users
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String    @id @default(cuid())
+  category    String
+  amount      Float
+  month       String    // Format: "YYYY-MM"
+  userId      String?   // Optional: null means shared budget for all users in household
+  householdId String    // Link to household for proper isolation
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  @@unique([category, month, userId])
+  @@unique([category, month, userId, householdId])
   @@index([month])
   @@index([userId])
+  @@index([householdId])
 }
 
 model RecurringExpense {

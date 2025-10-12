@@ -1,186 +1,230 @@
-# Bready - Vercel Deployment Tasks
+# Budget Data Isolation Bug - Fix Plan
 
-## Current Status
-✅ **Successfully deployed to Vercel!** Build passing, TypeScript compilation successful.
+## Status: 🔴 CRITICAL BUG - Immediate Fix Required
 
-**Latest Commit:** `3d01df7` - All TypeScript errors resolved
-**Strategy Used:** Local build-first approach (much faster than iterative Vercel deployments)
+## Root Cause Identified ✅
 
----
+**The Problem:**
+The `Budget` model is missing a `householdId` field. This causes shared budgets (`userId: null`) to be visible across ALL households instead of being scoped to individual households.
 
-## Completed Tasks ✅
-
-### Phase 1: Initial Deployment Setup
-- [x] Create Vercel account and connect GitHub repository
-- [x] Configure initial Clerk authentication
-- [x] Set up environment variables in Vercel
-
-### Phase 2: TypeScript Compilation Fixes
-- [x] Fix Next.js 15 route params type errors (budgets/[id], recurring-expenses/[id])
-- [x] Fix nullable email handling in CSV export utility
-- [x] Fix User type in app/page.tsx to match database schema
-- [x] Fix User type definitions in 6 component files (budget-dialog, enhanced-recent-expenses, expense-data-table, recent-expenses, user-form, user-management)
-- [x] Fix nested user object email field in Expense interfaces (3 files)
-
-### Phase 3: Additional TypeScript Fixes (Local Build Strategy)
-- [x] Fix Lucide icon title prop errors (wrapped in span elements)
-- [x] Fix nullable email handling in user-form useEffect
-- [x] Update Prisma seed file for Household model
-- [x] Verify local build passes (`npm run build`)
-- [x] Push all fixes to GitHub
-- [x] Successful Vercel deployment
+**Detailed Analysis:** See `tasks/bug-analysis-budget-isolation.md`
 
 ---
 
-## Next Steps: Production Configuration 🚀
+## Implementation Plan
 
-### Database Setup
-- [x] **Add Vercel Postgres Database** ✅
-  - Connected Neon PostgreSQL via Vercel Marketplace
-  - DATABASE_URL automatically added to environment variables
-  - Database provider: Neon (Serverless Postgres)
+### Phase 1: Update Database Schema
+- [ ] Add `householdId` field to Budget model in `prisma/schema.prisma`
+- [ ] Add foreign key relationship to Household
+- [ ] Update unique constraint to include householdId
+- [ ] Add index on householdId for query performance
 
-- [x] **Configure Environment Variables** ✅
-  - DATABASE_URL configured automatically by Neon integration
-  - All Clerk variables already present from initial setup
-  - Redeployed successfully
+**Files to modify:**
+- `prisma/schema.prisma`
 
-- [x] **Fix Database Schema Deployment** ✅
-  - **Issue 1:** Migrations weren't running automatically → Added `vercel.json`
-  - **Issue 2:** SQLite→PostgreSQL migration mismatch (P3019 error)
-  - **Symptoms:** 500 errors on all API routes (tables didn't exist)
-  - **Solution:** Changed to `prisma db push` instead of `migrate deploy`
-  - **Build Process:** Now runs `prisma generate && prisma db push --accept-data-loss && next build`
-  - **Why db push:** Fresh database, no data to lose, bypasses migration history mismatch
-  - **Status:** Fixed! Deployment in progress, schema will sync directly to Neon
+**Changes:**
+```prisma
+model Budget {
+  id          String    @id @default(cuid())
+  category    String
+  amount      Float
+  month       String    // Format: "YYYY-MM"
+  userId      String?   // Optional: null means shared budget for all users in household
+  householdId String    // NEW: Link to household for proper isolation
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-- [ ] **Optional: Seed Initial Data**
-  - Decide if seeding is needed for production
-  - Production typically starts empty, letting users create their own data
-  - Can test with real user sign-up instead of seed data
-
-### Clerk Authentication Configuration
-- [x] **Clerk Configuration Decision** ✅
-  - **Using Development Mode** (Clerk policy: vercel.app domains not allowed for production)
-  - Development Clerk instance fully functional with all features
-  - Production URL: `https://bready-ashen.vercel.app`
-  - Can upgrade to production Clerk later with custom domain (~$10-15/year)
-
-- [x] **Verify Clerk Settings** ✅
-  - Clerk development instance environment variables already in Vercel
-  - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - configured
-  - `CLERK_SECRET_KEY` - configured
-  - Sign-in/Sign-up paths configured in Clerk dashboard
-
-- [ ] **Test Authentication Flow**
-  - Visit production URL: https://bready-ashen.vercel.app
-  - Test sign-up flow
-  - Test sign-in flow
-  - Verify redirect URLs work correctly
-  - Create household and test full app functionality
-
-### Production Testing
-- [ ] **Test Core Features**
-  - User management (add/edit/delete users)
-  - Expense creation (personal and shared)
-  - Expense editing and deletion
-  - Budget setting and tracking
-  - Recurring expenses
-  - Settlement tracking
-  - CSV export functionality
-  - Month selector and filtering
-
-- [ ] **Test Edge Cases**
-  - Nullable email handling (household members without logins)
-  - Multi-user expense attribution
-  - Shared expense calculations
-  - Budget progress calculations
-
-### Documentation & Cleanup
-- [ ] **Update Documentation**
-  - Add production URL to README
-  - Document environment variables required
-  - Update SESSION documentation with final status
-  - Add deployment guide for future reference
-
-- [ ] **Optional: Custom Domain**
-  - Purchase domain (if desired)
-  - Configure in Vercel
-  - Update Clerk settings accordingly
-
----
-
-## Review Section
-
-### Summary of Deployment Journey
-
-**Challenge:** Multiple TypeScript compilation errors preventing Vercel deployment
-
-**Key Issues Resolved:**
-1. **Next.js 15 Breaking Changes** - Route params now require Promise type
-2. **Type Consistency** - Nullable email field cascaded through entire codebase
-3. **Lucide React Props** - Icons don't accept title attribute directly
-4. **Prisma Schema Evolution** - Seed file needed Household model support
-
-**Major Learning:**
-The breakthrough came from switching strategies. Instead of using Vercel as our TypeScript checker (slow iterative cycle), we ran `npm run build` locally to catch ALL errors at once. This allowed us to:
-- Fix 3 different errors in one cycle instead of 3 separate push-wait-fix cycles
-- Verify fixes locally before pushing
-- Save significant time and deployment resources
-
-**Files Modified:**
-- `app/api/budgets/[id]/route.ts`
-- `app/api/recurring-expenses/[id]/route.ts`
-- `lib/csv-utils.ts`
-- `app/page.tsx`
-- `components/budget-dialog.tsx`
-- `components/enhanced-recent-expenses.tsx`
-- `components/expense-data-table.tsx`
-- `components/recent-expenses.tsx`
-- `components/user-form.tsx`
-- `components/user-management.tsx`
-- `prisma/seed.ts`
-
-**Total Commits:** 4 major fix commits
-**Build Status:** ✅ Passing
-**Deployment Status:** ✅ Successful
-
-### Next Phase Strategy
-
-The production configuration phase should be straightforward since the code is working. Focus will be on:
-1. Database setup and migration
-2. Authentication configuration
-3. Thorough testing
-4. Documentation updates
-
-All changes should continue to follow the simplicity principle - minimal changes, maximum impact.
-
----
-
-## Notes
-
-- **Production URL:** https://bready-ashen.vercel.app
-- **Local Build First:** Always run `npm run build` locally before pushing to catch TypeScript errors
-- **Type Safety:** The nullable email field is intentional for household members without logins
-- **Database:** SQLite locally, Neon PostgreSQL (serverless) in production via Neon
-- **Authentication:** Clerk Development Mode (works with vercel.app domains)
-- **Household Model:** Each user belongs to a household, owner has Clerk account
-- **Upgrade Path:** Can add custom domain later to use Clerk Production mode
-
-### Known Issues (Non-Critical)
-
-**npm Deprecation Warning:**
+  @@unique([category, month, userId, householdId])  // Updated constraint
+  @@index([month])
+  @@index([userId])
+  @@index([householdId])  // NEW: For efficient household queries
+}
 ```
-npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+
+### Phase 2: Create and Run Migration
+- [ ] Generate Prisma migration: `npx prisma migrate dev --name add-household-to-budgets`
+- [ ] Review migration SQL
+- [ ] Run migration locally
+- [ ] Verify schema changes in database
+
+**Note:** This will reset any existing budget data (acceptable since app is in development)
+
+### Phase 3: Update API Routes
+
+#### A. Update GET /api/budgets
+- [ ] Add householdId to where clause
+- [ ] Remove the OR condition (householdId filter is sufficient)
+
+**File:** `app/api/budgets/route.ts`
+
+**Current (BROKEN):**
+```typescript
+const where: any = {
+  OR: [
+    { userId: null },
+    { userId: { in: householdUserIds } },
+  ],
+}
 ```
-- **Impact:** None - build succeeds, app works fine
-- **Priority:** Low - technical debt for future cleanup
-- **Cause:** Transitive dependency (likely from file upload/form-data library)
-- **Action:** Address during next dependency update cycle
+
+**Fixed:**
+```typescript
+const where: Prisma.BudgetWhereInput = {
+  householdId,  // Scope all budgets to household
+}
+```
+
+#### B. Update POST /api/budgets
+- [ ] Include householdId when creating budget
+- [ ] Remove unnecessary user validation (householdId filter handles this)
+
+**File:** `app/api/budgets/route.ts`
+
+**Add to budget creation:**
+```typescript
+const budget = await prisma.budget.create({
+  data: {
+    category,
+    amount: validateAmount(amount),
+    month,
+    userId: userId || null,
+    householdId,  // NEW: Add householdId
+  },
+})
+```
+
+#### C. Update PUT /api/budgets/[id]
+- [ ] Add householdId verification in update
+
+**File:** `app/api/budgets/[id]/route.ts`
+
+**Add household verification:**
+```typescript
+const budget = await prisma.budget.findUnique({
+  where: { id },
+})
+
+if (!budget || budget.householdId !== householdId) {
+  return NextResponse.json({ error: 'Budget not found' }, { status: 404 })
+}
+```
+
+#### D. Update DELETE /api/budgets/[id]
+- [ ] Add householdId verification in delete
+
+**File:** `app/api/budgets/[id]/route.ts`
+
+**Same verification as PUT**
+
+### Phase 4: Update Schema Relationship
+- [ ] Add budgets relation to Household model
+
+**File:** `prisma/schema.prisma`
+
+**Add to Household model:**
+```prisma
+model Household {
+  id                String             @id @default(cuid())
+  clerkId           String             @unique
+  name              String
+  users             User[]
+  budgets           Budget[]           // NEW: Add budgets relation
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+}
+```
+
+### Phase 5: Testing
+- [ ] Test budget creation in Household A
+- [ ] Test budget creation in Household B
+- [ ] Verify Household A cannot see Household B's budgets
+- [ ] Test shared budgets (userId: null) within household
+- [ ] Test user-specific budgets
+- [ ] Test budget update and delete
+- [ ] Test unique constraint (category + month + userId + householdId)
+
+### Phase 6: Verify Similar Issues Don't Exist
+- [ ] Check Expenses model - verify household isolation
+- [ ] Check RecurringExpenses model - verify household isolation
+- [ ] Check Settlements model - verify household isolation
+- [ ] Document isolation strategy for each model
 
 ---
 
-**Last Updated:** 2025-10-12
-**Status:** Fully configured and deployed! Ready for testing
-**Production URL:** https://bready-ashen.vercel.app
-**Next Task:** Test authentication and core features
+## Simplified Implementation Steps
+
+**Step 1: Update Schema**
+1. Modify `prisma/schema.prisma` - Add householdId to Budget
+2. Add budgets relation to Household
+
+**Step 2: Create Migration**
+1. Run: `npx prisma migrate dev --name add-household-to-budgets`
+2. Confirm migration
+
+**Step 3: Update GET /api/budgets**
+1. Simplify where clause to just filter by householdId
+2. Remove complex OR logic (no longer needed)
+
+**Step 4: Update POST /api/budgets**
+1. Add householdId to budget creation
+2. Simplify validation logic
+
+**Step 5: Update PUT & DELETE /api/budgets/[id]**
+1. Add householdId verification
+2. Return 404 if household doesn't match
+
+**Step 6: Test Everything**
+1. Create budgets in different households
+2. Verify complete isolation
+
+---
+
+## Expected Outcome
+
+### Before Fix:
+- ❌ Shared budgets visible across all households
+- ❌ User can see friend's budgets
+- ❌ Data privacy violation
+
+### After Fix:
+- ✅ Budgets completely isolated by household
+- ✅ Shared budgets (userId: null) only visible within household
+- ✅ User-specific budgets only visible to that user's household
+- ✅ Proper data privacy and GDPR compliance
+
+---
+
+## Impact Assessment
+
+**Code Changes:**
+- 1 schema file (`prisma/schema.prisma`)
+- 3 API route files (`app/api/budgets/*.ts`)
+- 1 migration file (auto-generated)
+
+**Database Changes:**
+- Add householdId column to Budget table
+- Add foreign key constraint
+- Update unique constraint
+- Add index on householdId
+
+**Breaking Changes:**
+- ✅ None for users (transparent fix)
+- ⚠️ Existing budget data will need householdId backfill (acceptable in dev)
+
+**Risk Level:** LOW
+- Schema change is additive (non-breaking)
+- API changes are minimal and localized
+- No frontend changes required
+
+---
+
+## Ready to Implement?
+
+**All changes follow the simplicity principle:**
+- ✅ Minimal code changes
+- ✅ Focused on one issue
+- ✅ No unnecessary refactoring
+- ✅ Clear and straightforward fix
+
+**Waiting for approval to proceed with implementation.**

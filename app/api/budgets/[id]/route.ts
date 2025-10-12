@@ -17,21 +17,11 @@ export async function PUT(
     const body = await request.json()
     const { category, amount, month, userId } = body
 
-    // Get household user IDs
-    const householdUsers = await prisma.user.findMany({
-      where: { householdId },
-      select: { id: true },
-    })
-    const householdUserIds = householdUsers.map((u) => u.id)
-
     // Verify budget belongs to household
     const existingBudget = await prisma.budget.findFirst({
       where: {
         id,
-        OR: [
-          { userId: null }, // Shared budget
-          { userId: { in: householdUserIds } }, // User-specific budget in household
-        ],
+        householdId, // Verify householdId matches
       },
     })
 
@@ -43,11 +33,16 @@ export async function PUT(
     }
 
     // If updating userId, verify it belongs to household
-    if (userId && !householdUserIds.includes(userId)) {
-      return NextResponse.json(
-        { error: 'User not found in your household' },
-        { status: 403 }
-      )
+    if (userId) {
+      const user = await prisma.user.findFirst({
+        where: { id: userId, householdId },
+      })
+      if (!user) {
+        return NextResponse.json(
+          { error: 'User not found in your household' },
+          { status: 403 }
+        )
+      }
     }
 
     const budget = await prisma.budget.update({
@@ -102,21 +97,11 @@ export async function DELETE(
 
     const { id } = await params
 
-    // Get household user IDs
-    const householdUsers = await prisma.user.findMany({
-      where: { householdId },
-      select: { id: true },
-    })
-    const householdUserIds = householdUsers.map((u) => u.id)
-
     // Verify budget belongs to household
     const existingBudget = await prisma.budget.findFirst({
       where: {
         id,
-        OR: [
-          { userId: null }, // Shared budget
-          { userId: { in: householdUserIds } }, // User-specific budget in household
-        ],
+        householdId, // Verify householdId matches
       },
     })
 
