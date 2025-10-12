@@ -19,7 +19,7 @@ import { Wallet } from "lucide-react"
 interface User {
   id: string
   name: string
-  email: string
+  email: string | null
   color: string
 }
 
