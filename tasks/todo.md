@@ -45,11 +45,12 @@
   - All Clerk variables already present from initial setup
   - Redeployed successfully
 
-- [ ] **Verify Database Migrations**
-  - Check if migrations ran automatically during deployment
-  - Verify all tables exist (User, Household, Expense, Budget, RecurringExpense, Settlement)
-  - If needed, run migrations manually or configure build to run them
-  - **Status:** Need to verify tables were created
+- [x] **Fix Database Migrations** ✅
+  - **Issue Found:** Migrations weren't running automatically on deployment
+  - **Symptoms:** 500 errors on all API routes (tables didn't exist)
+  - **Solution:** Added `vercel.json` to explicitly set build command to `vercel-build`
+  - **Build Process:** Now runs `prisma generate && prisma migrate deploy && next build`
+  - **Status:** Configuration pushed, awaiting redeploy to create tables
 
 - [ ] **Optional: Seed Initial Data**
   - Decide if seeding is needed for production
