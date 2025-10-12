@@ -57,17 +57,24 @@
   - Can test with real user sign-up instead of seed data
 
 ### Clerk Authentication Configuration
-- [ ] **Update Clerk Domain Settings**
-  - Get actual Vercel production URL (e.g., `bready.vercel.app`)
-  - Go to Clerk Dashboard → Settings → Domains
-  - Replace `bready.com` with actual Vercel URL
-  - Add both HTTP and HTTPS if needed
+- [x] **Clerk Configuration Decision** ✅
+  - **Using Development Mode** (Clerk policy: vercel.app domains not allowed for production)
+  - Development Clerk instance fully functional with all features
+  - Production URL: `https://bready-ashen.vercel.app`
+  - Can upgrade to production Clerk later with custom domain (~$10-15/year)
+
+- [x] **Verify Clerk Settings** ✅
+  - Clerk development instance environment variables already in Vercel
+  - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` - configured
+  - `CLERK_SECRET_KEY` - configured
+  - Sign-in/Sign-up paths configured in Clerk dashboard
 
 - [ ] **Test Authentication Flow**
-  - Visit production URL
+  - Visit production URL: https://bready-ashen.vercel.app
   - Test sign-up flow
   - Test sign-in flow
   - Verify redirect URLs work correctly
+  - Create household and test full app functionality
 
 ### Production Testing
 - [ ] **Test Core Features**
@@ -149,11 +156,13 @@ All changes should continue to follow the simplicity principle - minimal changes
 
 ## Notes
 
+- **Production URL:** https://bready-ashen.vercel.app
 - **Local Build First:** Always run `npm run build` locally before pushing to catch TypeScript errors
 - **Type Safety:** The nullable email field is intentional for household members without logins
-- **Database:** SQLite locally, Neon PostgreSQL (serverless) in production
-- **Authentication:** Clerk handles all auth, one owner per household
+- **Database:** SQLite locally, Neon PostgreSQL (serverless) in production via Neon
+- **Authentication:** Clerk Development Mode (works with vercel.app domains)
 - **Household Model:** Each user belongs to a household, owner has Clerk account
+- **Upgrade Path:** Can add custom domain later to use Clerk Production mode
 
 ### Known Issues (Non-Critical)
 
@@ -169,5 +178,6 @@ npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMExcep
 ---
 
 **Last Updated:** 2025-10-12
-**Status:** Database connected, ready for Clerk configuration
-**Next Task:** Update Clerk domain settings with Vercel URL
+**Status:** Fully configured and deployed! Ready for testing
+**Production URL:** https://bready-ashen.vercel.app
+**Next Task:** Test authentication and core features
