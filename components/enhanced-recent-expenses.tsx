@@ -23,6 +23,7 @@ interface Expense {
   user: {
     id: string
     name: string
+    email: string | null
     color: string
   }
 }

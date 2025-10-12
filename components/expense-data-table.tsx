@@ -56,6 +56,7 @@ interface Expense {
   user: {
     id: string
     name: string
+    email: string | null
     color: string
   }
 }
@@ -174,7 +175,7 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
         )
       },
       cell: ({ row }) => {
-        const user = row.getValue("user") as { id: string; name: string; color: string }
+        const user = row.getValue("user") as { id: string; name: string; email: string | null; color: string }
         return (
           <div className="flex items-center gap-2">
             <div
