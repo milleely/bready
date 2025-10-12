@@ -12,7 +12,7 @@ interface Expense {
   user: {
     id: string
     name: string
-    email: string
+    email: string | null
     color: string
   }
 }
@@ -35,7 +35,7 @@ export function generateExpensesCSV(expenses: Expense[]): string {
     Category: expense.category.charAt(0).toUpperCase() + expense.category.slice(1),
     User: expense.user.name,
     Type: expense.isShared ? 'Shared' : 'Personal',
-    'User Email': expense.user.email,
+    'User Email': expense.user.email || '',
   }))
 
   return unparse(rows, {
