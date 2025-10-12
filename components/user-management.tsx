@@ -9,7 +9,7 @@ import { Edit, Trash2, Users as UsersIcon } from "lucide-react"
 interface User {
   id: string
   name: string
-  email: string
+  email: string | null
   color: string
 }
 
@@ -108,7 +108,9 @@ export function UserManagement({ users, onRefresh }: UserManagementProps) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-golden-crust-dark truncate">{user.name}</p>
-                    <p className="text-sm text-golden-crust-dark/70 truncate">{user.email}</p>
+                    {user.email && (
+                      <p className="text-sm text-golden-crust-dark/70 truncate">{user.email}</p>
+                    )}
                   </div>
                 </div>
                 <div className="flex gap-2 flex-shrink-0">

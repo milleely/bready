@@ -7,7 +7,7 @@ import { ExpenseDataTable } from "@/components/expense-data-table"
 interface User {
   id: string
   name: string
-  email: string
+  email: string | null
   color: string
 }
 
