@@ -35,27 +35,26 @@
 ## Next Steps: Production Configuration 🚀
 
 ### Database Setup
-- [ ] **Add Vercel Postgres Database**
-  - Go to Vercel Dashboard → Storage → Create Database
-  - Select PostgreSQL
-  - Name: `bready-db` (or similar)
-  - Copy the DATABASE_URL connection string
+- [x] **Add Vercel Postgres Database** ✅
+  - Connected Neon PostgreSQL via Vercel Marketplace
+  - DATABASE_URL automatically added to environment variables
+  - Database provider: Neon (Serverless Postgres)
 
-- [ ] **Configure Environment Variables**
-  - Add `DATABASE_URL` to Vercel environment variables
-  - Verify all Clerk variables are present:
-    - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
-    - `CLERK_SECRET_KEY`
-  - Redeploy to apply environment variables
+- [x] **Configure Environment Variables** ✅
+  - DATABASE_URL configured automatically by Neon integration
+  - All Clerk variables already present from initial setup
+  - Redeployed successfully
 
-- [ ] **Run Database Migrations**
-  - Option A: Let Vercel build run migrations automatically
-  - Option B: Run manually via Vercel CLI or dashboard
-  - Verify all tables created (User, Household, Expense, Budget, RecurringExpense, Settlement)
+- [ ] **Verify Database Migrations**
+  - Check if migrations ran automatically during deployment
+  - Verify all tables exist (User, Household, Expense, Budget, RecurringExpense, Settlement)
+  - If needed, run migrations manually or configure build to run them
+  - **Status:** Need to verify tables were created
 
 - [ ] **Optional: Seed Initial Data**
   - Decide if seeding is needed for production
-  - Run seed script if necessary (with updated household logic)
+  - Production typically starts empty, letting users create their own data
+  - Can test with real user sign-up instead of seed data
 
 ### Clerk Authentication Configuration
 - [ ] **Update Clerk Domain Settings**
@@ -152,12 +151,23 @@ All changes should continue to follow the simplicity principle - minimal changes
 
 - **Local Build First:** Always run `npm run build` locally before pushing to catch TypeScript errors
 - **Type Safety:** The nullable email field is intentional for household members without logins
-- **Database:** Currently using SQLite locally, PostgreSQL in production
+- **Database:** SQLite locally, Neon PostgreSQL (serverless) in production
 - **Authentication:** Clerk handles all auth, one owner per household
 - **Household Model:** Each user belongs to a household, owner has Clerk account
+
+### Known Issues (Non-Critical)
+
+**npm Deprecation Warning:**
+```
+npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+```
+- **Impact:** None - build succeeds, app works fine
+- **Priority:** Low - technical debt for future cleanup
+- **Cause:** Transitive dependency (likely from file upload/form-data library)
+- **Action:** Address during next dependency update cycle
 
 ---
 
 **Last Updated:** 2025-10-12
-**Status:** Ready for production configuration
-**Next Task:** Add Vercel Postgres database
+**Status:** Database connected, ready for Clerk configuration
+**Next Task:** Update Clerk domain settings with Vercel URL
