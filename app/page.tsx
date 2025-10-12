@@ -221,25 +221,29 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <div className="flex items-center justify-between mb-8">
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-7xl">
+        {/* Mobile-responsive header */}
+        <div className="flex flex-col gap-4 mb-6 sm:mb-8 md:flex-row md:items-center md:justify-between">
+          {/* Logo and title section */}
           <div className="flex items-start gap-3">
             <BreadyLogo size={56} />
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 bg-clip-text text-transparent">
+              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 bg-clip-text text-transparent">
                 Bready
               </h1>
-              <p className="text-muted-foreground mt-2 text-sm">
+              <p className="text-muted-foreground mt-1 sm:mt-2 text-xs sm:text-sm">
                 Track your dough
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+
+          {/* Controls section - wraps on mobile */}
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
             <UserButton
               afterSignOutUrl="/sign-in"
               appearance={{
                 elements: {
-                  avatarBox: "w-10 h-10"
+                  avatarBox: "w-10 h-10 sm:w-11 sm:h-11"
                 }
               }}
             />
@@ -247,14 +251,15 @@ export default function Home() {
               selectedMonth={selectedMonth}
               onMonthChange={setSelectedMonth}
             />
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
               <BudgetDialog users={users} onBudgetSet={fetchData} />
               <ExpenseForm users={users} onSubmit={handleAddExpense} />
             </div>
           </div>
         </div>
 
-        <div className="space-y-6">
+        {/* Main content area with responsive spacing */}
+        <div className="space-y-4 sm:space-y-6">
           <EnhancedMetricsCards
             totalSpent={stats.totalSpent}
             sharedExpenses={stats.sharedExpenses}

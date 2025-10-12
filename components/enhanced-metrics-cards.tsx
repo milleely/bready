@@ -18,7 +18,7 @@ interface MetricsCardsProps {
 
 export function EnhancedMetricsCards({ totalSpent, sharedExpenses, userCount, avgPerPerson }: MetricsCardsProps) {
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
       {/* Total Spent Card */}
       <HoverCard>
         <HoverCardTrigger asChild>

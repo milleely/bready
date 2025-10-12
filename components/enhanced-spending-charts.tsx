@@ -73,7 +73,7 @@ export function EnhancedSpendingCharts({ spendingByCategory, spendingPerPerson }
   } satisfies ChartConfig
 
   return (
-    <div className="grid gap-6 md:grid-cols-2">
+    <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
       {/* Donut Chart for Category Spending */}
       <Card className="flex flex-col bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-md">
         <CardHeader className="items-center pb-0">
