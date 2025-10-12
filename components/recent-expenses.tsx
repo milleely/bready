@@ -82,7 +82,9 @@ export function RecentExpenses({ expenses, users, onEdit, onDelete }: RecentExpe
                     <TableCell>
                       <div className="flex items-center gap-2">
                         {expense.recurringExpenseId && (
-                          <Repeat className="h-4 w-4 text-purple-600" title="Recurring expense" />
+                          <span title="Recurring expense">
+                            <Repeat className="h-4 w-4 text-purple-600" />
+                          </span>
                         )}
                         {expense.description}
                       </div>

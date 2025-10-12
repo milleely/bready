@@ -34,7 +34,7 @@ export function UserForm({ user, onSubmit, trigger }: UserFormProps) {
     if (user) {
       setFormData({
         name: user.name,
-        email: user.email,
+        email: user.email || '',
         color: user.color,
       })
       setOpen(true)

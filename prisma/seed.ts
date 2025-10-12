@@ -3,6 +3,14 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
+  // Create a household first
+  const household = await prisma.household.create({
+    data: {
+      clerkId: 'seed_user_clerk_id', // Placeholder Clerk ID for seeding
+      name: 'Demo Household',
+    },
+  })
+
   // Create 4 users
   const users = await Promise.all([
     prisma.user.create({
@@ -10,6 +18,8 @@ async function main() {
         name: 'Alex',
         email: 'alex@example.com',
         color: '#3b82f6',
+        householdId: household.id,
+        isOwner: true, // First user is the owner
       },
     }),
     prisma.user.create({
@@ -17,6 +27,7 @@ async function main() {
         name: 'Jordan',
         email: 'jordan@example.com',
         color: '#10b981',
+        householdId: household.id,
       },
     }),
     prisma.user.create({
@@ -24,6 +35,7 @@ async function main() {
         name: 'Morgan',
         email: 'morgan@example.com',
         color: '#8b5cf6',
+        householdId: household.id,
       },
     }),
     prisma.user.create({
@@ -31,6 +43,7 @@ async function main() {
         name: 'Casey',
         email: 'casey@example.com',
         color: '#f59e0b',
+        householdId: household.id,
       },
     }),
   ])
