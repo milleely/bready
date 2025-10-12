@@ -6,13 +6,14 @@ import { validateAmount } from '@/lib/utils'
 // PUT /api/budgets/[id]
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Require authentication and get household ID
     const householdId = await getHouseholdId()
     if (householdId instanceof NextResponse) return householdId
 
+    const { id } = await params
     const body = await request.json()
     const { category, amount, month, userId } = body
 
@@ -26,7 +27,7 @@ export async function PUT(
     // Verify budget belongs to household
     const existingBudget = await prisma.budget.findFirst({
       where: {
-        id: params.id,
+        id,
         OR: [
           { userId: null }, // Shared budget
           { userId: { in: householdUserIds } }, // User-specific budget in household
@@ -50,7 +51,7 @@ export async function PUT(
     }
 
     const budget = await prisma.budget.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(category && { category }),
         ...(amount && { amount: validateAmount(amount) }),
@@ -92,12 +93,14 @@ export async function PUT(
 // DELETE /api/budgets/[id]
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Require authentication and get household ID
     const householdId = await getHouseholdId()
     if (householdId instanceof NextResponse) return householdId
+
+    const { id } = await params
 
     // Get household user IDs
     const householdUsers = await prisma.user.findMany({
@@ -109,7 +112,7 @@ export async function DELETE(
     // Verify budget belongs to household
     const existingBudget = await prisma.budget.findFirst({
       where: {
-        id: params.id,
+        id,
         OR: [
           { userId: null }, // Shared budget
           { userId: { in: householdUserIds } }, // User-specific budget in household
@@ -125,7 +128,7 @@ export async function DELETE(
     }
 
     await prisma.budget.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true }, { status: 200 })

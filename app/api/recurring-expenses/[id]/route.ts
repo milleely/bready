@@ -6,17 +6,19 @@ import { validateAmount } from '@/lib/utils'
 // PUT /api/recurring-expenses/[id]
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Require authentication and get household ID
     const householdId = await getHouseholdId()
     if (householdId instanceof NextResponse) return householdId
 
+    const { id } = await params
+
     // Verify recurring expense belongs to household
     const existingRecurringExpense = await prisma.recurringExpense.findFirst({
       where: {
-        id: params.id,
+        id,
         user: { householdId },
       },
     })
@@ -42,7 +44,7 @@ export async function PUT(
     } = body
 
     const recurringExpense = await prisma.recurringExpense.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(amount !== undefined && { amount: validateAmount(amount) }),
         ...(category && { category }),
@@ -83,17 +85,19 @@ export async function PUT(
 // DELETE /api/recurring-expenses/[id]
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Require authentication and get household ID
     const householdId = await getHouseholdId()
     if (householdId instanceof NextResponse) return householdId
 
+    const { id } = await params
+
     // Verify recurring expense belongs to household
     const existingRecurringExpense = await prisma.recurringExpense.findFirst({
       where: {
-        id: params.id,
+        id,
         user: { householdId },
       },
     })
@@ -106,7 +110,7 @@ export async function DELETE(
     }
 
     await prisma.recurringExpense.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ success: true }, { status: 200 })
