@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { categories } from "@/lib/utils"
-import { Plus, Upload, X, Image as ImageIcon } from "lucide-react"
+import { Plus, Upload, X, Image as ImageIcon, Eye, FileText, Sparkles } from "lucide-react"
 
 interface User {
   id: string
@@ -49,6 +49,9 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [receiptUrl, setReceiptUrl] = useState<string | null>(expense?.receiptUrl || null)
   const [uploading, setUploading] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [showPreview, setShowPreview] = useState(false)
+  const [scanning, setScanning] = useState(false)
 
   // Use controlled open state if provided, otherwise use internal state
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
@@ -85,12 +88,65 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
         return
       }
       setSelectedFile(file)
+
+      // Create preview URL for images (not PDFs)
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setPreviewUrl(reader.result as string)
+        }
+        reader.readAsDataURL(file)
+      } else {
+        setPreviewUrl(null) // PDF - no preview
+      }
     }
   }
 
   const removeReceipt = () => {
     setSelectedFile(null)
     setReceiptUrl(null)
+    setPreviewUrl(null)
+  }
+
+  const handleScanReceipt = async () => {
+    if (!selectedFile) return
+
+    setScanning(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', selectedFile)
+
+      const response = await fetch('/api/ocr', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        alert(error.error || 'Failed to scan receipt')
+        return
+      }
+
+      const ocrResult = await response.json()
+
+      // Auto-fill form fields with OCR data
+      setFormData(prev => ({
+        ...prev,
+        amount: ocrResult.amount ? ocrResult.amount.toString() : prev.amount,
+        date: ocrResult.date || prev.date,
+        description: ocrResult.description || prev.description,
+        category: ocrResult.category || prev.category,
+      }))
+
+      // Show success message with confidence
+      const confidence = ocrResult.confidence || 'medium'
+      alert(`Receipt scanned successfully! (Confidence: ${confidence})\n\nPlease review the extracted data before submitting.`)
+    } catch (error) {
+      console.error('Failed to scan receipt:', error)
+      alert('Failed to scan receipt. Please try again or enter manually.')
+    } finally {
+      setScanning(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -263,25 +319,68 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
 
               {/* Show preview if file selected or receipt exists */}
               {(selectedFile || receiptUrl) ? (
-                <div className="flex items-center gap-3 p-3 bg-amber-50/50 border border-golden-crust-medium rounded-md">
-                  <ImageIcon className="h-5 w-5 text-golden-crust-primary flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-golden-crust-dark font-medium truncate">
-                      {selectedFile ? selectedFile.name : 'Receipt attached'}
-                    </p>
-                    <p className="text-xs text-golden-crust-dark/60">
-                      {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB` : 'View receipt'}
-                    </p>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 p-3 bg-amber-50/50 border border-golden-crust-medium rounded-md">
+                    {/* Thumbnail preview for images */}
+                    {previewUrl ? (
+                      <img
+                        src={previewUrl}
+                        alt="Receipt preview"
+                        className="h-12 w-12 object-cover rounded border border-golden-crust-medium flex-shrink-0"
+                      />
+                    ) : selectedFile?.type === 'application/pdf' ? (
+                      <FileText className="h-12 w-12 text-golden-crust-primary flex-shrink-0" />
+                    ) : (
+                      <ImageIcon className="h-12 w-12 text-golden-crust-primary flex-shrink-0" />
+                    )}
+
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-golden-crust-dark font-medium truncate">
+                        {selectedFile ? selectedFile.name : 'Receipt attached'}
+                      </p>
+                      <p className="text-xs text-golden-crust-dark/60">
+                        {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB` : 'Click view to see'}
+                      </p>
+                    </div>
+
+                    {/* View button for preview */}
+                    {(previewUrl || receiptUrl) && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowPreview(true)}
+                        className="border-golden-crust-medium hover:bg-amber-100"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        View
+                      </Button>
+                    )}
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={removeReceipt}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={removeReceipt}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+
+                  {/* Scan Receipt button - only show for images (not PDFs) */}
+                  {selectedFile && selectedFile.type.startsWith('image/') && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleScanReceipt}
+                      disabled={scanning}
+                      className="w-full border-2 border-purple-500 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold"
+                    >
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      {scanning ? 'Analyzing Receipt...' : 'Scan Receipt with AI'}
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <Button
@@ -329,6 +428,32 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           </div>
         </form>
       </DialogContent>
+
+      {/* Preview Dialog */}
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader>
+            <DialogTitle>Receipt Preview</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            {previewUrl ? (
+              <img
+                src={previewUrl}
+                alt="Receipt full preview"
+                className="w-full h-auto max-h-[70vh] object-contain rounded-md border border-golden-crust-medium"
+              />
+            ) : receiptUrl ? (
+              <img
+                src={receiptUrl}
+                alt="Receipt full preview"
+                className="w-full h-auto max-h-[70vh] object-contain rounded-md border border-golden-crust-medium"
+              />
+            ) : (
+              <p className="text-center text-gray-500">No preview available</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   )
 }
