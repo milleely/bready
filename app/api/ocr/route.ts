@@ -9,6 +9,8 @@ const openai = new OpenAI({
 })
 
 interface OCRResult {
+  isReceipt: boolean // Receipt validation - true if it's an actual receipt
+  reason?: string // Explanation if not a receipt
   amount?: number
   date?: string // YYYY-MM-DD format
   description?: string
@@ -49,9 +51,27 @@ export async function POST(request: NextRequest) {
     // Create prompt for GPT-4o-mini Vision
     const categoryList = categories.map(c => c.value).join(', ')
 
-    const prompt = `Analyze this receipt image and extract the following information in JSON format:
+    const prompt = `FIRST: Determine if this image is a valid receipt or invoice.
 
+Valid receipts/invoices contain:
+- Merchant/business name
+- Purchase items or service description
+- Prices and amounts
+- Total amount paid
+- Transaction date
+- Look like actual receipts: paper receipts, digital receipts, invoices, bills
+
+INVALID (not receipts):
+- Screenshots without purchase info
+- Advertisements, newsletters, marketing materials
+- Memes, social media posts
+- Personal photos, selfies
+- Text documents, PDFs without purchase details
+- Anything that doesn't show a completed transaction
+
+IF this IS a valid receipt, extract the data in JSON format:
 {
+  "isReceipt": true,
   "amount": <total amount as number, without currency symbols>,
   "date": "<date in YYYY-MM-DD format, if visible>",
   "description": "<merchant/store name>",
@@ -59,7 +79,14 @@ export async function POST(request: NextRequest) {
   "confidence": "<high/medium/low based on image quality>"
 }
 
+IF this is NOT a valid receipt, return:
+{
+  "isReceipt": false,
+  "reason": "<brief explanation of what this image actually is>"
+}
+
 Rules:
+- Be strict: only accept actual receipts/invoices
 - If you can't read something clearly, use null for that field
 - For amount, only return the final total, not subtotals
 - For date, today's date is: ${new Date().toISOString().split('T')[0]}
@@ -110,8 +137,17 @@ Rules:
       )
     }
 
+    // Reject non-receipt images
+    if (ocrResult.isReceipt === false) {
+      return NextResponse.json(
+        { error: `Not a valid receipt: ${ocrResult.reason || 'Please upload an actual receipt image'}` },
+        { status: 400 }
+      )
+    }
+
     // Validate and clean the result
     const result: OCRResult = {
+      isReceipt: true, // Already validated above
       amount: ocrResult.amount ? Math.abs(Number(ocrResult.amount)) : undefined,
       date: ocrResult.date || undefined,
       description: ocrResult.description || undefined,
