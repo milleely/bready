@@ -112,7 +112,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           <DialogTitle>{expense ? 'Edit Expense' : 'Add New Expense'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="amount" className="text-golden-crust-dark font-semibold">Amount</Label>
               <Input
