@@ -43,6 +43,7 @@ model Expense {
   description         String
   date                DateTime
   isShared            Boolean           @default(false)
+  receiptUrl          String?           // Optional: URL/path to receipt image
   userId              String
   user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   recurringExpenseId  String?           // Optional: ID of recurring expense that generated this
