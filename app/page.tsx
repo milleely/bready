@@ -13,6 +13,7 @@ import { EnhancedBudgetProgress } from "@/components/enhanced-budget-progress"
 import { MonthSelector } from "@/components/month-selector"
 import { BreadyLogo } from "@/components/bready-logo"
 import { SettlementCard } from "@/components/settlement-card"
+import { ExpenseFilterPanel } from "@/components/expense-filter-panel"
 import { Button } from "@/components/ui/button"
 import { Wallet } from "lucide-react"
 
@@ -92,6 +93,13 @@ export default function Home() {
   const [editingExpense, setEditingExpense] = useState<Expense | undefined>()
   const [loading, setLoading] = useState(true)
 
+  // Filter state for advanced expense filtering
+  const [selectedUser, setSelectedUser] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedType, setSelectedType] = useState<'all' | 'shared' | 'personal'>('all')
+  const [minAmount, setMinAmount] = useState<number | null>(null)
+  const [maxAmount, setMaxAmount] = useState<number | null>(null)
+
   const fetchData = async () => {
     try {
       // First, generate any due recurring expenses
@@ -104,9 +112,19 @@ export default function Home() {
       const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0] // First day
       const endDate = new Date(year, month, 0).toISOString().split('T')[0] // Last day
 
+      // Build query params for expenses API with active filters
+      let expensesQuery = `startDate=${startDate}&endDate=${endDate}`
+      if (selectedUser) expensesQuery += `&userId=${selectedUser}`
+      if (selectedCategory) expensesQuery += `&category=${selectedCategory}`
+      if (selectedType !== 'all') {
+        expensesQuery += `&isShared=${selectedType === 'shared'}`
+      }
+      if (minAmount !== null) expensesQuery += `&minAmount=${minAmount}`
+      if (maxAmount !== null) expensesQuery += `&maxAmount=${maxAmount}`
+
       const [usersRes, expensesRes, statsRes, budgetsRes, settlementsRes] = await Promise.all([
         fetch('/api/users'),
-        fetch(`/api/expenses?startDate=${startDate}&endDate=${endDate}`),
+        fetch(`/api/expenses?${expensesQuery}`),
         fetch(`/api/stats?startDate=${startDate}&endDate=${endDate}`),
         fetch(`/api/budgets?month=${selectedMonth}`),
         fetch(`/api/settlements?startDate=${startDate}&endDate=${endDate}`),
@@ -134,7 +152,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchData()
-  }, [selectedMonth])
+  }, [selectedMonth, selectedUser, selectedCategory, selectedType, minAmount, maxAmount])
 
   const handleAddExpense = async (expense: Omit<Expense, 'id' | 'user'>) => {
     const response = await fetch('/api/expenses', {
@@ -204,6 +222,25 @@ export default function Home() {
     }
   }
 
+  // Filter management helpers
+  const clearAllFilters = () => {
+    setSelectedUser(null)
+    setSelectedCategory(null)
+    setSelectedType('all')
+    setMinAmount(null)
+    setMaxAmount(null)
+  }
+
+  const getActiveFilterCount = () => {
+    let count = 0
+    if (selectedUser) count++
+    if (selectedCategory) count++
+    if (selectedType !== 'all') count++
+    if (minAmount !== null) count++
+    if (maxAmount !== null) count++
+    return count
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -260,6 +297,22 @@ export default function Home() {
 
         {/* Main content area with responsive spacing */}
         <div className="space-y-4 sm:space-y-6">
+          <ExpenseFilterPanel
+            users={users}
+            selectedUser={selectedUser}
+            setSelectedUser={setSelectedUser}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}
+            minAmount={minAmount}
+            setMinAmount={setMinAmount}
+            maxAmount={maxAmount}
+            setMaxAmount={setMaxAmount}
+            activeFilterCount={getActiveFilterCount()}
+            onClearAll={clearAllFilters}
+          />
+
           <EnhancedMetricsCards
             totalSpent={stats.totalSpent}
             sharedExpenses={stats.sharedExpenses}
