@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal, Pencil, Repeat, Trash2 } from "lucide-react"
+import { ArrowUpDown, ChevronDown, FileImage, MoreHorizontal, Pencil, Repeat, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -36,6 +36,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { formatCurrency, formatDate, categories } from "@/lib/utils"
+import { ReceiptLightbox } from "@/components/receipt-lightbox"
 
 interface User {
   id: string
@@ -51,6 +52,7 @@ interface Expense {
   description: string
   date: Date | string
   isShared: boolean
+  receiptUrl?: string | null
   userId: string
   recurringExpenseId?: string | null
   user: {
@@ -72,6 +74,8 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [lightboxOpen, setLightboxOpen] = React.useState(false)
+  const [selectedReceiptUrl, setSelectedReceiptUrl] = React.useState<string | null>(null)
 
   const getCategoryLabel = (value: string) => {
     return categories.find(c => c.value === value)?.label || value
@@ -124,6 +128,33 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
               </span>
             )}
             <span>{expense.description}</span>
+          </div>
+        )
+      },
+    },
+    {
+      accessorKey: "receiptUrl",
+      header: () => <div className="text-center">Receipt</div>,
+      cell: ({ row }) => {
+        const expense = row.original
+        return (
+          <div className="flex justify-center">
+            {expense.receiptUrl ? (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 hover:bg-golden-crust-light/30"
+                onClick={() => {
+                  setSelectedReceiptUrl(expense.receiptUrl!)
+                  setLightboxOpen(true)
+                }}
+                title="View receipt"
+              >
+                <FileImage className="h-5 w-5 text-golden-crust-primary" />
+              </Button>
+            ) : (
+              <span className="text-gray-400" title="No receipt">-</span>
+            )}
           </div>
         )
       },
@@ -412,6 +443,13 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
           </Button>
         </div>
       </div>
+
+      {/* Receipt Lightbox */}
+      <ReceiptLightbox
+        receiptUrl={selectedReceiptUrl}
+        open={lightboxOpen}
+        onOpenChange={setLightboxOpen}
+      />
     </div>
   )
 }

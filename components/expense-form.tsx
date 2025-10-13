@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { categories } from "@/lib/utils"
-import { Plus } from "lucide-react"
+import { Plus, Upload, X, Image as ImageIcon } from "lucide-react"
 
 interface User {
   id: string
@@ -22,6 +22,7 @@ interface Expense {
   description: string
   date: Date | string
   isShared: boolean
+  receiptUrl?: string | null
   userId: string
 }
 
@@ -45,6 +46,9 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
     userId: expense?.userId || users[0]?.id || '',
   })
   const [loading, setLoading] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [receiptUrl, setReceiptUrl] = useState<string | null>(expense?.receiptUrl || null)
+  const [uploading, setUploading] = useState(false)
 
   // Use controlled open state if provided, otherwise use internal state
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
@@ -60,22 +64,73 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
         isShared: expense.isShared,
         userId: expense.userId,
       })
+      setReceiptUrl(expense.receiptUrl || null)
       // Auto-open dialog when editing
       setOpen(true)
     }
   }, [expense])
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('File too large. Maximum size is 5MB.')
+        return
+      }
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']
+      if (!allowedTypes.includes(file.type)) {
+        alert('Invalid file type. Only JPG, PNG, and PDF are allowed.')
+        return
+      }
+      setSelectedFile(file)
+    }
+  }
+
+  const removeReceipt = () => {
+    setSelectedFile(null)
+    setReceiptUrl(null)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
     try {
+      let uploadedReceiptUrl = receiptUrl // Keep existing if editing
+
+      // Upload new file if selected
+      if (selectedFile) {
+        setUploading(true)
+        const formData = new FormData()
+        formData.append('file', selectedFile)
+
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        })
+
+        if (!uploadRes.ok) {
+          const errorData = await uploadRes.json()
+          alert(errorData.error || 'Failed to upload receipt')
+          setUploading(false)
+          setLoading(false)
+          return
+        }
+
+        const { receiptUrl: newReceiptUrl } = await uploadRes.json()
+        uploadedReceiptUrl = newReceiptUrl
+        setUploading(false)
+      }
+
       await onSubmit({
         amount: parseFloat(formData.amount),
         category: formData.category,
         description: formData.description,
         date: new Date(formData.date),
         isShared: formData.isShared,
+        receiptUrl: uploadedReceiptUrl,
         userId: formData.userId,
       })
 
@@ -88,13 +143,17 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           isShared: false,
           userId: users[0]?.id || '',
         })
+        setSelectedFile(null)
+        setReceiptUrl(null)
       }
 
       setOpen(false)
     } catch (error) {
       console.error('Failed to submit expense:', error)
+      alert('Failed to submit expense. Please try again.')
     } finally {
       setLoading(false)
+      setUploading(false)
     }
   }
 
@@ -190,6 +249,54 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
             </Select>
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="receipt" className="text-golden-crust-dark font-semibold">Receipt (Optional)</Label>
+            <div className="space-y-2">
+              {/* Hidden file input */}
+              <input
+                id="receipt"
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,application/pdf"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+
+              {/* Show preview if file selected or receipt exists */}
+              {(selectedFile || receiptUrl) ? (
+                <div className="flex items-center gap-3 p-3 bg-amber-50/50 border border-golden-crust-medium rounded-md">
+                  <ImageIcon className="h-5 w-5 text-golden-crust-primary flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-golden-crust-dark font-medium truncate">
+                      {selectedFile ? selectedFile.name : 'Receipt attached'}
+                    </p>
+                    <p className="text-xs text-golden-crust-dark/60">
+                      {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB` : 'View receipt'}
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={removeReceipt}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById('receipt')?.click()}
+                  className="w-full border border-golden-crust-medium text-golden-crust-dark hover:bg-amber-100"
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload Receipt (JPG, PNG, or PDF)
+                </Button>
+              )}
+            </div>
+          </div>
+
           <div className="flex items-center space-x-2">
             <input
               id="shared"
@@ -214,10 +321,10 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
             </Button>
             <Button
               type="submit"
-              disabled={loading}
+              disabled={loading || uploading}
               className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold shadow-lg"
             >
-              {loading ? 'Saving...' : expense ? 'Update' : 'Add Expense'}
+              {uploading ? 'Uploading...' : loading ? 'Saving...' : expense ? 'Update' : 'Add Expense'}
             </Button>
           </div>
         </form>
