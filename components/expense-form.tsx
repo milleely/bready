@@ -127,7 +127,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                 required
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-2 max-w-xs sm:max-w-none">
               <Label htmlFor="date" className="text-golden-crust-dark font-semibold">Date</Label>
               <Input
                 id="date"
