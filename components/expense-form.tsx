@@ -222,12 +222,12 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{expense ? 'Edit Expense' : 'Add New Expense'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 mt-3 sm:mt-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="amount" className="text-golden-crust-dark font-semibold">Amount</Label>
               <Input
@@ -318,7 +318,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
               />
 
               {/* Fixed-dimension container - same size whether empty or with receipt */}
-              <div className="min-h-[60px] flex items-center gap-3 p-3 bg-amber-50/50 border border-golden-crust-medium rounded-md">
+              <div className="min-h-[60px] flex items-center gap-2 p-3 bg-amber-50/50 border border-golden-crust-medium rounded-md">
                 {(selectedFile || receiptUrl) ? (
                   <>
                     {/* Thumbnail preview for images */}
@@ -408,7 +408,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
             </Label>
           </div>
 
-          <div className="flex gap-3 justify-end pt-4">
+          <div className="flex gap-2 sm:gap-3 justify-end pt-4">
             <Button
               type="button"
               variant="outline"
