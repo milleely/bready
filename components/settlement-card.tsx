@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { formatCurrency } from "@/lib/utils"
-import { ArrowRight, CheckCircle2, DollarSign, Check } from "lucide-react"
+import { ArrowRight, ArrowDown, CheckCircle2, DollarSign, Check } from "lucide-react"
 import { useState } from "react"
 
 interface Settlement {
@@ -77,9 +77,9 @@ export function SettlementCard({ settlements, onMarkAsPaid }: SettlementCardProp
                   key={`${settlement.from.id}-${settlement.to.id}-${index}`}
                   className="bg-white/60 backdrop-blur-sm border-2 border-golden-crust-primary/40 rounded-lg p-4 hover:shadow-md transition-shadow"
                 >
-                  <div className="grid grid-cols-3 items-center gap-4">
+                  <div className="flex flex-col sm:grid sm:grid-cols-3 items-center gap-4">
                     {/* From User */}
-                    <div className="flex items-center gap-3 flex-1">
+                    <div className="flex items-center gap-3 flex-1 w-full sm:w-auto">
                       <div
                         className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0"
                         style={{ backgroundColor: settlement.from.color }}
@@ -95,19 +95,21 @@ export function SettlementCard({ settlements, onMarkAsPaid }: SettlementCardProp
                     </div>
 
                     {/* Arrow and Amount - Centered */}
-                    <div className="flex items-center justify-center gap-3">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
                       <div className="text-center">
                         <p className="text-2xl font-extrabold text-golden-crust-primary whitespace-nowrap">
                           {formatCurrency(settlement.amount)}
                         </p>
                       </div>
-                      <ArrowRight className="h-6 w-6 text-golden-crust-primary flex-shrink-0" />
+                      {/* Down arrow on mobile, right arrow on desktop */}
+                      <ArrowDown className="h-6 w-6 text-golden-crust-primary flex-shrink-0 sm:hidden" />
+                      <ArrowRight className="h-6 w-6 text-golden-crust-primary flex-shrink-0 hidden sm:block" />
                     </div>
 
                     {/* To User + Button */}
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="flex-1 min-w-0 text-right">
+                    <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 flex-1 w-full sm:w-auto">
+                      <div className="flex items-center gap-3 flex-1 w-full sm:w-auto">
+                        <div className="flex-1 min-w-0 sm:text-right">
                           <p className="text-sm font-semibold text-golden-crust-dark truncate">
                             {settlement.to.name}
                           </p>
@@ -127,7 +129,7 @@ export function SettlementCard({ settlements, onMarkAsPaid }: SettlementCardProp
                           onClick={() => handleMarkAsPaid(settlement)}
                           disabled={isProcessing}
                           size="sm"
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-md flex-shrink-0"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-md w-full sm:w-auto"
                         >
                           {isProcessing ? (
                             "Processing..."
