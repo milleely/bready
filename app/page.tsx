@@ -251,10 +251,6 @@ export default function Home() {
     )
   }
 
-  const avgPerPerson = stats.spendingPerPerson.length > 0
-    ? stats.totalSpent / stats.spendingPerPerson.length
-    : 0
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
       <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 max-w-7xl">
@@ -300,7 +296,7 @@ export default function Home() {
             totalSpent={stats.totalSpent}
             sharedExpenses={stats.sharedExpenses}
             userCount={users.length}
-            avgPerPerson={avgPerPerson}
+            settlements={settlements}
           />
 
           <EnhancedBudgetProgress

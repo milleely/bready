@@ -7,16 +7,35 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
 import { formatCurrency } from "@/lib/utils"
-import { DollarSign, Users, Share2, TrendingUp, Info } from "lucide-react"
+import { DollarSign, Users, Share2, Scale, Info, CheckCircle2 } from "lucide-react"
+
+interface Settlement {
+  from: {
+    id: string
+    name: string
+    color: string
+  }
+  to: {
+    id: string
+    name: string
+    color: string
+  }
+  amount: number
+}
 
 interface MetricsCardsProps {
   totalSpent: number
   sharedExpenses: number
   userCount: number
-  avgPerPerson: number
+  settlements: Settlement[]
 }
 
-export function EnhancedMetricsCards({ totalSpent, sharedExpenses, userCount, avgPerPerson }: MetricsCardsProps) {
+export function EnhancedMetricsCards({ totalSpent, sharedExpenses, userCount, settlements }: MetricsCardsProps) {
+  // Calculate settlement metrics
+  const settlementCount = settlements.length
+  const totalToSettle = settlements.reduce((sum, s) => sum + s.amount, 0)
+  const isSettled = settlementCount === 0
+
   return (
     <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-4">
       {/* Total Spent Card */}
@@ -121,20 +140,38 @@ export function EnhancedMetricsCards({ totalSpent, sharedExpenses, userCount, av
         </HoverCardContent>
       </HoverCard>
 
-      {/* Avg Per Person Card */}
+      {/* Settlement Status Card */}
       <HoverCard>
         <HoverCardTrigger asChild>
-          <Card className="border-0 shadow-md cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1" style={{ background: 'linear-gradient(135deg, #e3c462 0%, #e7d791 100%)' }}>
+          <Card className="border-0 shadow-md cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1" style={{ background: isSettled ? 'linear-gradient(135deg, #86efac 0%, #bbf7d0 100%)' : 'linear-gradient(135deg, #fecaca 0%, #fef08a 100%)' }}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-semibold" style={{ color: '#604b21' }}>Avg Per Person</CardTitle>
-              <TrendingUp className="h-5 w-5" style={{ color: '#604b21' }} />
+              <CardTitle className="text-sm font-semibold" style={{ color: '#604b21' }}>
+                {isSettled ? 'All Settled Up' : 'Settlements Needed'}
+              </CardTitle>
+              {isSettled ? (
+                <CheckCircle2 className="h-5 w-5" style={{ color: '#16a34a' }} />
+              ) : (
+                <Scale className="h-5 w-5" style={{ color: '#dc2626' }} />
+              )}
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold" style={{ color: '#604b21' }}>{formatCurrency(avgPerPerson)}</div>
-              <p className="text-xs mt-1 flex items-center gap-1 font-medium" style={{ color: '#604b21' }}>
-                Average spending
-                <Info className="h-3 w-3" />
-              </p>
+              {isSettled ? (
+                <>
+                  <div className="text-3xl font-bold" style={{ color: '#16a34a' }}>✓</div>
+                  <p className="text-xs mt-1 flex items-center gap-1 font-medium" style={{ color: '#604b21' }}>
+                    No outstanding balances
+                    <Info className="h-3 w-3" />
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className="text-3xl font-bold" style={{ color: '#604b21' }}>{settlementCount}</div>
+                  <p className="text-xs mt-1 flex items-center gap-1 font-medium" style={{ color: '#604b21' }}>
+                    {formatCurrency(totalToSettle)} to settle
+                    <Info className="h-3 w-3" />
+                  </p>
+                </>
+              )}
             </CardContent>
           </Card>
         </HoverCardTrigger>
@@ -144,13 +181,24 @@ export function EnhancedMetricsCards({ totalSpent, sharedExpenses, userCount, av
           sideOffset={8}
         >
           <div className="space-y-2">
-            <h4 className="text-sm font-semibold text-gray-900">Average Spending Per Person</h4>
-            <p className="text-sm text-gray-600">
-              This is calculated by dividing the total household spending by the number of active members.
+            <h4 className="text-sm font-semibold text-gray-900">Settlement Status</h4>
+            {isSettled ? (
+              <p className="text-sm text-gray-600">
+                Everyone is settled up! All shared expenses have been balanced for this month.
+              </p>
+            ) : (
+              <>
+                <p className="text-sm text-gray-600">
+                  There {settlementCount === 1 ? 'is' : 'are'} {settlementCount} outstanding {settlementCount === 1 ? 'settlement' : 'settlements'} for shared expenses this month.
+                </p>
+                <div className="text-xs text-gray-700 pt-2 font-medium bg-amber-50 rounded px-2 py-1">
+                  Total amount to settle: {formatCurrency(totalToSettle)}
+                </div>
+              </>
+            )}
+            <p className="text-xs text-gray-500 pt-2">
+              See the "Settle Up" section below for details on who owes whom.
             </p>
-            <div className="text-xs text-gray-700 pt-2 font-medium bg-blue-50 rounded px-2 py-1">
-              Formula: {formatCurrency(totalSpent)} ÷ {userCount} users
-            </div>
           </div>
         </HoverCardContent>
       </HoverCard>

@@ -222,7 +222,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{expense ? 'Edit Expense' : 'Add New Expense'}</DialogTitle>
         </DialogHeader>
@@ -320,7 +320,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
               {/* Show preview if file selected or receipt exists */}
               {(selectedFile || receiptUrl) ? (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-3 p-3 bg-amber-50/50 border border-golden-crust-medium rounded-md">
+                  <div className="flex items-center gap-3 p-3 bg-amber-50/50 border border-golden-crust-medium rounded-md max-w-full overflow-hidden">
                     {/* Thumbnail preview for images */}
                     {previewUrl ? (
                       <img
@@ -350,7 +350,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                         variant="outline"
                         size="sm"
                         onClick={() => setShowPreview(true)}
-                        className="border-golden-crust-medium hover:bg-amber-100"
+                        className="border-golden-crust-medium hover:bg-amber-100 flex-shrink-0 whitespace-nowrap"
                       >
                         <Eye className="h-4 w-4 mr-1" />
                         View
@@ -362,7 +362,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                       variant="ghost"
                       size="sm"
                       onClick={removeReceipt}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
                     >
                       <X className="h-4 w-4" />
                     </Button>
