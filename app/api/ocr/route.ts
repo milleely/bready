@@ -146,10 +146,35 @@ Rules:
     }
 
     // Validate and clean the result
+    let validatedDate = ocrResult.date
+
+    // Smart date validation: adjust dates that are too old or too far in future
+    if (validatedDate) {
+      const extractedDate = new Date(validatedDate)
+      const today = new Date()
+      const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate())
+      const oneMonthAhead = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())
+
+      // If date is more than 1 year old, use current year instead
+      if (extractedDate < oneYearAgo) {
+        const month = extractedDate.getMonth()
+        const day = extractedDate.getDate()
+        const adjustedDate = new Date(today.getFullYear(), month, day)
+        validatedDate = adjustedDate.toISOString().split('T')[0]
+      }
+      // If date is more than 1 month in future, use current year instead
+      else if (extractedDate > oneMonthAhead) {
+        const month = extractedDate.getMonth()
+        const day = extractedDate.getDate()
+        const adjustedDate = new Date(today.getFullYear(), month, day)
+        validatedDate = adjustedDate.toISOString().split('T')[0]
+      }
+    }
+
     const result: OCRResult = {
       isReceipt: true, // Already validated above
       amount: ocrResult.amount ? Math.abs(Number(ocrResult.amount)) : undefined,
-      date: ocrResult.date || undefined,
+      date: validatedDate || undefined,
       description: ocrResult.description || undefined,
       category: ocrResult.category || undefined,
       confidence: ocrResult.confidence || 'medium',
