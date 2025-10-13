@@ -13,7 +13,6 @@ import { EnhancedBudgetProgress } from "@/components/enhanced-budget-progress"
 import { MonthSelector } from "@/components/month-selector"
 import { BreadyLogo } from "@/components/bready-logo"
 import { SettlementCard } from "@/components/settlement-card"
-import { ExpenseFilterPanel } from "@/components/expense-filter-panel"
 import { Button } from "@/components/ui/button"
 import { Wallet } from "lucide-react"
 
@@ -297,22 +296,6 @@ export default function Home() {
 
         {/* Main content area with responsive spacing */}
         <div className="space-y-4 sm:space-y-6">
-          <ExpenseFilterPanel
-            users={users}
-            selectedUser={selectedUser}
-            setSelectedUser={setSelectedUser}
-            selectedCategory={selectedCategory}
-            setSelectedCategory={setSelectedCategory}
-            selectedType={selectedType}
-            setSelectedType={setSelectedType}
-            minAmount={minAmount}
-            setMinAmount={setMinAmount}
-            maxAmount={maxAmount}
-            setMaxAmount={setMaxAmount}
-            activeFilterCount={getActiveFilterCount()}
-            onClearAll={clearAllFilters}
-          />
-
           <EnhancedMetricsCards
             totalSpent={stats.totalSpent}
             sharedExpenses={stats.sharedExpenses}
@@ -343,6 +326,18 @@ export default function Home() {
             users={users}
             onEdit={(expense) => setEditingExpense(expense)}
             onDelete={handleDeleteExpense}
+            selectedUser={selectedUser}
+            setSelectedUser={setSelectedUser}
+            selectedCategory={selectedCategory}
+            setSelectedCategory={setSelectedCategory}
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}
+            minAmount={minAmount}
+            setMinAmount={setMinAmount}
+            maxAmount={maxAmount}
+            setMaxAmount={setMaxAmount}
+            activeFilterCount={getActiveFilterCount()}
+            onClearAllFilters={clearAllFilters}
           />
         </div>
 
