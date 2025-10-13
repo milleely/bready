@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
-import { join } from 'path'
+import { put } from '@vercel/blob'
 import { getHouseholdId } from '@/lib/auth'
 
 // Maximum file size: 5MB
@@ -54,27 +53,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const filename = `receipt-${timestamp}${extension}`
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
+    const filename = `receipts/receipt-${householdId}-${timestamp}${extension}`
 
-    // Save file to public/receipts directory
-    const uploadDir = join(process.cwd(), 'public', 'receipts')
-    const filePath = join(uploadDir, filename)
-    await writeFile(filePath, buffer)
-
-    // Return the public URL path
-    const receiptUrl = `/receipts/${filename}`
+    // Upload to Vercel Blob Storage
+    const blob = await put(filename, file, {
+      access: 'public',
+      addRandomSuffix: false,
+    })
 
     return NextResponse.json({
-      receiptUrl,
+      receiptUrl: blob.url,
       message: 'File uploaded successfully'
     }, { status: 200 })
 
   } catch (error) {
     console.error('Upload error:', error)
     return NextResponse.json(
-      { error: 'Failed to upload file' },
+      { error: error instanceof Error ? error.message : 'Failed to upload file' },
       { status: 500 }
     )
   }

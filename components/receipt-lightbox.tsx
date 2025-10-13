@@ -1,6 +1,7 @@
 "use client"
 
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
 import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -18,6 +19,9 @@ export function ReceiptLightbox({ receiptUrl, open, onOpenChange }: ReceiptLight
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl w-full p-0 overflow-hidden">
+        <VisuallyHidden>
+          <DialogTitle>Receipt Preview</DialogTitle>
+        </VisuallyHidden>
         <div className="relative w-full h-[80vh] bg-black/90">
           {/* Close button */}
           <Button
