@@ -14,17 +14,37 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category')
     const startDate = searchParams.get('startDate')
     const endDate = searchParams.get('endDate')
+    const isShared = searchParams.get('isShared')
+    const minAmount = searchParams.get('minAmount')
+    const maxAmount = searchParams.get('maxAmount')
 
     const where: any = {
       user: { householdId }, // Only return expenses from user's household
     }
 
+    // Single user filter
     if (userId) where.userId = userId
+
+    // Single category filter
     if (category) where.category = category
+
+    // Date range filter
     if (startDate || endDate) {
       where.date = {}
       if (startDate) where.date.gte = new Date(startDate)
       if (endDate) where.date.lte = new Date(endDate)
+    }
+
+    // Expense type filter (shared/personal)
+    if (isShared !== null && isShared !== undefined) {
+      where.isShared = isShared === 'true'
+    }
+
+    // Amount range filter
+    if (minAmount || maxAmount) {
+      where.amount = {}
+      if (minAmount) where.amount.gte = parseFloat(minAmount)
+      if (maxAmount) where.amount.lte = parseFloat(maxAmount)
     }
 
     const expenses = await prisma.expense.findMany({
