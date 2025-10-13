@@ -104,9 +104,9 @@ export function EnhancedBudgetProgress({ budgets, spendingByCategory, onDelete }
                     variant="ghost"
                     size="icon"
                     onClick={() => onDelete(budget.id)}
-                    className="h-8 w-8 hover:bg-red-100 text-red-600 hover:text-red-700"
+                    className="h-11 w-11 hover:bg-red-100 text-red-600 hover:text-red-700"
                   >
-                    <Trash2 className="h-4 w-4" />
+                    <Trash2 className="h-5 w-5" />
                   </Button>
                 </div>
 

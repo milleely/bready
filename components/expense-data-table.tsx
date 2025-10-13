@@ -244,9 +244,9 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
+              <Button variant="ghost" className="h-11 w-11 p-0">
                 <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
+                <MoreHorizontal className="h-5 w-5" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -335,7 +335,7 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border border-golden-crust-primary/40 bg-white/50 overflow-hidden">
+      <div className="rounded-md border border-golden-crust-primary/40 bg-white/50 overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
