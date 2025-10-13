@@ -222,7 +222,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-[calc(100vw-2rem)] sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>{expense ? 'Edit Expense' : 'Add New Expense'}</DialogTitle>
         </DialogHeader>
@@ -317,10 +317,10 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                 className="hidden"
               />
 
-              {/* Show preview if file selected or receipt exists */}
-              {(selectedFile || receiptUrl) ? (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3 p-3 bg-amber-50/50 border border-golden-crust-medium rounded-md max-w-full overflow-hidden">
+              {/* Fixed-dimension container - same size whether empty or with receipt */}
+              <div className="min-h-[60px] flex items-center gap-3 p-3 bg-amber-50/50 border border-golden-crust-medium rounded-md">
+                {(selectedFile || receiptUrl) ? (
+                  <>
                     {/* Thumbnail preview for images */}
                     {previewUrl ? (
                       <img
@@ -350,10 +350,9 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                         variant="outline"
                         size="sm"
                         onClick={() => setShowPreview(true)}
-                        className="border-golden-crust-medium hover:bg-amber-100 flex-shrink-0 whitespace-nowrap"
+                        className="border-golden-crust-medium hover:bg-amber-100"
                       >
-                        <Eye className="h-4 w-4 mr-1" />
-                        View
+                        <Eye className="h-4 w-4" />
                       </Button>
                     )}
 
@@ -362,35 +361,35 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                       variant="ghost"
                       size="sm"
                       onClick={removeReceipt}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 flex-shrink-0"
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       <X className="h-4 w-4" />
                     </Button>
-                  </div>
+                  </>
+                ) : (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => document.getElementById('receipt')?.click()}
+                    className="w-full h-full text-golden-crust-dark hover:bg-amber-100"
+                  >
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload Receipt (JPG, PNG, or PDF)
+                  </Button>
+                )}
+              </div>
 
-                  {/* Scan Receipt button - only show for images (not PDFs) */}
-                  {selectedFile && selectedFile.type.startsWith('image/') && (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleScanReceipt}
-                      disabled={scanning}
-                      className="w-full border-2 border-purple-500 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold"
-                    >
-                      <Sparkles className="mr-2 h-4 w-4" />
-                      {scanning ? 'Analyzing Receipt...' : 'Scan Receipt with AI'}
-                    </Button>
-                  )}
-                </div>
-              ) : (
+              {/* Scan Receipt button - only show for images (not PDFs) */}
+              {selectedFile && selectedFile.type.startsWith('image/') && (
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => document.getElementById('receipt')?.click()}
-                  className="w-full border border-golden-crust-medium text-golden-crust-dark hover:bg-amber-100"
+                  onClick={handleScanReceipt}
+                  disabled={scanning}
+                  className="w-full border-2 border-purple-500 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold"
                 >
-                  <Upload className="mr-2 h-4 w-4" />
-                  Upload Receipt (JPG, PNG, or PDF)
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  {scanning ? 'Analyzing Receipt...' : 'Scan Receipt with AI'}
                 </Button>
               )}
             </div>
