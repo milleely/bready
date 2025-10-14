@@ -91,6 +91,13 @@ Rules:
 - For amount, only return the final total, not subtotals
 - For date, today's date is: ${new Date().toISOString().split('T')[0]}
 - For category, choose the BEST match from the provided list based on the merchant/items
+- For date extraction, consider these common formats and prefer recent dates:
+  * DD/MM/YY or DD/MM/YYYY (European: day/month/year)
+  * MM/DD/YY or MM/DD/YYYY (US/Canadian: month/day/year)
+  * YY/MM/DD or YYYY/MM/DD (ISO-ish: year/month/day)
+  * When ambiguous, prefer the interpretation that gives a recent date (within 2 years)
+  * If first number is 20-30 in YY/MM/DD context, it's likely the year portion
+  * If first number is > 31, it must be year-first format
 - Return ONLY the JSON object, no additional text`
 
     // Call OpenAI Vision API
@@ -148,24 +155,52 @@ Rules:
     // Validate and clean the result
     let validatedDate = ocrResult.date
 
-    // Smart date validation: adjust dates that are too old or too far in future
+    // Smart date validation: detect and correct date format issues
     if (validatedDate) {
       const extractedDate = new Date(validatedDate)
       const today = new Date()
       const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), today.getDate())
+      const twoYearsAgo = new Date(today.getFullYear() - 2, today.getMonth(), today.getDate())
       const oneMonthAhead = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate())
 
-      // If date is more than 1 year old, use current year instead
-      if (extractedDate < oneYearAgo) {
-        const month = extractedDate.getMonth()
+      // Detect potential YY/MM/DD misinterpretation as DD/MM/YY
+      // If date is very old (>2 years) and day is 20-30, might be YY/MM/DD format
+      if (extractedDate < twoYearsAgo) {
         const day = extractedDate.getDate()
+        const month = extractedDate.getMonth()
+        const year = extractedDate.getFullYear()
+
+        // If the "day" is 20-30, it might actually be the year (2020-2030)
+        if (day >= 20 && day <= 30) {
+          // Try reinterpreting as YY/MM/DD: day → year, month stays, year → day
+          const reinterpretedYear = 2000 + day // e.g., 25 → 2025
+          const reinterpretedMonth = month      // month stays the same
+          const reinterpretedDay = year % 100   // e.g., 2012 → 12
+
+          // Check if reinterpretation gives a valid, recent date
+          if (reinterpretedDay >= 1 && reinterpretedDay <= 31) {
+            const reinterpretedDate = new Date(reinterpretedYear, reinterpretedMonth, reinterpretedDay)
+
+            // If reinterpreted date is recent (within 2 years), use it
+            if (reinterpretedDate >= twoYearsAgo && reinterpretedDate <= oneMonthAhead) {
+              validatedDate = reinterpretedDate.toISOString().split('T')[0]
+            }
+          }
+        }
+      }
+
+      // If still more than 1 year old (and wasn't corrected above), use current year
+      const finalDate = new Date(validatedDate)
+      if (finalDate < oneYearAgo) {
+        const month = finalDate.getMonth()
+        const day = finalDate.getDate()
         const adjustedDate = new Date(today.getFullYear(), month, day)
         validatedDate = adjustedDate.toISOString().split('T')[0]
       }
       // If date is more than 1 month in future, use current year instead
-      else if (extractedDate > oneMonthAhead) {
-        const month = extractedDate.getMonth()
-        const day = extractedDate.getDate()
+      else if (finalDate > oneMonthAhead) {
+        const month = finalDate.getMonth()
+        const day = finalDate.getDate()
         const adjustedDate = new Date(today.getFullYear(), month, day)
         validatedDate = adjustedDate.toISOString().split('T')[0]
       }
