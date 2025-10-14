@@ -4,7 +4,7 @@
 
 Bready is a warm and welcoming multi-user expense tracker designed for households and roommates to collaboratively manage shared and personal finances. With its bread-themed interface and intuitive design, managing your household's "dough" has never been easier.
 
-![Version](https://img.shields.io/badge/version-1.0.0-orange)
+![Version](https://img.shields.io/badge/version-1.1.0-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
 
@@ -22,12 +22,17 @@ Bready is a warm and welcoming multi-user expense tracker designed for household
 - **Multi-User Support:** Track expenses for up to 4 household members
 - **Shared Expenses:** Mark expenses as "shared" to automatically split costs
 - **Personal Expenses:** Keep track of individual spending separately
-- **Category Organization:** Organize expenses into 7 predefined categories
+- **Category Organization:** Organize expenses into 15 predefined categories
+- **Receipt Upload:** Snap photos of receipts with AI-powered OCR validation
+- **Month Filtering:** Filter expenses by month for better organization
 
-### 📊 Visual Analytics
+### 📊 Visual Analytics & Budgeting
 - **Real-Time Dashboard:** See total spending, shared expenses, and per-person averages at a glance
 - **Category Breakdown:** Interactive pie chart showing spending by category
 - **User Comparison:** Stacked bar chart comparing personal vs shared spending per person
+- **Budget Tracker:** Set monthly budgets per category (household or user-specific)
+- **Budget Progress:** Visual progress bars with remaining amounts and over-budget alerts
+- **Settlement Calculations:** Automatic calculation of who owes whom
 - **Color-Coded Users:** Each household member has a unique color for easy identification
 
 ### 🎨 Beautiful Design
@@ -176,17 +181,25 @@ npx prisma generate                              # Regenerate Prisma client
 
 ## Expense Categories
 
-Bready comes with 7 predefined categories:
+Bready comes with 15 predefined categories:
 
-| Category | Color | Description |
-|----------|-------|-------------|
-| 🛒 Groceries | Green | Food and household supplies |
-| 💡 Utilities | Blue | Electricity, water, internet |
-| 📱 Subscriptions | Purple | Netflix, Spotify, etc. |
-| 🍽️ Dining Out | Orange | Restaurants and takeout |
-| 🚗 Transportation | Red | Gas, transit, rideshares |
-| 🎮 Entertainment | Pink | Movies, games, hobbies |
-| 📦 Other | Gray | Miscellaneous expenses |
+| Icon | Category | Color | Description |
+|------|----------|-------|-------------|
+| 🥖 | Groceries | Amber | Food and household supplies |
+| ⚡ | Utilities | Gray | Electricity, water, internet |
+| 📱 | Subscriptions | Indigo | Netflix, Spotify, streaming |
+| 🍽️ | Dining Out | Orange-Red | Restaurants and takeout |
+| 🚗 | Transportation | Red | Gas, transit, rideshares |
+| 🎬 | Entertainment | Purple | Movies, games, hobbies |
+| 💊 | Healthcare | Green | Medical, pharmacy, insurance |
+| 🏠 | Household Items | Cyan | Furniture, appliances, home goods |
+| ✨ | Personal Care | Pink | Beauty, grooming, self-care |
+| 👕 | Shopping | Violet | Clothing, accessories, retail |
+| 🐾 | Pets | Yellow | Pet food, vet, supplies |
+| 🎁 | Gifts | Rose | Presents, special occasions |
+| ✈️ | Travel | Sky Blue | Flights, hotels, vacation |
+| 🔧 | Home Maintenance | Slate | Repairs, tools, maintenance |
+| 📦 | Other | Brown | Miscellaneous expenses |
 
 *Categories can be customized in `lib/utils.ts`*
 
@@ -296,21 +309,24 @@ Your app will be live with automatic HTTPS, global CDN, and managed database.
 - ✅ Secure API routes
 - ✅ Production deployment ready
 
-### v1.1 (In Progress)
-- Budget tracking and alerts
-- Settlement calculations
-- CSV export
-- Monthly trends
+### ✅ v1.1 (Complete)
+- ✅ Budget tracking with user-specific and household budgets
+- ✅ Settlement calculations
+- ✅ Month filtering for expenses
+- ✅ 15 expense categories with optimized colors
+- ✅ Receipt upload with AI-powered OCR validation
+- ✅ Receipt storage on Vercel Blob
 
-### v1.2 (Planned)
+### v1.2 (In Progress)
+- CSV export functionality
+- Monthly trends visualization
 - Recurring expenses
-- Advanced analytics
+- Advanced filtering and search
+
+### v2.0 (Planned)
+- Advanced analytics dashboard
 - Mobile optimization
 - AI spending insights
-
-### v2.0 (Future)
-- Mobile app (React Native)
-- Receipt scanning
 - Bank integration
 - Multi-currency support
 

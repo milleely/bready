@@ -7,6 +7,84 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2025-10-14
+
+### Added - Budget Tracking & Receipt Upload
+
+- **Budget Tracker System:**
+  - Monthly budget tracking per category
+  - User-specific budgets (personal) and household budgets (shared)
+  - Visual progress bars showing budget usage with percentage
+  - Over-budget alerts with red warning indicators
+  - Budget edit functionality with pencil icon
+  - User/shared indicators on budget cards
+  - Budget deletion with confirmation
+
+- **Receipt Upload & OCR:**
+  - Receipt photo upload for expenses
+  - AI-powered OCR for automatic expense extraction
+  - Receipt validation (rejects non-receipt images)
+  - Vercel Blob Storage integration for receipt storage
+  - Mobile-optimized receipt capture with fixed dimensions
+  - Receipt lightbox for viewing uploaded receipts
+
+- **Settlement Calculations:**
+  - Automatic calculation of who owes whom
+  - Settlement status card showing pending payments
+  - Mark settlements as paid functionality
+  - Color-coded settlement indicators
+
+- **Category Expansion:**
+  - Expanded from 7 to 15 expense categories:
+    - Healthcare 💊 (Medical, pharmacy, insurance)
+    - Household Items 🏠 (Furniture, appliances)
+    - Personal Care ✨ (Beauty, grooming)
+    - Shopping 👕 (Clothing, accessories)
+    - Pets 🐾 (Pet food, vet, supplies)
+    - Gifts 🎁 (Presents, occasions)
+    - Travel ✈️ (Flights, hotels, vacation)
+    - Home Maintenance 🔧 (Repairs, tools)
+  - Optimized category colors for better visual differentiation
+  - Semantic color choices matching category themes
+
+- **Month Filtering:**
+  - Month selector in header for filtering expenses
+  - Defaults to current month
+  - Stats and budgets automatically filter by selected month
+  - Clean URL-based navigation
+
+### Improved - UI/UX Enhancements
+
+- **Category Dropdown:**
+  - Made scrollable with max height of ~6 items
+  - Removed auto-scroll buttons for better control
+  - Native mouse wheel/trackpad scrolling
+
+- **Receipt Lightbox:**
+  - Fixed duplicate close button issue
+  - Centered X icon in close button
+  - Dark translucent background for better focus
+  - Support for both images and PDF receipts
+
+- **Budget Cards:**
+  - Enhanced visual design with category colors
+  - Progress bars with smooth animations
+  - Clear "remaining" vs "over budget" messaging
+  - Responsive layout for mobile
+
+### Changed
+- Budget tracker now differentiates between personal and household spending
+- Receipt uploads stored in Vercel Blob instead of local storage
+- Category colors updated for better contrast and semantic meaning
+
+### Fixed
+- Personal budgets now correctly filter expenses by user
+- Receipt lightbox close button properly centered
+- Category dropdown scrolling on mobile
+- Budget edit mode properly populates form data
+
+---
+
 ## [1.0.0] - 2025-10-09
 
 ### Added - Bready Rebrand

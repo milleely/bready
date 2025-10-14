@@ -1,7 +1,7 @@
 # Product Requirements Document: Bready
 
-**Version:** 1.0.0
-**Last Updated:** October 9, 2025
+**Version:** 1.1.0
+**Last Updated:** October 14, 2025
 **Product Owner:** TBD
 **Status:** Active Development
 
@@ -88,14 +88,22 @@ Bready provides a centralized platform where households can:
 
 **Description:** Organize expenses into predefined categories for better tracking.
 
-**Categories:**
-- Groceries
-- Utilities
-- Subscriptions
-- Dining Out
-- Transportation
-- Entertainment
-- Other
+**Categories (15 total):**
+- Groceries 🥖
+- Utilities ⚡
+- Subscriptions 📱
+- Dining Out 🍽️
+- Transportation 🚗
+- Entertainment 🎬
+- Healthcare 💊
+- Household Items 🏠
+- Personal Care ✨
+- Shopping 👕
+- Pets 🐾
+- Gifts 🎁
+- Travel ✈️
+- Home Maintenance 🔧
+- Other 📦
 
 **Acceptance Criteria:**
 - ✅ Category selection required for each expense
@@ -157,6 +165,55 @@ Bready provides a centralized platform where households can:
 - ✅ Warm color palette maintains in both modes
 - ✅ Smooth transitions between themes
 
+### 8. Budget Tracking (v1.1)
+**Priority:** P0 (Must Have)
+
+**Description:** Monthly budgets per category with visual progress tracking.
+
+**Acceptance Criteria:**
+- ✅ Set budgets per category for specific months
+- ✅ User-specific budgets (personal) and household budgets (shared)
+- ✅ Visual progress bars showing budget usage percentage
+- ✅ Over-budget alerts with red warning indicators
+- ✅ Budget edit and delete functionality
+- ✅ User/shared indicators on budget cards
+
+### 9. Receipt Upload & OCR (v1.1)
+**Priority:** P1 (Should Have)
+
+**Description:** Upload receipt photos with AI-powered OCR for automatic expense extraction.
+
+**Acceptance Criteria:**
+- ✅ Receipt photo upload from mobile and desktop
+- ✅ AI-powered OCR extracts amount, date, and merchant
+- ✅ Receipt validation (rejects non-receipt images)
+- ✅ Vercel Blob Storage for receipt storage
+- ✅ Receipt lightbox for viewing uploaded receipts
+- ✅ Mobile-optimized receipt capture
+
+### 10. Settlement Calculations (v1.1)
+**Priority:** P1 (Should Have)
+
+**Description:** Automatic calculation of who owes whom based on shared expenses.
+
+**Acceptance Criteria:**
+- ✅ Automatic settlement calculation
+- ✅ Settlement status card showing pending payments
+- ✅ Mark settlements as paid functionality
+- ✅ Color-coded user indicators
+- ✅ Month-specific settlement tracking
+
+### 11. Month Filtering (v1.1)
+**Priority:** P1 (Should Have)
+
+**Description:** Filter expenses and budgets by month.
+
+**Acceptance Criteria:**
+- ✅ Month selector in header
+- ✅ Defaults to current month
+- ✅ Stats and budgets automatically filter by selected month
+- ✅ Clean navigation between months
+
 ---
 
 ## Design Principles
@@ -181,33 +238,40 @@ Bready provides a centralized platform where households can:
 
 ---
 
-## Future Roadmap (Post-v1.0)
+## Future Roadmap
+
+### ✅ v1.1 (Completed - October 2025)
+- ✅ **Budget Tracking:** Set spending limits per category (household and user-specific)
+- ✅ **Settlement Calculations:** Automatic calculation of who owes whom
+- ✅ **Month Filtering:** Filter expenses by month
+- ✅ **Receipt Upload:** Upload receipt images with AI-powered OCR
+- ✅ **Category Expansion:** Expanded from 7 to 15 categories
 
 ### Phase 2: Enhanced Analytics
-**Target:** v1.1
-
-- [ ] **Date Range Filtering:** Filter expenses by custom date ranges
-- [ ] **Monthly Trends:** Line chart showing spending over time
-- [ ] **Budget Alerts:** Set spending limits per category
-- [ ] **Export Data:** CSV/PDF export of expenses
-- [ ] **Search & Filter:** Search expenses by description, filter by user/category
-
-### Phase 3: Financial Intelligence
 **Target:** v1.2
 
+- [ ] **Date Range Filtering:** Custom date range selection
+- [ ] **Monthly Trends:** Line chart showing spending over time
+- [ ] **Export Data:** CSV/PDF export of expenses
+- [ ] **Search & Filter:** Advanced search and filtering
+- [ ] **Spending Insights:** AI-generated pattern analysis
+
+### Phase 3: Financial Intelligence
+**Target:** v1.3
+
 - [ ] **Recurring Expenses:** Mark and auto-populate recurring bills
-- [ ] **Spending Insights:** AI-generated spending pattern analysis
 - [ ] **Forecasting:** Predict upcoming month's spending
-- [ ] **Bill Splitting Calculator:** Suggest who owes whom how much
+- [ ] **Budget Recommendations:** AI-suggested budget amounts
+- [ ] **Spending Alerts:** Email/push notifications for budget warnings
 
 ### Phase 4: Social Features
 **Target:** v2.0
 
-- [ ] **User Authentication:** Login system with protected routes
-- [ ] **Multi-Household Support:** Users can belong to multiple households
+- ✅ **User Authentication:** Clerk-based login system (completed v1.0)
+- ✅ **Multi-Household Support:** Users can manage households (completed v1.0)
 - [ ] **Notifications:** Email/push notifications for shared expenses
 - [ ] **Comments:** Add notes/comments to expenses
-- [ ] **Receipts:** Upload receipt images
+- [ ] **Shared Shopping Lists:** Collaborative household shopping
 
 ### Phase 5: Mobile & Integration
 **Target:** v2.1
@@ -294,4 +358,5 @@ Bready provides a centralized platform where households can:
 ---
 
 **Document History:**
+- v1.1.0 (Oct 14, 2025) - Updated for v1.1.0 release: Budget tracking, receipt upload, settlements, 15 categories
 - v1.0.0 (Oct 9, 2025) - Initial PRD creation post-Bready rebrand
