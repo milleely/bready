@@ -293,12 +293,14 @@ export default function Home() {
                 users={users}
                 onBudgetSet={fetchData}
                 budget={editingBudget}
-                open={!!editingBudget}
-                onOpenChange={(open) => {
-                  if (!open) {
-                    setEditingBudget(undefined)
+                {...(editingBudget && {
+                  open: true,
+                  onOpenChange: (open: boolean) => {
+                    if (!open) {
+                      setEditingBudget(undefined)
+                    }
                   }
-                }}
+                })}
               />
               <ExpenseForm users={users} onSubmit={handleAddExpense} />
             </div>
