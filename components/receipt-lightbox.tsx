@@ -16,7 +16,7 @@ export function ReceiptLightbox({ receiptUrl, open, onOpenChange }: ReceiptLight
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl w-full p-0 overflow-hidden [&>button]:text-white [&>button]:bg-black/50 [&>button]:hover:bg-black/70 [&>button]:rounded-full [&>button]:h-8 [&>button]:w-8">
+      <DialogContent className="max-w-4xl w-full p-0 overflow-hidden [&>button]:flex [&>button]:items-center [&>button]:justify-center [&>button]:text-white [&>button]:bg-black/50 [&>button]:hover:bg-black/70 [&>button]:rounded-full [&>button]:h-8 [&>button]:w-8 [&>button]:p-0">
         <VisuallyHidden>
           <DialogTitle>Receipt Preview</DialogTitle>
         </VisuallyHidden>
