@@ -265,6 +265,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                 {categories.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value}>
                     <div className="flex items-center gap-2">
+                      <span className="text-base">{cat.icon}</span>
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }} />
                       {cat.label}
                     </div>

@@ -85,6 +85,10 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
     return categories.find(c => c.value === value)?.color || '#6b7280'
   }
 
+  const getCategoryIcon = (value: string) => {
+    return categories.find(c => c.value === value)?.icon || '📦'
+  }
+
   const columns: ColumnDef<Expense>[] = [
     {
       accessorKey: "date",
@@ -176,6 +180,7 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
       cell: ({ row }) => {
         const category = row.getValue("category") as string
         const color = getCategoryColor(category)
+        const icon = getCategoryIcon(category)
         return (
           <Badge
             variant="outline"
@@ -184,7 +189,9 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
               borderColor: color,
               color: color
             }}
+            className="gap-1"
           >
+            <span>{icon}</span>
             {getCategoryLabel(category)}
           </Badge>
         )

@@ -12,6 +12,14 @@ export const categories = [
   { value: 'dining', label: 'Dining Out', color: '#3b82f6', icon: '🍽️' },
   { value: 'transportation', label: 'Transportation', color: '#dc2626', icon: '🚗' },
   { value: 'entertainment', label: 'Entertainment', color: '#ec4899', icon: '🎬' },
+  { value: 'healthcare', label: 'Healthcare', color: '#10b981', icon: '💊' },
+  { value: 'household', label: 'Household Items', color: '#14b8a6', icon: '🏠' },
+  { value: 'personal-care', label: 'Personal Care', color: '#d946ef', icon: '✨' },
+  { value: 'shopping', label: 'Shopping', color: '#8b5cf6', icon: '👕' },
+  { value: 'pets', label: 'Pets', color: '#eab308', icon: '🐾' },
+  { value: 'gifts', label: 'Gifts', color: '#fb7185', icon: '🎁' },
+  { value: 'travel', label: 'Travel', color: '#06b6d4', icon: '✈️' },
+  { value: 'home-maintenance', label: 'Home Maintenance', color: '#475569', icon: '🔧' },
   { value: 'other', label: 'Other', color: '#78716c', icon: '📦' },
 ] as const
 
@@ -25,11 +33,13 @@ export function formatCurrency(amount: number): string {
 }
 
 export function formatDate(date: Date | string): string {
+  const d = new Date(date)
   return new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-  }).format(new Date(date))
+    timeZone: 'UTC'
+  }).format(d)
 }
 
 /**

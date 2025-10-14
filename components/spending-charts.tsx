@@ -15,11 +15,14 @@ export function SpendingCharts({ spendingByCategory, spendingPerPerson }: Spendi
     return acc
   }, {} as Record<string, string>)
 
-  const categoryData = spendingByCategory.map(item => ({
-    name: categories.find(c => c.value === item.category)?.label || item.category,
-    value: item.amount,
-    color: categoryColors[item.category] || '#6b7280'
-  }))
+  const categoryData = spendingByCategory.map(item => {
+    const cat = categories.find(c => c.value === item.category)
+    return {
+      name: cat ? `${cat.icon} ${cat.label}` : item.category,
+      value: item.amount,
+      color: categoryColors[item.category] || '#6b7280'
+    }
+  })
 
   const personData = spendingPerPerson.map(person => ({
     name: person.name,
