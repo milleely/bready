@@ -28,15 +28,23 @@ interface Expense {
   isShared: boolean
 }
 
+interface User {
+  id: string
+  name: string
+  email: string | null
+  color: string
+}
+
 interface BudgetProgressProps {
   budgets: Budget[]
   expenses: Expense[]
   spendingByCategory: CategorySpending[]
+  users: User[]
   onEdit: (budget: Budget) => void
   onDelete: (id: string) => Promise<void>
 }
 
-export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, onEdit, onDelete }: BudgetProgressProps) {
+export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, users, onEdit, onDelete }: BudgetProgressProps) {
   if (budgets.length === 0) {
     return null
   }
@@ -81,6 +89,7 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
         <div className="space-y-4">
           {budgets.map((budget) => {
             const categoryInfo = categories.find(c => c.value === budget.category)
+            const budgetUser = budget.userId ? users.find(u => u.id === budget.userId) : null
 
             // Calculate spent amount based on budget type
             let spent = 0
@@ -117,6 +126,22 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
                       <h3 className="font-semibold text-gray-900 text-base">
                         {categoryInfo?.label || budget.category}
                       </h3>
+                      {/* User/Shared indicator badge */}
+                      <div className="mt-1 mb-1">
+                        {budgetUser ? (
+                          <Badge variant="outline" className="text-xs px-2 py-0.5 border-gray-300 bg-white inline-flex items-center">
+                            <div
+                              className="h-2 w-2 rounded-full mr-1.5"
+                              style={{ backgroundColor: budgetUser.color }}
+                            />
+                            {budgetUser.name}
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 inline-flex items-center">
+                            Shared
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-sm text-gray-600 mt-0.5">
                         {formatCurrency(spent)} / {formatCurrency(budget.amount)}
                       </p>

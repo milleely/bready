@@ -318,6 +318,7 @@ export default function Home() {
             budgets={budgets}
             expenses={expenses}
             spendingByCategory={stats.spendingByCategory}
+            users={users}
             onEdit={handleEditBudget}
             onDelete={handleDeleteBudget}
           />
