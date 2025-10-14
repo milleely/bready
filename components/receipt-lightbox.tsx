@@ -2,8 +2,6 @@
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden"
-import { X } from "lucide-react"
-import { Button } from "@/components/ui/button"
 
 interface ReceiptLightboxProps {
   receiptUrl: string | null
@@ -18,21 +16,11 @@ export function ReceiptLightbox({ receiptUrl, open, onOpenChange }: ReceiptLight
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl w-full p-0 overflow-hidden">
+      <DialogContent className="max-w-4xl w-full p-0 overflow-hidden [&>button]:text-white [&>button]:bg-black/50 [&>button]:hover:bg-black/70 [&>button]:rounded-full [&>button]:h-8 [&>button]:w-8">
         <VisuallyHidden>
           <DialogTitle>Receipt Preview</DialogTitle>
         </VisuallyHidden>
         <div className="relative w-full h-[80vh] bg-black/90">
-          {/* Close button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onOpenChange(false)}
-            className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-black/70 text-white rounded-full"
-          >
-            <X className="h-6 w-6" />
-          </Button>
-
           {/* Receipt content */}
           <div className="w-full h-full flex items-center justify-center p-4">
             {isPdf ? (
