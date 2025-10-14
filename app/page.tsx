@@ -80,6 +80,7 @@ export default function Home() {
 
   const [users, setUsers] = useState<User[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
+  const [filteredExpenses, setFilteredExpenses] = useState<Expense[]>([])
   const [budgets, setBudgets] = useState<Budget[]>([])
   const [settlements, setSettlements] = useState<Settlement[]>([])
   const [selectedMonth, setSelectedMonth] = useState<string>(getCurrentMonth())
@@ -112,34 +113,40 @@ export default function Home() {
       const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0] // First day
       const endDate = new Date(year, month, 0).toISOString().split('T')[0] // Last day
 
-      // Build query params for expenses API with active filters
-      let expensesQuery = `startDate=${startDate}&endDate=${endDate}`
-      if (selectedUser) expensesQuery += `&userId=${selectedUser}`
-      if (selectedCategory) expensesQuery += `&category=${selectedCategory}`
-      if (selectedType !== 'all') {
-        expensesQuery += `&isShared=${selectedType === 'shared'}`
-      }
-      if (minAmount !== null) expensesQuery += `&minAmount=${minAmount}`
-      if (maxAmount !== null) expensesQuery += `&maxAmount=${maxAmount}`
+      // Base query for all expenses (only month filter)
+      const allExpensesQuery = `startDate=${startDate}&endDate=${endDate}`
 
-      const [usersRes, expensesRes, statsRes, budgetsRes, settlementsRes] = await Promise.all([
+      // Build query params for filtered expenses (with all active filters)
+      let filteredExpensesQuery = `startDate=${startDate}&endDate=${endDate}`
+      if (selectedUser) filteredExpensesQuery += `&userId=${selectedUser}`
+      if (selectedCategory) filteredExpensesQuery += `&category=${selectedCategory}`
+      if (selectedType !== 'all') {
+        filteredExpensesQuery += `&isShared=${selectedType === 'shared'}`
+      }
+      if (minAmount !== null) filteredExpensesQuery += `&minAmount=${minAmount}`
+      if (maxAmount !== null) filteredExpensesQuery += `&maxAmount=${maxAmount}`
+
+      const [usersRes, allExpensesRes, filteredExpensesRes, statsRes, budgetsRes, settlementsRes] = await Promise.all([
         fetch('/api/users'),
-        fetch(`/api/expenses?${expensesQuery}`),
+        fetch(`/api/expenses?${allExpensesQuery}`),
+        fetch(`/api/expenses?${filteredExpensesQuery}`),
         fetch(`/api/stats?startDate=${startDate}&endDate=${endDate}`),
         fetch(`/api/budgets?month=${selectedMonth}`),
         fetch(`/api/settlements?startDate=${startDate}&endDate=${endDate}`),
       ])
 
-      const [usersData, expensesData, statsData, budgetsData, settlementsData] = await Promise.all([
+      const [usersData, allExpensesData, filteredExpensesData, statsData, budgetsData, settlementsData] = await Promise.all([
         usersRes.json(),
-        expensesRes.json(),
+        allExpensesRes.json(),
+        filteredExpensesRes.json(),
         statsRes.json(),
         budgetsRes.json(),
         settlementsRes.json(),
       ])
 
       setUsers(usersData)
-      setExpenses(expensesData)
+      setExpenses(allExpensesData)
+      setFilteredExpenses(filteredExpensesData)
       setStats(statsData)
       setBudgets(budgetsData)
       setSettlements(settlementsData)
@@ -338,7 +345,7 @@ export default function Home() {
           <UserManagement users={users} onRefresh={fetchData} />
 
           <EnhancedRecentExpenses
-            expenses={expenses}
+            expenses={filteredExpenses}
             users={users}
             onEdit={(expense) => setEditingExpense(expense)}
             onDelete={handleDeleteExpense}
