@@ -171,7 +171,7 @@ export function EnhancedRecentExpenses({
                   >
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+                  <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark max-h-[280px]">
                     <SelectItem value="all">All Categories</SelectItem>
                     {categories.map((cat) => (
                       <SelectItem key={cat.value} value={cat.value}>

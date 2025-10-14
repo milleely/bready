@@ -108,7 +108,7 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
                 <SelectTrigger id="category" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+                <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark max-h-[280px]">
                   {categories.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value}>
                       <div className="flex items-center gap-2">

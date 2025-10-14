@@ -261,7 +261,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
               <SelectTrigger className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark max-h-[280px]">
                 {categories.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value}>
                     <div className="flex items-center gap-2">
