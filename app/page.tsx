@@ -90,6 +90,7 @@ export default function Home() {
     spendingByCategory: [],
   })
   const [editingExpense, setEditingExpense] = useState<Expense | undefined>()
+  const [editingBudget, setEditingBudget] = useState<Budget | undefined>()
   const [loading, setLoading] = useState(true)
 
   // Filter state for advanced expense filtering
@@ -209,6 +210,10 @@ export default function Home() {
     }
   }
 
+  const handleEditBudget = (budget: Budget) => {
+    setEditingBudget(budget)
+  }
+
   const handleDeleteBudget = async (id: string) => {
     if (!confirm('Are you sure you want to delete this budget?')) return
 
@@ -284,7 +289,17 @@ export default function Home() {
               onMonthChange={setSelectedMonth}
             />
             <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
-              <BudgetDialog users={users} onBudgetSet={fetchData} />
+              <BudgetDialog
+                users={users}
+                onBudgetSet={fetchData}
+                budget={editingBudget}
+                open={!!editingBudget}
+                onOpenChange={(open) => {
+                  if (!open) {
+                    setEditingBudget(undefined)
+                  }
+                }}
+              />
               <ExpenseForm users={users} onSubmit={handleAddExpense} />
             </div>
           </div>
@@ -301,7 +316,9 @@ export default function Home() {
 
           <EnhancedBudgetProgress
             budgets={budgets}
+            expenses={expenses}
             spendingByCategory={stats.spendingByCategory}
+            onEdit={handleEditBudget}
             onDelete={handleDeleteBudget}
           />
 

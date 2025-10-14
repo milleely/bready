@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -30,20 +30,45 @@ interface User {
   color: string
 }
 
-interface BudgetDialogProps {
-  users: User[]
-  onBudgetSet: () => void
+interface Budget {
+  id: string
+  category: string
+  amount: number
+  month: string
+  userId: string | null
 }
 
-export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
-  const [open, setOpen] = useState(false)
-  const [category, setCategory] = useState("")
-  const [amount, setAmount] = useState("")
-  const [userId, setUserId] = useState<string | "shared">("shared")
+interface BudgetDialogProps {
+  users: User[]
+  budget?: Budget
+  onBudgetSet: () => void
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+}
+
+export function BudgetDialog({ users, budget, onBudgetSet, open: controlledOpen, onOpenChange: controlledOnOpenChange }: BudgetDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const [category, setCategory] = useState(budget?.category || "")
+  const [amount, setAmount] = useState(budget?.amount?.toString() || "")
+  const [userId, setUserId] = useState<string | "shared">(budget?.userId || "shared")
   const [loading, setLoading] = useState(false)
+
+  // Use controlled open state if provided, otherwise use internal state
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setInternalOpen
 
   // Get current month in YYYY-MM format
   const currentMonth = new Date().toISOString().slice(0, 7)
+
+  // Update form when budget prop changes (edit mode)
+  useEffect(() => {
+    if (budget) {
+      setCategory(budget.category)
+      setAmount(budget.amount.toString())
+      setUserId(budget.userId || "shared")
+      setOpen(true)
+    }
+  }, [budget])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,8 +81,11 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
     setLoading(true)
 
     try {
-      const response = await fetch('/api/budgets', {
-        method: 'POST',
+      const url = budget ? `/api/budgets/${budget.id}` : '/api/budgets'
+      const method = budget ? 'PUT' : 'POST'
+
+      const response = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           category,
@@ -69,13 +97,15 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
 
       if (!response.ok) {
         const error = await response.json()
-        throw new Error(error.error || 'Failed to set budget')
+        throw new Error(error.error || `Failed to ${budget ? 'update' : 'set'} budget`)
       }
 
       // Reset form and close dialog
-      setCategory("")
-      setAmount("")
-      setUserId("shared")
+      if (!budget) {
+        setCategory("")
+        setAmount("")
+        setUserId("shared")
+      }
       setOpen(false)
       onBudgetSet()
     } catch (error: any) {
@@ -95,9 +125,9 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Set Monthly Budget</DialogTitle>
+          <DialogTitle>{budget ? 'Edit Budget' : 'Set Monthly Budget'}</DialogTitle>
           <DialogDescription>
-            Set a budget goal for {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+            {budget ? 'Update' : 'Set a'} budget goal for {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
@@ -169,7 +199,7 @@ export function BudgetDialog({ users, onBudgetSet }: BudgetDialogProps) {
               disabled={loading}
               className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold shadow-lg"
             >
-              {loading ? "Setting..." : "Set Budget"}
+              {loading ? (budget ? "Updating..." : "Setting...") : (budget ? "Update Budget" : "Set Budget")}
             </Button>
           </DialogFooter>
         </form>

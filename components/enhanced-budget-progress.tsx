@@ -5,7 +5,7 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { formatCurrency, categories } from "@/lib/utils"
-import { Target, AlertTriangle, CheckCircle2, AlertCircle, Trash2 } from "lucide-react"
+import { Target, AlertTriangle, CheckCircle2, AlertCircle, Trash2, Pencil } from "lucide-react"
 
 interface Budget {
   id: string
@@ -20,13 +20,23 @@ interface CategorySpending {
   amount: number
 }
 
+interface Expense {
+  id: string
+  amount: number
+  category: string
+  userId: string
+  isShared: boolean
+}
+
 interface BudgetProgressProps {
   budgets: Budget[]
+  expenses: Expense[]
   spendingByCategory: CategorySpending[]
+  onEdit: (budget: Budget) => void
   onDelete: (id: string) => Promise<void>
 }
 
-export function EnhancedBudgetProgress({ budgets, spendingByCategory, onDelete }: BudgetProgressProps) {
+export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, onEdit, onDelete }: BudgetProgressProps) {
   if (budgets.length === 0) {
     return null
   }
@@ -71,7 +81,19 @@ export function EnhancedBudgetProgress({ budgets, spendingByCategory, onDelete }
         <div className="space-y-4">
           {budgets.map((budget) => {
             const categoryInfo = categories.find(c => c.value === budget.category)
-            const spent = spendingByCategory.find(s => s.category === budget.category)?.amount || 0
+
+            // Calculate spent amount based on budget type
+            let spent = 0
+            if (budget.userId) {
+              // Personal budget: filter expenses by userId AND category
+              spent = expenses
+                .filter(e => e.userId === budget.userId && e.category === budget.category)
+                .reduce((sum, e) => sum + e.amount, 0)
+            } else {
+              // Shared budget: use total spending for this category
+              spent = spendingByCategory.find(s => s.category === budget.category)?.amount || 0
+            }
+
             const percentage = Math.min((spent / budget.amount) * 100, 100)
             const isOverBudget = spent > budget.amount
             const remaining = budget.amount - spent
@@ -100,14 +122,24 @@ export function EnhancedBudgetProgress({ budgets, spendingByCategory, onDelete }
                       </p>
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onDelete(budget.id)}
-                    className="h-11 w-11 hover:bg-red-100 text-red-600 hover:text-red-700"
-                  >
-                    <Trash2 className="h-5 w-5" />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onEdit(budget)}
+                      className="h-11 w-11 hover:bg-amber-100 text-golden-crust-primary hover:text-golden-crust-dark"
+                    >
+                      <Pencil className="h-5 w-5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDelete(budget.id)}
+                      className="h-11 w-11 hover:bg-red-100 text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
