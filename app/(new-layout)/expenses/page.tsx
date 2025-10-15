@@ -3,6 +3,15 @@
 import { useEffect, useState } from "react"
 import { EnhancedRecentExpenses } from "@/components/enhanced-recent-expenses"
 import { ExpenseForm } from "@/components/expense-form"
+import { EnhancedSpendingCharts } from "@/components/enhanced-spending-charts"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { ChevronDown, ChevronUp, BarChart3 } from "lucide-react"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 
 interface User {
   id: string
@@ -23,11 +32,39 @@ interface Expense {
   user: User
 }
 
+interface Stats {
+  totalSpent: number
+  sharedExpenses: number
+  spendingPerPerson: Array<{
+    userId: string
+    name: string
+    color: string
+    total: number
+    shared: number
+    personal: number
+  }>
+  spendingByCategory: Array<{ category: string; amount: number }>
+}
+
 export default function ExpensesPage() {
   const [users, setUsers] = useState<User[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
   const [editingExpense, setEditingExpense] = useState<Expense | undefined>()
   const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState<Stats>({
+    totalSpent: 0,
+    sharedExpenses: 0,
+    spendingPerPerson: [],
+    spendingByCategory: [],
+  })
+  const [analyticsOpen, setAnalyticsOpen] = useState(() => {
+    // Load from localStorage or default to true
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('expenses-analytics-open')
+      return stored !== null ? stored === 'true' : true
+    }
+    return true
+  })
 
   // Filter state
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
@@ -57,18 +94,21 @@ export default function ExpensesPage() {
       if (minAmount !== null) query += `&minAmount=${minAmount}`
       if (maxAmount !== null) query += `&maxAmount=${maxAmount}`
 
-      const [usersRes, expensesRes] = await Promise.all([
+      const [usersRes, expensesRes, statsRes] = await Promise.all([
         fetch('/api/users'),
         fetch(`/api/expenses?${query}`),
+        fetch(`/api/stats?startDate=${startDate}&endDate=${endDate}`),
       ])
 
-      const [usersData, expensesData] = await Promise.all([
+      const [usersData, expensesData, statsData] = await Promise.all([
         usersRes.json(),
         expensesRes.json(),
+        statsRes.json(),
       ])
 
       setUsers(usersData)
       setExpenses(expensesData)
+      setStats(statsData)
     } catch (error) {
       console.error('Failed to fetch expenses data:', error)
     } finally {
@@ -79,6 +119,13 @@ export default function ExpensesPage() {
   useEffect(() => {
     fetchData()
   }, [selectedUser, selectedCategory, selectedType, minAmount, maxAmount])
+
+  // Persist analytics open state to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('expenses-analytics-open', String(analyticsOpen))
+    }
+  }, [analyticsOpen])
 
   const handleDeleteExpense = async (id: string) => {
     if (!confirm('Are you sure you want to delete this expense?')) return
@@ -146,6 +193,43 @@ export default function ExpensesPage() {
           Manage all your transactions and track spending patterns.
         </p>
       </div>
+
+      {/* Collapsible Analytics Section */}
+      <Collapsible open={analyticsOpen} onOpenChange={setAnalyticsOpen}>
+        <Card className="border-amber-200 bg-gradient-to-br from-amber-50/50 to-orange-50/50">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-amber-700" />
+                <CardTitle className="text-amber-900">Spending Analytics</CardTitle>
+              </div>
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="sm" className="hover:bg-amber-100">
+                  {analyticsOpen ? (
+                    <>
+                      <ChevronUp className="h-4 w-4 mr-2" />
+                      Hide
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="h-4 w-4 mr-2" />
+                      Show
+                    </>
+                  )}
+                </Button>
+              </CollapsibleTrigger>
+            </div>
+          </CardHeader>
+          <CollapsibleContent>
+            <CardContent>
+              <EnhancedSpendingCharts
+                spendingByCategory={stats.spendingByCategory}
+                spendingPerPerson={stats.spendingPerPerson}
+              />
+            </CardContent>
+          </CollapsibleContent>
+        </Card>
+      </Collapsible>
 
       <EnhancedRecentExpenses
         expenses={expenses}

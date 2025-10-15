@@ -11,46 +11,117 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
 
 ---
 
-## Phase 1: Quick Wins + Foundation ⚡
+## Phase 1: Quick Wins + Foundation ⚡ **✅ COMPLETE**
 **Goal**: Establish clear visual hierarchy and improve core dashboard UX
 **Time Estimate**: 3-4 hours
+**Completion Date**: 2025-10-15
 
 ### Information Hierarchy & Layout
-- [ ] **Redesign dashboard layout** with clear visual hierarchy
-  - [ ] Create hero card for "This Month at a Glance" (total spending + trend)
-  - [ ] Add mini sparkline to show 30-day spending trend
-  - [ ] Consolidate budget status into summary card (show count: "6 on track, 2 warning, 2 over")
-  - [ ] Move settlement alerts to prominent position (only if settlements exist)
-  - [ ] Create "Top 3 Categories" section with visual bars
-  - [ ] Remove detailed charts from dashboard (keep in Insights page)
+- [x] **Redesign dashboard layout** with clear visual hierarchy
+  - [x] Create hero card for "This Month at a Glance" (total spending + trend)
+  - [x] Add mini sparkline to show 30-day spending trend
+  - [x] Consolidate budget status into summary card (show count: "6 on track, 2 warning, 2 over")
+  - [x] Move settlement alerts to prominent position (only if settlements exist)
+  - [x] Create "Top 3 Categories" section with visual bars
+  - [x] Remove detailed charts from dashboard (keep in Insights page)
 
 ### Dashboard Purpose Clarity
-- [ ] **Simplify dashboard focus** to answer "Am I okay?" in 3 seconds
-  - [ ] Add overall budget health indicator (🟢 Healthy / 🟡 Warning / 🔴 Over)
-  - [ ] Show only actionable summary information
-  - [ ] Add "View detailed breakdown" links pointing to Expenses, Budgets, Insights pages
-  - [ ] Remove redundant information (keep charts in Insights)
+- [x] **Simplify dashboard focus** to answer "Am I okay?" in 3 seconds
+  - [x] Add overall budget health indicator (🟢 Healthy / 🟡 Warning / 🔴 Over)
+  - [x] Show only actionable summary information
+  - [x] Add "View detailed breakdown" links pointing to Expenses, Budgets, Insights pages
+  - [x] Remove redundant information (keep charts in Insights)
 
 ### Visual Improvements
-- [ ] **Add micro-visualizations** to category list
-  - [ ] Progress bars showing each category as % of total
-  - [ ] Color-code bars by category color
-  - [ ] Add category icons (emoji or lucide icons)
+- [x] **Add micro-visualizations** to category list
+  - [x] Progress bars showing each category as % of total
+  - [x] Color-code bars by category color
+  - [x] Add category icons (emoji or lucide icons)
 
-- [ ] **Add trend indicators** to metric cards
-  - [ ] "+12% vs last month" style comparison
-  - [ ] Up/down arrows with color coding (green = down spending, red = up)
-  - [ ] Show absolute change: "+$127 vs last month"
+- [x] **Add trend indicators** to metric cards
+  - [x] "+12% vs last month" style comparison
+  - [x] Up/down arrows with color coding (green = down spending, red = up)
+  - [x] Show absolute change: "+$127 vs last month"
 
-- [ ] **Improve empty states** with actionable CTAs
-  - [ ] "No expenses yet" state with friendly icon
-  - [ ] Clear "Add Your First Expense" button
-  - [ ] Optional: "Import from CSV" secondary action
+- [x] **Improve empty states** with actionable CTAs
+  - [x] "No expenses yet" state with friendly icon
+  - [x] Clear "Add Your First Expense" button
+  - [x] Optional: "Import from CSV" secondary action
 
-- [ ] **Add skeleton loading states**
-  - [ ] Create skeleton card component
-  - [ ] Replace spinner with content-shaped placeholders
-  - [ ] Improve perceived performance
+- [x] **Add skeleton loading states**
+  - [x] Create skeleton card component
+  - [x] Replace spinner with content-shaped placeholders
+  - [x] Improve perceived performance
+
+### Visual Refinement (Feedback Round 1)
+- [x] **Apply gradient backgrounds to cards**
+  - [x] Budget Health card: blue-100 to indigo-100 gradient (stronger than 50)
+  - [x] Settlements card: emerald-100 to teal-100 gradient (stronger than 50)
+  - [x] Top Spending Categories card: amber-100 to orange-100 gradient (stronger than 50)
+  - [x] Update text colors for readability on new backgrounds
+
+- [x] **Enhance button prominence and alignment**
+  - [x] Ensure "View All Budgets" and "Settle Now" buttons align horizontally using flexbox
+  - [x] Change action buttons from outline to default variant with themed colors
+  - [x] Add hover effects (shadow-lg, transition-all)
+  - [x] Make clickable elements more visually distinct
+
+### Visual Refinement (Feedback Round 2)
+- [x] **Strengthen card gradients**
+  - [x] Changed from 50-level to 100-level gradients for better contrast
+  - [x] Cards now stand out against page background
+
+- [x] **Enhance card shadows and borders**
+  - [x] Changed from `shadow-md` to `shadow-xl` for stronger depth
+  - [x] Added subtle white border (`border-white/40`) for glass card effect
+
+- [x] **Fix button alignment with flexbox**
+  - [x] Added `flex flex-col min-h-[200px]` to CardContent
+  - [x] Used `mt-auto` on button Link wrappers to push buttons to bottom
+  - [x] Buttons now align horizontally at same vertical position
+
+### Visual Refinement (Feedback Round 3 - Warm Color Palette)
+- [x] **Switch to warm, cohesive color scheme**
+  - [x] Budget Health: Changed from blue-100/indigo-100 to yellow-100/amber-100 (golden yellow)
+  - [x] Budget Health icon: Changed from indigo-600 to amber-700
+  - [x] Budget Health buttons: Changed from indigo-600/700 to amber-600/700
+  - [x] Settlements: Changed from emerald-100/teal-100 to pink-100/rose-100 (warm pink)
+  - [x] Settlements icon: Changed from emerald-600 to rose-600
+  - [x] Settlements button: Changed from emerald-600/700 to rose-600/700
+  - [x] Top Categories: Kept amber-100/orange-100 (already on-brand)
+  - [x] All cards now use warm tones aligned with Bready's bread theme
+
+### Visual Refinement (Feedback Round 4 - Rich Vibrant Gradients)
+- [x] **Upgrade to rich, saturated gradients (400-500 level)**
+  - [x] Budget Health: Changed from yellow-100/amber-100 to amber-400/yellow-400/amber-500 (rich golden)
+  - [x] Budget Health icon: Darkened from amber-700 to amber-800
+  - [x] Budget Health buttons: Darkened from amber-600/700 to amber-700/800 for contrast
+  - [x] Settlements: **REMOVED PINK** - Changed from pink-100/rose-100 to lime-400/yellow-400/lime-500 (bright lime)
+  - [x] Settlements icon: Changed from rose-600 to lime-800
+  - [x] Settlements button: Changed from rose-600/700 to lime-700/800
+  - [x] Top Categories: Changed from amber-100/orange-100 to orange-400/amber-400/orange-500 (vibrant orange)
+  - [x] Top Categories button: Changed from amber-600/700 to orange-700/800
+  - [x] All cards now use rich, vibrant gradients matching reference design
+  - [x] Pink completely removed from color palette
+
+### Visual Refinement (Feedback Round 5 - Neutral Stone Palette) **UI/UX AGENT APPROVED**
+- [x] **Switch to sophisticated neutral stone palette** (vibrant gradients were too overpowering)
+  - [x] Budget Health: Changed from amber-400/yellow-400/amber-500 to stone-50/stone-100 (neutral base)
+  - [x] Budget Health borders: Changed from white/40 to stone-200/50 (subtle definition)
+  - [x] Budget Health icon: Changed from amber-800 to stone-600
+  - [x] Budget Health buttons: Changed from amber-700/800 to stone-700/800
+  - [x] Budget Health title: Changed from gray-900 to stone-700
+  - [x] Settlements: Changed from lime-400/yellow-400/lime-500 to amber-50/40 to stone-100 (very subtle amber accent)
+  - [x] Settlements borders: Changed from white/40 to amber-200/40 (maintains bread theme connection)
+  - [x] Settlements icon: Changed from lime-800 to stone-600
+  - [x] Settlements button: Changed from lime-700/800 to stone-700/800
+  - [x] Settlements title: Changed from gray-900 to stone-700
+  - [x] Top Categories: Changed from orange-400/amber-400/orange-500 to stone-50/stone-50/50/stone-100
+  - [x] Top Categories borders: Changed from white/40 to stone-200/50
+  - [x] Top Categories button: Changed from orange-700/800 to stone-700/800
+  - [x] Top Categories title: Changed from gray-900 to stone-700
+  - [x] **Result**: Calm, professional, sophisticated palette that doesn't overwhelm
+  - [x] **Visual hierarchy** maintained through typography, shadows, and spacing rather than bold colors
 
 ---
 
@@ -59,11 +130,11 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
 **Time Estimate**: 3-5 hours
 
 ### Navigation Improvements
-- [ ] **Collapsible sidebar toggle**
-  - [ ] Add collapse/expand button to sidebar
-  - [ ] Icon-only mode when collapsed (width: 64px)
-  - [ ] Persist user preference in localStorage
-  - [ ] Smooth animation for collapse/expand
+- [x] **Collapsible sidebar toggle** ✅ COMPLETE
+  - [x] Add collapse/expand button to sidebar
+  - [x] Icon-only mode when collapsed (width: 64px)
+  - [x] Persist user preference in localStorage
+  - [x] Smooth animation for collapse/expand
 
 - [ ] **Keyboard shortcuts**
   - [ ] `1` - Go to Dashboard
@@ -167,16 +238,90 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
 *To be filled after each phase is complete*
 
 ### Phase 1 Completion Notes
-- **Date Completed**:
+- **Date Completed**: 2025-10-15
 - **Changes Made**:
+  - ✅ Created prominent hero card with "This Month at a Glance" showing total spending + trend indicator
+  - ✅ Added 30-day spending sparkline chart showing daily spending patterns
+  - ✅ Implemented overall budget health indicator (🟢/🟡/🔴 emoji badge)
+  - ✅ Built Budget Health summary card with on-track/warning/over counts
+  - ✅ Added Settlements card with pending payment tracking
+  - ✅ Created Top 3 Categories section with progress bars and category icons
+  - ✅ Integrated ContextualAlerts component for actionable warnings (over-budget, settlements, recurring, inactivity)
+  - ✅ Added "View detailed breakdown" links to Expenses, Budgets, and Insights pages
+  - ✅ Applied consistent warm amber/orange color theme across all dashboard cards
+  - ✅ Removed detailed charts (moved to Insights page)
 - **Issues Encountered**:
+  - None - implementation was straightforward
+  - Database connection warning (unrelated to dashboard changes)
 - **Remaining Work**:
+  - Phase 1 is complete
+  - Ready to proceed with Phase 2: Enhanced Interactivity (keyboard shortcuts, optimistic UI)
 
 ### Phase 2 Completion Notes
-- **Date Completed**:
+- **Date Completed**: 2025-10-15 (Partial - Collapsible Sidebar Complete)
 - **Changes Made**:
-- **Issues Encountered**:
+  - ✅ Collapsible sidebar toggle implemented in `components/sidebar-layout.tsx`
+  - Added `sidebarCollapsed` state with localStorage persistence
+  - Implemented icon-only mode (64px collapsed, 256px expanded)
+  - Added ChevronLeft/ChevronRight toggle button in sidebar header
+  - Smooth CSS transitions (duration-300) for collapse/expand
+  - Adaptive main content margin (md:ml-16 vs md:ml-64)
+  - Conditional rendering: logo text, MonthSelector, and UserButton sizing
+  - Mobile navigation unaffected (uses separate state)
+- **Issues Encountered**: None - implementation was straightforward
 - **Remaining Work**:
+  - Keyboard shortcuts
+  - Optimistic UI for expense creation
+  - Contextual quick actions
+
+### Hero Card Final Polish (2025-10-15)
+- **Date Completed**: 2025-10-15
+- **Changes Made**:
+  - ✅ Fixed trend text wrapping by adding `whitespace-nowrap` to "(+0% vs last mo)" text
+  - ✅ Replaced emoji circle indicators (🟢🟡🔴) with professional Lucide icons:
+    - CheckCircle2 (green background) for healthy budgets
+    - AlertCircle (amber background) for warning state
+    - AlertTriangle (red background) for over budget
+    - CircleDashed (gray background) for no budgets set
+  - ✅ Added bread-themed emoji bullets to expense breakdown:
+    - 🥖 (baguette) for shared expenses (communal)
+    - 🍞 (bread slice) for personal expenses (individual)
+  - ✅ Enhanced budget health badge styling with rounded-2xl, backdrop-blur, and shadow effects
+- **Issues Encountered**: None - straightforward CSS and component updates
+- **Files Modified**:
+  - `app/(new-layout)/dashboard/page.tsx` (lines 7-15, 173-183, 327-328, 337, 341, 351-376)
+
+### Page Reorganization: Insights & Expenses (2025-10-15)
+- **Date Completed**: 2025-10-15
+- **Goal**: Consolidate expense-related analytics with transaction data, reserve Insights page for AI features
+- **Changes Made**:
+  - ✅ Moved `EnhancedSpendingCharts` component from Insights page to Expenses page
+  - ✅ Installed shadcn collapsible component (`npx shadcn@latest add @shadcn/collapsible`)
+  - ✅ Created collapsible "Spending Analytics" section on Expenses page:
+    - Category pie chart and per-person spending cards
+    - Show/Hide toggle button with ChevronUp/ChevronDown icons
+    - localStorage persistence (`expenses-analytics-open` key)
+    - Defaults to expanded on first visit
+    - Amber gradient styling matching brand theme
+  - ✅ Added stats API call to Expenses page to fetch analytics data
+  - ✅ Removed charts and summary cards from Insights page:
+    - Removed `EnhancedSpendingCharts` component
+    - Removed "Top Spending Category" card
+    - Removed "Shared vs Personal" card
+    - Removed stats API call and state
+  - ✅ Insights page now contains only AI Financial Insights placeholder card
+- **Issues Encountered**: None - clean separation of concerns
+- **Files Modified**:
+  - `app/(new-layout)/expenses/page.tsx` (added imports, stats state, analytics section)
+  - `app/(new-layout)/insights/page.tsx` (removed charts, cards, and API calls)
+  - `components/ui/collapsible.tsx` (new shadcn component)
+- **Rationale**:
+  - Users expect expense-related visualizations near expense data (information scent)
+  - Reduces context switching between pages
+  - Insights page reserved for future AI-powered features (clean separation)
+  - Collapsible design prevents clutter while maintaining accessibility
+- **Remaining Work**:
+  - None for this feature - fully complete
 
 ### Phase 3 Completion Notes
 - **Date Completed**:
