@@ -250,19 +250,11 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{getMonthName(selectedMonth)} Expenses</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage all your transactions and track spending patterns.
-          </p>
-        </div>
-        <Button
-          onClick={() => setAddingExpense(true)}
-          className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-lg"
-        >
-          <Plus className="mr-2 h-4 w-4" /> Add Expense
-        </Button>
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">{getMonthName(selectedMonth)} Expenses</h1>
+        <p className="text-muted-foreground mt-1">
+          Manage all your transactions and track spending patterns.
+        </p>
       </div>
 
       {/* Collapsible Analytics Section */}
