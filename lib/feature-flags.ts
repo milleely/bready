@@ -14,11 +14,11 @@ export const FeatureFlags = {
    * for Dashboard, Expenses, Budgets, and Insights.
    *
    * Toggle methods:
-   * 1. Environment variable: NEXT_PUBLIC_USE_NEW_LAYOUT=true
-   * 2. Cookie: layout-version=v2
-   * 3. Default: false (use old layout)
+   * 1. Environment variable: NEXT_PUBLIC_USE_NEW_LAYOUT=false (to disable)
+   * 2. Cookie: layout-version=v1 (to use old layout)
+   * 3. Default: true (use new layout)
    */
-  NEW_NAVIGATION: process.env.NEXT_PUBLIC_USE_NEW_LAYOUT === 'true',
+  NEW_NAVIGATION: process.env.NEXT_PUBLIC_USE_NEW_LAYOUT !== 'false',
 }
 
 /**
@@ -27,7 +27,7 @@ export const FeatureFlags = {
  * Priority order:
  * 1. Cookie override (for testing)
  * 2. Environment variable
- * 3. Default to false (old layout)
+ * 3. Default to true (new layout)
  */
 export async function useNewLayout(): Promise<boolean> {
   try {
@@ -35,14 +35,14 @@ export async function useNewLayout(): Promise<boolean> {
     const layoutCookie = cookieStore.get('layout-version')?.value
 
     // Cookie override for testing
-    if (layoutCookie === 'v2') return true
     if (layoutCookie === 'v1') return false
+    if (layoutCookie === 'v2') return true
 
-    // Environment variable
+    // Environment variable or default to true
     return FeatureFlags.NEW_NAVIGATION
   } catch (error) {
     console.error('Error checking feature flags:', error)
-    return false // Safe default
+    return true // Default to new layout
   }
 }
 
