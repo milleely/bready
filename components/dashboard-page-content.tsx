@@ -16,13 +16,6 @@ import {
 } from "lucide-react"
 import { formatCurrency, categories } from "@/lib/utils"
 import Link from "next/link"
-import {
-  ContextualAlerts,
-  createOverBudgetAlert,
-  createPendingSettlementsAlert,
-  createRecurringExpensesDueAlert,
-  createInactivityAlert,
-} from "@/components/contextual-alerts"
 import { SpendingSparkline } from "@/components/spending-sparkline"
 
 interface Stats {
@@ -209,55 +202,6 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
   // Calculate personal expenses
   const personalExpenses = stats.totalSpent - stats.sharedExpenses
 
-  // Generate contextual alerts
-  const generateAlerts = () => {
-    const alerts = []
-
-    // Over-budget alert
-    if (budgetHealth.over > 0) {
-      alerts.push(createOverBudgetAlert(budgetHealth.over))
-    }
-
-    // Pending settlements alert
-    if (settlements.length > 0) {
-      alerts.push(createPendingSettlementsAlert(settlements.length))
-    }
-
-    // Recurring expenses due within 7 days
-    const today = new Date()
-    const sevenDaysFromNow = new Date()
-    sevenDaysFromNow.setDate(today.getDate() + 7)
-
-    const dueSoon = recurringExpenses.filter(re => {
-      const nextDate = new Date(re.nextDate)
-      return nextDate >= today && nextDate <= sevenDaysFromNow
-    })
-
-    if (dueSoon.length > 0) {
-      alerts.push(createRecurringExpensesDueAlert(dueSoon.length))
-    }
-
-    // Inactivity reminder (only if expenses exist and last one is >3 days ago)
-    if (expenses.length > 0) {
-      const sortedExpenses = [...expenses].sort((a, b) =>
-        new Date(b.date).getTime() - new Date(a.date).getTime()
-      )
-      const lastExpenseDate = new Date(sortedExpenses[0].date)
-      const daysSinceLastExpense = Math.floor(
-        (today.getTime() - lastExpenseDate.getTime()) / (1000 * 60 * 60 * 24)
-      )
-
-      // Show reminder if >3 days but <30 days (avoid nagging inactive users)
-      if (daysSinceLastExpense > 3 && daysSinceLastExpense < 30) {
-        alerts.push(createInactivityAlert(daysSinceLastExpense))
-      }
-    }
-
-    return alerts
-  }
-
-  const alerts = generateAlerts()
-
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -314,9 +258,6 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-muted-foreground mt-1">Your financial snapshot for {getMonthName(selectedMonth)}</p>
       </div>
-
-      {/* Contextual Alerts */}
-      <ContextualAlerts alerts={alerts} />
 
       {/* Hero Card - This Month at a Glance */}
       <Card className="bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 border-0 shadow-xl text-white">

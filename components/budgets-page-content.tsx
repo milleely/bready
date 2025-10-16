@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import { EnhancedBudgetProgress } from "@/components/enhanced-budget-progress"
 import { BudgetDialog } from "@/components/budget-dialog"
-import { ContextualAlerts, createOverBudgetAlert } from "@/components/contextual-alerts"
 
 interface User {
   id: string
@@ -121,20 +120,6 @@ export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
     )
   }
 
-  // Calculate over-budget categories
-  const overBudgetCount = budgets.filter(budget => {
-    const categorySpending = spendingByCategory.find(
-      s => s.category === budget.category
-    )
-    return categorySpending && categorySpending.amount > budget.amount
-  }).length
-
-  // Generate contextual alerts
-  const alerts = []
-  if (overBudgetCount > 0) {
-    alerts.push(createOverBudgetAlert(overBudgetCount))
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -158,9 +143,6 @@ export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
           })}
         />
       </div>
-
-      {/* Contextual Alerts */}
-      <ContextualAlerts alerts={alerts} />
 
       {budgets.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 bg-white rounded-lg border-2 border-dashed border-gray-300">

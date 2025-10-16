@@ -12,7 +12,6 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { ContextualAlerts, createInactivityAlert } from "@/components/contextual-alerts"
 
 interface User {
   id: string
@@ -249,34 +248,6 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
     )
   }
 
-  // Calculate days since last expense (excluding optimistic ones)
-  const daysSinceLastExpense = (() => {
-    if (expenses.length === 0) return null // Don't show if no historical data
-
-    const realExpenses = expenses.filter(e => !e.id.startsWith('temp-'))
-    if (realExpenses.length === 0) return null
-
-    const sortedExpenses = [...realExpenses].sort((a, b) => {
-      const dateA = new Date(a.date).getTime()
-      const dateB = new Date(b.date).getTime()
-      return dateB - dateA // Most recent first
-    })
-
-    const mostRecentExpense = sortedExpenses[0]
-    const mostRecentDate = new Date(mostRecentExpense.date)
-    const today = new Date()
-    const diffTime = Math.abs(today.getTime() - mostRecentDate.getTime())
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
-
-    return diffDays
-  })()
-
-  // Generate contextual alerts
-  const alerts = []
-  if (daysSinceLastExpense !== null && daysSinceLastExpense > 3) {
-    alerts.push(createInactivityAlert(daysSinceLastExpense))
-  }
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -293,9 +264,6 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
           <Plus className="mr-2 h-4 w-4" /> Add Expense
         </Button>
       </div>
-
-      {/* Contextual Alerts */}
-      <ContextualAlerts alerts={alerts} />
 
       {/* Collapsible Analytics Section */}
       <Collapsible open={analyticsOpen} onOpenChange={setAnalyticsOpen}>

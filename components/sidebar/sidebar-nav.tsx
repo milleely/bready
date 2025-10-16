@@ -20,12 +20,6 @@ const navItems: NavItem[] = [
     description: "Overview and quick stats",
   },
   {
-    title: "Settlements",
-    href: "/settlements",
-    icon: Scale,
-    description: "Balance payments",
-  },
-  {
     title: "Expenses",
     href: "/expenses",
     icon: Receipt,
@@ -36,6 +30,12 @@ const navItems: NavItem[] = [
     href: "/budgets",
     icon: Target,
     description: "Track your budgets",
+  },
+  {
+    title: "Settlements",
+    href: "/settlements",
+    icon: Scale,
+    description: "Balance payments",
   },
   {
     title: "Insights",

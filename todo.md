@@ -140,6 +140,13 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
   - [x] Persist user preference in localStorage
   - [x] Smooth animation for collapse/expand
 
+- [x] **Navigation order optimization** ✅ COMPLETE (2025-10-16)
+  - [x] Reordered navigation to prioritize daily-use features
+  - **New order:** Dashboard → Expenses → Budgets → Settlements → Insights → Settings
+  - **Rationale:** Expenses (daily use) moved from 3rd to 2nd position
+  - **UX improvement:** Reduced mouse travel for most common actions
+  - Updated in `components/sidebar/sidebar-nav.tsx`
+
 - [x] **Keyboard shortcuts** ✅ DESCOPED
   - User requested removal from scope
   - May be reconsidered in future phases
@@ -151,12 +158,13 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
   - [x] Implemented in `app/(new-layout)/expenses/page.tsx` (lines 160-206)
   - [x] Uses `optimisticExpenses` state with temp IDs
 
-- [x] **Contextual quick actions** ✅ ALREADY IMPLEMENTED
-  - [x] Over-budget alerts with "Review Budgets" button
-  - [x] Pending settlements alerts with "Settle Now" button
-  - [x] Recurring expenses due soon notifications
-  - [x] Inactivity reminders (>3 days without expenses)
-  - [x] Implemented via `ContextualAlerts` component across Dashboard, Expenses, and Budgets pages
+- [x] **Contextual quick actions** ✅ REMOVED (2025-10-16)
+  - ~~Over-budget alerts with "Review Budgets" button~~
+  - ~~Pending settlements alerts with "Settle Now" button~~
+  - ~~Recurring expenses due soon notifications~~
+  - ~~Inactivity reminders (>3 days without expenses)~~
+  - **Removed from Dashboard, Expenses, and Budgets pages per user request**
+  - Component file kept for potential future use
 
 ### User Management & Settings
 - [x] **Settings page** ✅ COMPLETE

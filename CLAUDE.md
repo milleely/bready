@@ -257,3 +257,4 @@ The singleton pattern in `lib/db.ts` prevents multiple instances in development 
 
 CRITICAL: When debugging, you MUST trace through the ENTIRE code flow step by step. No assumptions. No shortcuts.
 CRITICAL: Before pushing build to production, run locally to catch all errors in one cycle or in as few cycles needed.
+- Update @todo.md regulary as you create features
