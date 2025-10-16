@@ -9,9 +9,6 @@ interface BreadyLogoProps {
 }
 
 export function BreadyLogo({ size = 48, className, animate = true }: BreadyLogoProps) {
-  // Determine if we should use mobile-optimized rendering
-  const isMobileSize = size <= 40
-
   return (
     <svg
       width={size}
@@ -25,134 +22,72 @@ export function BreadyLogo({ size = 48, className, animate = true }: BreadyLogoP
       )}
       aria-label="Bready logo"
     >
-      {/* Background circle - stronger for mobile */}
-      <circle
-        cx="50"
-        cy="50"
-        r="45"
-        fill={isMobileSize ? "#fef3c7" : "url(#breadGradient)"}
-        opacity={isMobileSize ? "0.6" : "0.1"}
+      {/* Main bread slice body */}
+      <rect
+        x="20"
+        y="20"
+        width="60"
+        height="60"
+        rx="8"
+        fill="#f59e0b"
       />
 
-      {/* Main bread shape with conditional styling */}
-      <path
-        d="M 25 50
-           Q 25 30, 50 30
-           T 75 50
-           Q 75 70, 50 70
-           T 25 50"
-        fill={isMobileSize ? "url(#mobileCrustGradient)" : "url(#crustGradient)"}
-        stroke={isMobileSize ? "#78350f" : "url(#outlineGradient)"}
-        strokeWidth={isMobileSize ? "3.5" : "2.5"}
+      {/* Crust border - darker amber */}
+      <rect
+        x="20"
+        y="20"
+        width="60"
+        height="60"
+        rx="8"
+        stroke="#b45309"
+        strokeWidth="6"
+        fill="none"
       />
 
-      {/* Bread scoring marks - only show at larger sizes */}
-      {!isMobileSize && (
-        <>
-          <path
-            d="M 35 40 Q 40 45, 35 50"
-            stroke="#b45309"
-            strokeWidth="2"
-            strokeLinecap="round"
-            opacity="0.8"
-          />
-          <path
-            d="M 50 38 Q 50 45, 50 52"
-            stroke="#b45309"
-            strokeWidth="2"
-            strokeLinecap="round"
-            opacity="0.8"
-          />
-          <path
-            d="M 65 40 Q 60 45, 65 50"
-            stroke="#b45309"
-            strokeWidth="2"
-            strokeLinecap="round"
-            opacity="0.8"
-          />
-        </>
-      )}
+      {/* Inner lighter area (bread texture) */}
+      <rect
+        x="30"
+        y="30"
+        width="40"
+        height="40"
+        rx="4"
+        fill="#fde68a"
+        opacity="0.6"
+      />
 
-      {/* Steam effects - only show at larger sizes */}
-      {!isMobileSize && animate && (
-        <g className="animate-pulse">
-          <path
-            d="M 40 25 Q 42 20, 40 15"
-            stroke="#f59e0b"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            opacity="0.4"
-          />
-          <path
-            d="M 50 23 Q 52 18, 50 13"
-            stroke="#f59e0b"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            opacity="0.5"
-          />
-          <path
-            d="M 60 25 Q 58 20, 60 15"
-            stroke="#f59e0b"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            opacity="0.4"
-          />
-        </g>
-      )}
+      {/* Texture pattern - diamond grid */}
+      <g stroke="#d97706" strokeWidth="3" strokeLinecap="round">
+        {/* Diagonal lines creating diamond pattern */}
+        <line x1="35" y1="40" x2="45" y2="50" />
+        <line x1="45" y1="40" x2="55" y2="50" />
+        <line x1="55" y1="40" x2="65" y2="50" />
 
-      {/* Highlight for glossy effect - only show at larger sizes */}
-      {!isMobileSize && (
-        <ellipse
-          cx="50"
-          cy="40"
-          rx="15"
-          ry="8"
-          fill="white"
-          opacity="0.3"
-        />
-      )}
+        <line x1="35" y1="50" x2="45" y2="60" />
+        <line x1="45" y1="50" x2="55" y2="60" />
+        <line x1="55" y1="50" x2="65" y2="60" />
 
-      {/* Gradient definitions */}
-      <defs>
-        {/* Mobile-optimized darker gradient */}
-        <linearGradient id="mobileCrustGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#d97706" />
-          <stop offset="40%" stopColor="#b45309" />
-          <stop offset="100%" stopColor="#78350f" />
-        </linearGradient>
+        <line x1="40" y1="35" x2="50" y2="45" />
+        <line x1="50" y1="35" x2="60" y2="45" />
 
-        {/* Original gradient for larger sizes */}
-        <linearGradient id="breadGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#f59e0b" />
-          <stop offset="50%" stopColor="#ea580c" />
-          <stop offset="100%" stopColor="#dc2626" />
-        </linearGradient>
+        <line x1="40" y1="55" x2="50" y2="65" />
+        <line x1="50" y1="55" x2="60" y2="65" />
+      </g>
 
-        <linearGradient id="crustGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#f59e0b" />
-          <stop offset="30%" stopColor="#d97706" />
-          <stop offset="70%" stopColor="#b45309" />
-          <stop offset="100%" stopColor="#92400e" />
-        </linearGradient>
+      {/* Corner highlights for dimension */}
+      <circle cx="32" cy="32" r="4" fill="#fbbf24" opacity="0.5" />
+      <circle cx="68" cy="32" r="4" fill="#fbbf24" opacity="0.5" />
 
-        <linearGradient id="outlineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#dc2626" />
-          <stop offset="50%" stopColor="#ea580c" />
-          <stop offset="100%" stopColor="#f59e0b" />
-        </linearGradient>
-
-        {/* Shadow filter */}
-        <filter id="shadow">
-          <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.2"/>
-        </filter>
-      </defs>
-
-      {/* Apply shadow to the whole logo */}
-      <style>{`
-        svg {
-          filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
-        }
-      `}</style>
+      {/* Strong outer border for maximum contrast */}
+      <rect
+        x="20"
+        y="20"
+        width="60"
+        height="60"
+        rx="8"
+        stroke="#92400e"
+        strokeWidth="3"
+        fill="none"
+      />
     </svg>
   )
 }
