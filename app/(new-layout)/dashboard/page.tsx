@@ -71,6 +71,8 @@ interface RecurringExpense {
   nextDate: string
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function DashboardPage() {
   const searchParams = useSearchParams()
   const [stats, setStats] = useState<Stats>({

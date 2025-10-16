@@ -34,6 +34,8 @@ interface CategorySpending {
   amount: number
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function BudgetsPage() {
   const searchParams = useSearchParams()
   const [users, setUsers] = useState<User[]>([])

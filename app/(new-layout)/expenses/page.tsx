@@ -48,6 +48,8 @@ interface Stats {
   spendingByCategory: Array<{ category: string; amount: number }>
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function ExpensesPage() {
   const searchParams = useSearchParams()
   const [users, setUsers] = useState<User[]>([])

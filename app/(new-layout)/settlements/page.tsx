@@ -24,6 +24,8 @@ interface SettlementHistoryItem {
   note: string | null
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function SettlementsPage() {
   const searchParams = useSearchParams()
   const [settlements, setSettlements] = useState<Settlement[]>([])
