@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { Suspense, useEffect, useState } from "react"
+import { useSearchParams} from "next/navigation"
 import { SettlementCard } from "@/components/settlement-card"
 import { SettlementSummaryCards } from "@/components/settlement-summary-cards"
 import { SettlementHistory } from "@/components/settlement-history"
@@ -24,9 +24,7 @@ interface SettlementHistoryItem {
   note: string | null
 }
 
-export const dynamic = 'force-dynamic'
-
-export default function SettlementsPage() {
+function SettlementsPageContent() {
   const searchParams = useSearchParams()
   const [settlements, setSettlements] = useState<Settlement[]>([])
   const [settlementHistory, setSettlementHistory] = useState<SettlementHistoryItem[]>([])
@@ -206,5 +204,20 @@ export default function SettlementsPage() {
         onUnmark={handleUnmark}
       />
     </div>
+  )
+}
+
+export default function SettlementsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <Wallet className="h-12 w-12 animate-pulse mx-auto mb-4 text-amber-600" />
+          <p className="text-muted-foreground">Loading settlements...</p>
+        </div>
+      </div>
+    }>
+      <SettlementsPageContent />
+    </Suspense>
   )
 }

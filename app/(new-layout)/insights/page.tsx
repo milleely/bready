@@ -1,13 +1,12 @@
 "use client"
 
+import { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Brain, Sparkles, TrendingUp, AlertCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
-export const dynamic = 'force-dynamic'
-
-export default function InsightsPage() {
+function InsightsPageContent() {
   const searchParams = useSearchParams()
 
   // Get current month
@@ -116,5 +115,22 @@ export default function InsightsPage() {
       </Card>
 
     </div>
+  )
+}
+
+export default function InsightsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-pulse mb-4">
+            <Brain className="h-12 w-12 text-purple-600 mx-auto" />
+          </div>
+          <p className="text-muted-foreground">Loading insights...</p>
+        </div>
+      </div>
+    }>
+      <InsightsPageContent />
+    </Suspense>
   )
 }

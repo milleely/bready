@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { EnhancedRecentExpenses } from "@/components/enhanced-recent-expenses"
 import { ExpenseForm } from "@/components/expense-form"
@@ -48,9 +48,7 @@ interface Stats {
   spendingByCategory: Array<{ category: string; amount: number }>
 }
 
-export const dynamic = 'force-dynamic'
-
-export default function ExpensesPage() {
+function ExpensesPageContent() {
   const searchParams = useSearchParams()
   const [users, setUsers] = useState<User[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
@@ -390,5 +388,22 @@ export default function ExpensesPage() {
         />
       )}
     </div>
+  )
+}
+
+export default function ExpensesPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-pulse mb-4">
+            <div className="h-12 w-12 bg-amber-200 rounded-full mx-auto"></div>
+          </div>
+          <p className="text-muted-foreground">Loading expenses...</p>
+        </div>
+      </div>
+    }>
+      <ExpensesPageContent />
+    </Suspense>
   )
 }

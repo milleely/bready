@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -71,9 +71,7 @@ interface RecurringExpense {
   nextDate: string
 }
 
-export const dynamic = 'force-dynamic'
-
-export default function DashboardPage() {
+function DashboardPageContent() {
   const searchParams = useSearchParams()
   const [stats, setStats] = useState<Stats>({
     totalSpent: 0,
@@ -567,5 +565,20 @@ export default function DashboardPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <Wallet className="h-12 w-12 animate-pulse mx-auto mb-4 text-amber-600" />
+          <p className="text-muted-foreground">Loading your dashboard...</p>
+        </div>
+      </div>
+    }>
+      <DashboardPageContent />
+    </Suspense>
   )
 }
