@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { UserButton } from "@clerk/nextjs"
 import { SidebarNav } from "@/components/sidebar/sidebar-nav"
 import { MobileNav } from "@/components/mobile-nav/mobile-nav"
@@ -14,18 +13,15 @@ import { cn } from "@/lib/utils"
 
 interface SidebarLayoutProps {
   children: React.ReactNode
+  selectedMonth: string
+  onMonthChange: (month: string) => void
 }
 
-export function SidebarLayout({ children }: SidebarLayoutProps) {
+export function SidebarLayout({ children, selectedMonth, onMonthChange }: SidebarLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [storedCollapsed, setStoredCollapsed] = useState(false)
   const [expenseFormOpen, setExpenseFormOpen] = useState(false)
-
-  // URL-based month state management
-  const router = useRouter()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
 
   // Load sidebar collapsed state from localStorage after hydration
   useEffect(() => {
@@ -44,21 +40,6 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
     const newState = !sidebarCollapsed
     setStoredCollapsed(newState)
     localStorage.setItem('sidebar-collapsed', String(newState))
-  }
-
-  // Get current month from URL or default to current
-  const getCurrentMonth = () => {
-    const today = new Date()
-    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
-  }
-
-  const selectedMonth = searchParams.get('month') || getCurrentMonth()
-
-  // Handle month change by updating URL
-  const handleMonthChange = (newMonth: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set('month', newMonth)
-    router.push(`${pathname}?${params.toString()}`)
   }
 
   return (
@@ -122,7 +103,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
             <div className="px-4 pt-2 pb-4 border-b border-gray-100">
               <MonthSelector
                 selectedMonth={selectedMonth}
-                onMonthChange={handleMonthChange}
+                onMonthChange={onMonthChange}
               />
             </div>
           )}
@@ -203,7 +184,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
               <div className="p-4 border-t border-gray-200 space-y-3">
                 <MonthSelector
                   selectedMonth={selectedMonth}
-                  onMonthChange={handleMonthChange}
+                  onMonthChange={onMonthChange}
                 />
                 <div className="flex items-center justify-center">
                   <UserButton

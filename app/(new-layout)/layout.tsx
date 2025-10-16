@@ -1,9 +1,9 @@
-import { SidebarLayout } from "@/components/sidebar-layout"
+import { MonthSelectorWrapper } from "@/components/month-selector-wrapper"
 
 export default function NewLayoutWrapper({
   children,
 }: {
   children: React.ReactNode
 }) {
-  return <SidebarLayout>{children}</SidebarLayout>
+  return <MonthSelectorWrapper>{children}</MonthSelectorWrapper>
 }
