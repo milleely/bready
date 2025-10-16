@@ -229,16 +229,30 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
   - [ ] Proper heading hierarchy (h1 → h2 → h3)
   - [ ] Use `<data>` for numeric values
 
-- [ ] **ARIA labels & roles**
-  - [ ] Add `aria-label` to icon-only buttons
+- [x] **ARIA labels & roles** ✅ COMPLETE (2025-10-16)
+  - [x] Added `aria-label` to icon-only buttons (Edit, Delete, View Receipt)
+  - [x] Contextual labels include entity names (e.g., "Edit {user.name}")
+  - [x] Implemented in expense tables, user management, and budget cards
   - [ ] Add `aria-live` regions for dynamic updates
   - [ ] Proper `role` attributes for custom components
 
-- [ ] **Keyboard navigation**
-  - [ ] All interactive elements reachable via Tab
-  - [ ] Proper focus indicators (outline on focus)
-  - [ ] Escape to close modals/dialogs
-  - [ ] Enter/Space to activate buttons
+- [x] **Keyboard navigation** ✅ COMPLETE (2025-10-16)
+  - [x] Added global focus styles with `:focus-visible` (WCAG 2.1 AA compliant)
+  - [x] 2-3px solid outlines with offsets and box-shadows
+  - [x] Enhanced focus for buttons (3px outline + shadow)
+  - [x] Form input focus styling with border color changes
+  - [x] Radix UI Dialog primitives provide automatic:
+    - Focus trap (locks focus inside modals)
+    - Escape key handling (closes dialogs)
+    - Focus restoration (returns to trigger element)
+  - [x] Created keyboard shortcuts system:
+    - Hook: `hooks/use-keyboard-shortcut.ts`
+    - Help dialog: `components/keyboard-shortcuts-dialog.tsx`
+    - Floating "Shortcuts" button (bottom-right)
+    - Press `?` to view keyboard shortcuts
+    - Integrated into `components/sidebar-layout.tsx`
+  - [x] All interactive elements reachable via Tab
+  - [x] Enter/Space to activate buttons (browser default)
 
 - [ ] **Screen reader support**
   - [ ] Announce when expenses are added/deleted
@@ -402,17 +416,62 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
 - **Remaining Work**:
   - None for this feature - fully complete
 
-### Phase 3 Completion Notes
-- **Date Completed**: Not started yet
-- **Status**: Ready to begin after Phase 2 completion
-- **Planned Features**:
-  - Mobile experience improvements (swipe navigation, smart FAB)
-  - Onboarding & contextual tooltips
-  - Accessibility enhancements (ARIA, keyboard nav, screen readers)
-  - Performance optimizations (code splitting, memoization, bundle size)
-- **Changes Made**: TBD
-- **Issues Encountered**: TBD
-- **Remaining Work**: TBD
+### Phase 3 Completion Notes (Partial - Accessibility Focus)
+- **Date Completed**: 2025-10-16 (accessibility features only)
+- **Status**: Accessibility improvements complete. Mobile UX, onboarding, and performance optimizations remain for future phases.
+
+- **Changes Made**:
+
+  **Keyboard Navigation & Focus Management:**
+  - ✅ Added comprehensive global focus styles to `app/globals.css`:
+    - `:focus-visible` selectors for keyboard-only focus indicators
+    - 2-3px solid outlines with `outline-offset` for clear visibility
+    - Enhanced box-shadows for buttons and interactive elements
+    - Form input focus styling with border color changes
+    - WCAG 2.1 AA compliant (3:1 contrast ratio)
+
+  - ✅ Audited all modal components for keyboard accessibility:
+    - `expense-form.tsx`, `budget-dialog.tsx`, `user-form.tsx` - all use Radix UI Dialog
+    - `receipt-lightbox.tsx`, `export-dialog.tsx` - also use Radix UI Dialog
+    - Radix UI provides automatic focus trapping, Escape key handling, and focus restoration
+    - No additional keyboard handlers needed (built-in accessibility)
+
+  - ✅ Created keyboard shortcuts system:
+    - **Hook**: `hooks/use-keyboard-shortcut.ts` - reusable hook for keyboard commands
+    - **Dialog**: `components/keyboard-shortcuts-dialog.tsx` - help interface
+    - **Features**:
+      - Floating "Shortcuts" button in bottom-right corner
+      - Press `?` to open help dialog (matches GitHub, Gmail patterns)
+      - Grouped shortcuts by category (Navigation, Quick Actions)
+      - Styled kbd elements for visual key representation
+    - **Integration**: Added to `components/sidebar-layout.tsx` (available on all pages)
+
+  **ARIA Labels:**
+  - ✅ Previously completed - icon-only buttons have contextual labels
+
+- **Files Created**:
+  - `hooks/use-keyboard-shortcut.ts` - Keyboard shortcut hook
+  - `components/keyboard-shortcuts-dialog.tsx` - Help dialog component
+
+- **Files Modified**:
+  - `app/globals.css` - Added focus styles (45 lines)
+  - `components/sidebar-layout.tsx` - Added KeyboardShortcutsDialog import and component
+  - `todo.md` - Updated Phase 3 Accessibility section
+
+- **Issues Encountered**: None - Radix UI provided excellent accessibility foundation
+
+- **Remaining Work** (Phase 3):
+  - Mobile Experience: Swipe navigation, smart FAB
+  - Onboarding: First-time user tour, contextual tooltips
+  - Accessibility: ARIA live regions, screen reader announcements, semantic HTML audit
+  - Performance: Code splitting, memoization, bundle analysis
+
+- **Testing Notes**:
+  - All modals tested: Escape key closes dialogs ✅
+  - Focus trap working: Tab stays within modal ✅
+  - Focus indicators visible: Blue outline on keyboard navigation ✅
+  - Keyboard shortcuts dialog: Press `?` to open ✅
+  - All features compiled successfully with no TypeScript errors ✅
 
 ---
 

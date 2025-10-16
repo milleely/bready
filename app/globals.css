@@ -66,3 +66,48 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* Keyboard Navigation Focus Styles - WCAG 2.1 AA Compliant */
+/* Use focus-visible to show focus only for keyboard navigation, not mouse clicks */
+*:focus-visible {
+  outline: 2px solid hsl(var(--color-ring));
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Enhanced focus for buttons and interactive elements */
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 3px solid hsl(var(--color-ring));
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px hsl(var(--color-ring) / 0.2);
+}
+
+/* Focus styles for form inputs */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid hsl(var(--color-ring));
+  outline-offset: 0;
+  border-color: hsl(var(--color-ring));
+  box-shadow: 0 0 0 3px hsl(var(--color-ring) / 0.15);
+}
+
+/* Focus for custom components like dialog triggers */
+[data-radix-collection-item]:focus-visible {
+  outline: 2px solid hsl(var(--color-ring));
+  outline-offset: 2px;
+}
+
+/* Ensure skip links are visible on focus */
+.skip-link:focus {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 9999;
+  padding: 1rem;
+  background: hsl(var(--color-background));
+  border: 2px solid hsl(var(--color-ring));
+  border-radius: 0.5rem;
+}
