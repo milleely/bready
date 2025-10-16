@@ -74,6 +74,7 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
               size="icon"
               onClick={toggleSidebar}
               className="transition-all"
+              aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {sidebarCollapsed ? (
                 <ChevronRight className="h-4 w-4" />
@@ -170,6 +171,7 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
                   size="icon"
                   onClick={() => setSidebarOpen(false)}
                   className="md:hidden"
+                  aria-label="Close sidebar"
                 >
                   <X className="h-5 w-5" />
                 </Button>
@@ -215,6 +217,7 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
                 variant="ghost"
                 size="icon"
                 onClick={() => setSidebarOpen(true)}
+                aria-label="Open navigation menu"
               >
                 <Menu className="h-5 w-5" />
               </Button>

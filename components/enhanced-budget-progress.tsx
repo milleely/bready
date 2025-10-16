@@ -153,6 +153,7 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
                       size="icon"
                       onClick={() => onEdit(budget)}
                       className="h-11 w-11 hover:bg-amber-100 text-golden-crust-primary hover:text-golden-crust-dark"
+                      aria-label={`Edit ${categoryInfo?.label || budget.category} budget`}
                     >
                       <Pencil className="h-5 w-5" />
                     </Button>
@@ -161,6 +162,7 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
                       size="icon"
                       onClick={() => onDelete(budget.id)}
                       className="h-11 w-11 hover:bg-red-100 text-red-600 hover:text-red-700"
+                      aria-label={`Delete ${categoryInfo?.label || budget.category} budget`}
                     >
                       <Trash2 className="h-5 w-5" />
                     </Button>

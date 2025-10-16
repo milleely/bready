@@ -118,8 +118,8 @@ export function UserManagement({ users, onRefresh }: UserManagementProps) {
                     variant="ghost"
                     size="icon"
                     onClick={() => setEditingUser(user)}
-                    title="Edit user"
                     className="h-11 w-11 hover:bg-amber-100 text-golden-crust-dark"
+                    aria-label={`Edit ${user.name}`}
                   >
                     <Edit className="h-5 w-5" />
                   </Button>
@@ -127,8 +127,8 @@ export function UserManagement({ users, onRefresh }: UserManagementProps) {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleDeleteUser(user)}
-                    title="Delete user"
                     className="h-11 w-11 hover:bg-red-100 text-red-600 hover:text-red-700"
+                    aria-label={`Delete ${user.name}`}
                   >
                     <Trash2 className="h-5 w-5" />
                   </Button>

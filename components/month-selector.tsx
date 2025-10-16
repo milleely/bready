@@ -92,6 +92,7 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
                   size="icon"
                   className="h-8 w-8 border-amber-300 hover:bg-amber-50"
                   onClick={() => setPickerYear(pickerYear - 1)}
+                  aria-label="Previous year"
                 >
                   <ChevronDown className="h-4 w-4" />
                 </Button>
@@ -103,6 +104,7 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
                   size="icon"
                   className="h-8 w-8 border-amber-300 hover:bg-amber-50"
                   onClick={() => setPickerYear(pickerYear + 1)}
+                  aria-label="Next year"
                 >
                   <ChevronUp className="h-4 w-4" />
                 </Button>

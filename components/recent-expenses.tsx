@@ -126,6 +126,7 @@ export function RecentExpenses({ expenses, users, onEdit, onDelete }: RecentExpe
                             variant="ghost"
                             size="icon"
                             onClick={() => onEdit(expense)}
+                            aria-label={`Edit ${expense.description}`}
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -135,6 +136,7 @@ export function RecentExpenses({ expenses, users, onEdit, onDelete }: RecentExpe
                             variant="ghost"
                             size="icon"
                             onClick={() => onDelete(expense.id)}
+                            aria-label={`Delete ${expense.description}`}
                           >
                             <Trash2 className="h-4 w-4 text-destructive" />
                           </Button>
