@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { LayoutDashboard, Receipt, Target, Brain } from "lucide-react"
@@ -36,9 +37,47 @@ const navItems: NavItem[] = [
 
 export function MobileNav() {
   const pathname = usePathname()
+  const [isVisible, setIsVisible] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
+
+  useEffect(() => {
+    let ticking = false
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY
+
+          // Show nav when scrolling up or at top (within 50px)
+          if (currentScrollY < 50) {
+            setIsVisible(true)
+          } else if (currentScrollY < lastScrollY - 20) {
+            // Scrolling up - show nav
+            setIsVisible(true)
+          } else if (currentScrollY > lastScrollY + 50) {
+            // Scrolling down - hide nav
+            setIsVisible(false)
+          }
+
+          setLastScrollY(currentScrollY)
+          ticking = false
+        })
+
+        ticking = true
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [lastScrollY])
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around bg-white border-t border-gray-200 px-4 py-2 safe-area-inset-bottom md:hidden">
+    <nav
+      className={cn(
+        "fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around bg-white border-t border-gray-200 px-4 py-2 safe-area-inset-bottom md:hidden transition-transform duration-300 ease-in-out",
+        isVisible ? "translate-y-0" : "translate-y-full"
+      )}
+    >
       {navItems.map((item) => {
         const Icon = item.icon
         const isActive = pathname === item.href || pathname.startsWith(item.href + '/')

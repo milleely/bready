@@ -1,4 +1,5 @@
 import { ExpensesPageContent } from "@/components/expenses-page-content"
+import { MobilePageSwiper } from "@/components/mobile-page-swiper"
 
 export default async function ExpensesPage({
   searchParams,
@@ -7,5 +8,9 @@ export default async function ExpensesPage({
 }) {
   const { month } = await searchParams
 
-  return <ExpensesPageContent month={month as string | undefined} />
+  return (
+    <MobilePageSwiper>
+      <ExpensesPageContent month={month as string | undefined} />
+    </MobilePageSwiper>
+  )
 }

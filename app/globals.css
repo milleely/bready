@@ -111,3 +111,16 @@ select:focus-visible {
   border: 2px solid hsl(var(--color-ring));
   border-radius: 0.5rem;
 }
+
+/* Mobile Swipe Navigation Animations */
+@media (max-width: 768px) {
+  .mobile-swipe-left {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+
+  .mobile-swipe-right {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
