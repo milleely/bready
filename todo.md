@@ -125,9 +125,10 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
 
 ---
 
-## Phase 2: Enhanced Interactivity 🎯
+## Phase 2: Enhanced Interactivity 🎯 **✅ COMPLETE**
 **Goal**: Make the dashboard more interactive and efficient to use
 **Time Estimate**: 3-5 hours
+**Completion Date**: 2025-10-15
 
 ### Navigation Improvements
 - [x] **Collapsible sidebar toggle** ✅ COMPLETE
@@ -136,26 +137,51 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
   - [x] Persist user preference in localStorage
   - [x] Smooth animation for collapse/expand
 
-- [ ] **Keyboard shortcuts**
-  - [ ] `1` - Go to Dashboard
-  - [ ] `2` - Go to Expenses
-  - [ ] `3` - Go to Budgets
-  - [ ] `4` - Go to Insights
-  - [ ] `N` - New expense modal
-  - [ ] `?` - Show keyboard shortcuts help dialog
-  - [ ] Add visual indicators for shortcuts in UI
+- [x] **Keyboard shortcuts** ✅ DESCOPED
+  - User requested removal from scope
+  - May be reconsidered in future phases
 
 ### UX Enhancements
-- [ ] **Optimistic UI** for expense creation
-  - [ ] Show expense immediately in UI when user adds it
-  - [ ] Rollback and show error if API fails
-  - [ ] Improves perceived performance
+- [x] **Optimistic UI** for expense creation ✅ ALREADY IMPLEMENTED
+  - [x] Shows expense immediately in UI when user adds it
+  - [x] Rollback and error handling if API fails
+  - [x] Implemented in `app/(new-layout)/expenses/page.tsx` (lines 160-206)
+  - [x] Uses `optimisticExpenses` state with temp IDs
 
-- [ ] **Contextual quick actions**
-  - [ ] Over-budget warning card with "Review Budgets" button
-  - [ ] Pending settlements card with "Settle Now" button
-  - [ ] Recurring expenses due soon notification
-  - [ ] "Haven't logged expenses in X days" reminder (if >3 days)
+- [x] **Contextual quick actions** ✅ ALREADY IMPLEMENTED
+  - [x] Over-budget alerts with "Review Budgets" button
+  - [x] Pending settlements alerts with "Settle Now" button
+  - [x] Recurring expenses due soon notifications
+  - [x] Inactivity reminders (>3 days without expenses)
+  - [x] Implemented via `ContextualAlerts` component across Dashboard, Expenses, and Budgets pages
+
+### User Management & Settings
+- [x] **Settings page** ✅ COMPLETE
+  - [x] Created Settings navigation in sidebar
+  - [x] Built dedicated Settings page (`app/(new-layout)/settings/page.tsx`)
+  - [x] Integrated UserManagement component
+  - [x] Added placeholder sections for future features (Notifications, Export Data)
+
+- [x] **User CRUD operations** ✅ COMPLETE
+  - [x] Create user with name, email, and color picker
+  - [x] Edit user with inline dialog
+  - [x] Delete user with cascade warning (deletes expenses)
+  - [x] 4-user household limit enforced by API
+  - [x] Color-coded user avatars
+  - [x] Fully functional API routes
+
+### Global Month Selector
+- [x] **URL-based month state management** ✅ COMPLETE
+  - [x] Moved MonthSelector from sidebar bottom to below "Add Expense" button
+  - [x] Implemented URL query parameter (`?month=YYYY-MM`)
+  - [x] Month selection persists across all pages
+  - [x] Removed redundant page-specific MonthSelector from Settlements page
+  - [x] Updated all page headers to display dynamic month names:
+    - Dashboard: "October 2025 at a Glance"
+    - Expenses: "October 2025 Expenses"
+    - Budgets: "October 2025 Budgets"
+    - Settlements: "October 2025 Settlements"
+    - Insights: "October 2025 Insights"
 
 ---
 
@@ -258,8 +284,10 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
   - Ready to proceed with Phase 2: Enhanced Interactivity (keyboard shortcuts, optimistic UI)
 
 ### Phase 2 Completion Notes
-- **Date Completed**: 2025-10-15 (Partial - Collapsible Sidebar Complete)
+- **Date Completed**: 2025-10-15
 - **Changes Made**:
+
+  **Navigation Improvements:**
   - ✅ Collapsible sidebar toggle implemented in `components/sidebar-layout.tsx`
   - Added `sidebarCollapsed` state with localStorage persistence
   - Implemented icon-only mode (64px collapsed, 256px expanded)
@@ -268,11 +296,51 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
   - Adaptive main content margin (md:ml-16 vs md:ml-64)
   - Conditional rendering: logo text, MonthSelector, and UserButton sizing
   - Mobile navigation unaffected (uses separate state)
-- **Issues Encountered**: None - implementation was straightforward
-- **Remaining Work**:
-  - Keyboard shortcuts
-  - Optimistic UI for expense creation
-  - Contextual quick actions
+  - ✅ Keyboard shortcuts descoped per user request
+
+  **UX Enhancements:**
+  - ✅ Optimistic UI already implemented in Expenses page
+    - Uses temporary IDs for instant UI updates
+    - Rollback on API failure with error handling
+    - Prevents editing/deleting optimistic expenses
+  - ✅ Contextual quick actions already implemented
+    - ContextualAlerts component showing over-budget warnings
+    - Pending settlements alerts with action buttons
+    - Recurring expense due notifications
+    - Inactivity reminders (>3 days without expenses)
+    - Integrated on Dashboard, Expenses, and Budgets pages
+
+  **User Management & Settings:**
+  - ✅ Created Settings page at `/settings`
+  - ✅ Added Settings navigation item to sidebar
+  - ✅ Implemented full user CRUD operations:
+    - Create user with UserForm dialog (name, email, color)
+    - Edit user with inline dialog
+    - Delete user with cascade warning
+    - 4-user household limit enforced
+  - ✅ Added placeholder sections for future features
+
+  **Global Month Selector:**
+  - ✅ Repositioned MonthSelector to optimal UX location (below Add Expense)
+  - ✅ Implemented URL-based state management (`?month=YYYY-MM`)
+  - ✅ Month selection syncs across all pages automatically
+  - ✅ Updated all page headers to show dynamic month names
+  - ✅ Removed redundant page-specific selectors
+
+- **Issues Encountered**: None - all features either already existed or implemented smoothly
+
+- **Files Modified**:
+  - `components/sidebar-layout.tsx` (collapsible sidebar + global month selector)
+  - `components/sidebar/sidebar-nav.tsx` (added Settings nav item)
+  - `app/(new-layout)/settings/page.tsx` (new Settings page)
+  - `app/(new-layout)/dashboard/page.tsx` (dynamic month header)
+  - `app/(new-layout)/expenses/page.tsx` (dynamic month header)
+  - `app/(new-layout)/budgets/page.tsx` (dynamic month header)
+  - `app/(new-layout)/settlements/page.tsx` (removed local selector, dynamic header)
+  - `app/(new-layout)/insights/page.tsx` (dynamic month header)
+  - `todo.md` (documentation)
+
+- **Phase Status**: ✅ **COMPLETE** - All planned features implemented or already present
 
 ### Hero Card Final Polish (2025-10-15)
 - **Date Completed**: 2025-10-15
@@ -324,10 +392,16 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
   - None for this feature - fully complete
 
 ### Phase 3 Completion Notes
-- **Date Completed**:
-- **Changes Made**:
-- **Issues Encountered**:
-- **Remaining Work**:
+- **Date Completed**: Not started yet
+- **Status**: Ready to begin after Phase 2 completion
+- **Planned Features**:
+  - Mobile experience improvements (swipe navigation, smart FAB)
+  - Onboarding & contextual tooltips
+  - Accessibility enhancements (ARIA, keyboard nav, screen readers)
+  - Performance optimizations (code splitting, memoization, bundle size)
+- **Changes Made**: TBD
+- **Issues Encountered**: TBD
+- **Remaining Work**: TBD
 
 ---
 

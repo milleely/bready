@@ -43,6 +43,12 @@ const navItems: NavItem[] = [
     icon: Brain,
     description: "AI-powered analytics",
   },
+  {
+    title: "Settings",
+    href: "/settings",
+    icon: Settings,
+    description: "Manage household",
+  },
 ]
 
 interface SidebarNavProps {

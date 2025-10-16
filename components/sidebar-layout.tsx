@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter, usePathname, useSearchParams } from "next/navigation"
 import { UserButton } from "@clerk/nextjs"
 import { SidebarNav } from "@/components/sidebar/sidebar-nav"
 import { MobileNav } from "@/components/mobile-nav/mobile-nav"
@@ -21,6 +22,11 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
   const [storedCollapsed, setStoredCollapsed] = useState(false)
   const [expenseFormOpen, setExpenseFormOpen] = useState(false)
 
+  // URL-based month state management
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+
   // Load sidebar collapsed state from localStorage after hydration
   useEffect(() => {
     const stored = localStorage.getItem('sidebar-collapsed')
@@ -38,6 +44,21 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
     const newState = !sidebarCollapsed
     setStoredCollapsed(newState)
     localStorage.setItem('sidebar-collapsed', String(newState))
+  }
+
+  // Get current month from URL or default to current
+  const getCurrentMonth = () => {
+    const today = new Date()
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
+  }
+
+  const selectedMonth = searchParams.get('month') || getCurrentMonth()
+
+  // Handle month change by updating URL
+  const handleMonthChange = (newMonth: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('month', newMonth)
+    router.push(`${pathname}?${params.toString()}`)
   }
 
   return (
@@ -82,7 +103,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
           </div>
 
           {/* Add Expense Button */}
-          <div className="px-4 py-4">
+          <div className="px-4 pt-4 pb-2">
             <Button
               onClick={() => setExpenseFormOpen(true)}
               className={cn(
@@ -96,6 +117,16 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
             </Button>
           </div>
 
+          {/* Month Selector - Global Context */}
+          {!sidebarCollapsed && (
+            <div className="px-4 pt-2 pb-4 border-b border-gray-100">
+              <MonthSelector
+                selectedMonth={selectedMonth}
+                onMonthChange={handleMonthChange}
+              />
+            </div>
+          )}
+
           {/* Navigation */}
           <div className="flex-1 overflow-y-auto p-4">
             <SidebarNav collapsed={sidebarCollapsed} />
@@ -103,11 +134,7 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
 
           {/* Bottom Section */}
           {!sidebarCollapsed && (
-            <div className="p-4 border-t border-gray-200 space-y-3">
-              <MonthSelector
-                selectedMonth={new Date().toISOString().slice(0, 7)}
-                onMonthChange={() => {}}
-              />
+            <div className="p-4 border-t border-gray-200">
               <div className="flex items-center justify-center">
                 <UserButton
                   afterSignOutUrl="/sign-in"
@@ -175,8 +202,8 @@ export function SidebarLayout({ children }: SidebarLayoutProps) {
               {/* Bottom Section */}
               <div className="p-4 border-t border-gray-200 space-y-3">
                 <MonthSelector
-                  selectedMonth={new Date().toISOString().slice(0, 7)}
-                  onMonthChange={() => {}}
+                  selectedMonth={selectedMonth}
+                  onMonthChange={handleMonthChange}
                 />
                 <div className="flex items-center justify-center">
                   <UserButton

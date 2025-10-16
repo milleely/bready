@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { SettlementCard } from "@/components/settlement-card"
 import { SettlementSummaryCards } from "@/components/settlement-summary-cards"
 import { SettlementHistory } from "@/components/settlement-history"
-import { MonthSelector } from "@/components/month-selector"
 import { BreadyLogo } from "@/components/bready-logo"
 import { CheckCircle2, Wallet } from "lucide-react"
 
@@ -25,13 +25,26 @@ interface SettlementHistoryItem {
 }
 
 export default function SettlementsPage() {
+  const searchParams = useSearchParams()
   const [settlements, setSettlements] = useState<Settlement[]>([])
   const [settlementHistory, setSettlementHistory] = useState<SettlementHistoryItem[]>([])
-  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+  const [loading, setLoading] = useState(true)
+
+  // Get current month
+  const getCurrentMonth = () => {
     const today = new Date()
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`
-  })
-  const [loading, setLoading] = useState(true)
+  }
+
+  // Get selected month from URL or default to current
+  const selectedMonth = searchParams.get('month') || getCurrentMonth()
+
+  // Format month for display (e.g., "September 2024")
+  const getMonthName = (monthStr: string) => {
+    const [year, month] = monthStr.split('-').map(Number)
+    const date = new Date(year, month - 1)
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  }
 
   const fetchSettlements = async () => {
     try {
@@ -127,30 +140,16 @@ export default function SettlementsPage() {
     )
   }
 
-  // Get month name for display
-  const [year, month] = selectedMonth.split('-').map(Number)
-  const monthDate = new Date(year, month - 1, 1)
-  const monthName = monthDate.toLocaleString("default", {
-    month: "long",
-    year: "numeric",
-  })
-
   const hasSettlements = settlements.length > 0
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Settlements</h1>
-          <p className="text-muted-foreground mt-1">
-            Balance shared expenses for {monthName}
-          </p>
-        </div>
-        <MonthSelector
-          selectedMonth={selectedMonth}
-          onMonthChange={setSelectedMonth}
-        />
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">{getMonthName(selectedMonth)} Settlements</h1>
+        <p className="text-muted-foreground mt-1">
+          Balance shared expenses for {getMonthName(selectedMonth)}
+        </p>
       </div>
 
       {/* Summary Cards */}
@@ -190,7 +189,7 @@ export default function SettlementsPage() {
               Fresh Out of the Oven!
             </h2>
             <p className="text-lg text-gray-700 max-w-md mx-auto mb-2">
-              Everyone is settled up for {monthName}.
+              Everyone is settled up for {getMonthName(selectedMonth)}.
             </p>
             <p className="text-gray-600 max-w-md mx-auto">
               Your household finances are perfectly balanced.

@@ -1,14 +1,33 @@
 "use client"
 
+import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Brain, Sparkles, TrendingUp, AlertCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 export default function InsightsPage() {
+  const searchParams = useSearchParams()
+
+  // Get current month
+  const getCurrentMonth = () => {
+    const today = new Date()
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
+  }
+
+  // Get selected month from URL or default to current
+  const selectedMonth = searchParams.get('month') || getCurrentMonth()
+
+  // Format month for display (e.g., "September 2024")
+  const getMonthName = (monthStr: string) => {
+    const [year, month] = monthStr.split('-').map(Number)
+    const date = new Date(year, month - 1)
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  }
+
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Insights</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{getMonthName(selectedMonth)} Insights</h1>
         <p className="text-muted-foreground mt-1">
           AI-powered analytics and spending patterns to help you make better financial decisions.
         </p>

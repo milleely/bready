@@ -1,8 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { EnhancedBudgetProgress } from "@/components/enhanced-budget-progress"
 import { BudgetDialog } from "@/components/budget-dialog"
+import { ContextualAlerts, createOverBudgetAlert } from "@/components/contextual-alerts"
 
 interface User {
   id: string
@@ -33,6 +35,7 @@ interface CategorySpending {
 }
 
 export default function BudgetsPage() {
+  const searchParams = useSearchParams()
   const [users, setUsers] = useState<User[]>([])
   const [budgets, setBudgets] = useState<Budget[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
@@ -46,9 +49,18 @@ export default function BudgetsPage() {
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
   }
 
+  // Get selected month from URL or default to current
+  const selectedMonth = searchParams.get('month') || getCurrentMonth()
+
+  // Format month for display (e.g., "September 2024")
+  const getMonthName = (monthStr: string) => {
+    const [year, month] = monthStr.split('-').map(Number)
+    const date = new Date(year, month - 1)
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  }
+
   const fetchData = async () => {
     try {
-      const selectedMonth = getCurrentMonth()
       const [year, month] = selectedMonth.split('-').map(Number)
       const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0]
       const endDate = new Date(year, month, 0).toISOString().split('T')[0]
@@ -80,7 +92,7 @@ export default function BudgetsPage() {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [selectedMonth])
 
   const handleDeleteBudget = async (id: string) => {
     if (!confirm('Are you sure you want to delete this budget?')) return
@@ -107,11 +119,25 @@ export default function BudgetsPage() {
     )
   }
 
+  // Calculate over-budget categories
+  const overBudgetCount = budgets.filter(budget => {
+    const categorySpending = spendingByCategory.find(
+      s => s.category === budget.category
+    )
+    return categorySpending && categorySpending.amount > budget.amount
+  }).length
+
+  // Generate contextual alerts
+  const alerts = []
+  if (overBudgetCount > 0) {
+    alerts.push(createOverBudgetAlert(overBudgetCount))
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Budgets</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{getMonthName(selectedMonth)} Budgets</h1>
           <p className="text-muted-foreground mt-1">
             Set and track your spending limits for each category.
           </p>
@@ -130,6 +156,9 @@ export default function BudgetsPage() {
           })}
         />
       </div>
+
+      {/* Contextual Alerts */}
+      <ContextualAlerts alerts={alerts} />
 
       {budgets.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-64 bg-white rounded-lg border-2 border-dashed border-gray-300">

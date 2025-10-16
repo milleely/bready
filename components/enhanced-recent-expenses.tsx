@@ -54,6 +54,7 @@ interface EnhancedRecentExpensesProps {
   setMaxAmount: (amount: number | null) => void
   activeFilterCount: number
   onClearAllFilters: () => void
+  optimisticIds?: string[]
 }
 
 export function EnhancedRecentExpenses({
@@ -73,6 +74,7 @@ export function EnhancedRecentExpenses({
   setMaxAmount,
   activeFilterCount,
   onClearAllFilters,
+  optimisticIds = [],
 }: EnhancedRecentExpensesProps) {
   const [showFilters, setShowFilters] = useState(false)
 
@@ -254,6 +256,7 @@ export function EnhancedRecentExpenses({
           expenses={expenses}
           onEdit={onEdit}
           onDelete={onDelete}
+          optimisticIds={optimisticIds}
         />
       </CardContent>
     </Card>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -71,6 +72,7 @@ interface RecurringExpense {
 }
 
 export default function DashboardPage() {
+  const searchParams = useSearchParams()
   const [stats, setStats] = useState<Stats>({
     totalSpent: 0,
     sharedExpenses: 0,
@@ -89,6 +91,16 @@ export default function DashboardPage() {
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
   }
 
+  // Get selected month from URL or default to current
+  const selectedMonth = searchParams.get('month') || getCurrentMonth()
+
+  // Format month for display (e.g., "September 2024")
+  const getMonthName = (monthStr: string) => {
+    const [year, month] = monthStr.split('-').map(Number)
+    const date = new Date(year, month - 1)
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  }
+
   const getPreviousMonth = () => {
     const today = new Date()
     const prevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
@@ -97,7 +109,6 @@ export default function DashboardPage() {
 
   const fetchData = async () => {
     try {
-      const selectedMonth = getCurrentMonth()
       const prevMonth = getPreviousMonth()
 
       const [year, month] = selectedMonth.split('-').map(Number)
@@ -141,7 +152,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [selectedMonth])
 
   // Calculate budget health
   const getBudgetHealth = () => {
@@ -299,7 +310,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Your financial snapshot for this month</p>
+        <p className="text-muted-foreground mt-1">Your financial snapshot for {getMonthName(selectedMonth)}</p>
       </div>
 
       {/* Contextual Alerts */}
@@ -311,7 +322,7 @@ export default function DashboardPage() {
           <div className="flex flex-col md:flex-row md:items-start gap-8">
             {/* Left Column: Financial Numbers (60%) */}
             <div className="flex-1 md:max-w-[60%]">
-              <p className="text-amber-100 text-sm font-medium mb-2">This Month at a Glance</p>
+              <p className="text-amber-100 text-sm font-medium mb-2">{getMonthName(selectedMonth)} at a Glance</p>
               <h2 className="text-5xl font-bold mb-3">{formatCurrency(stats.totalSpent)}</h2>
 
               {/* Trend Indicator */}
