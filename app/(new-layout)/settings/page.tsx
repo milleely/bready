@@ -13,6 +13,8 @@ interface User {
   color: string
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function SettingsPage() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
