@@ -77,8 +77,8 @@ export default function Home() {
 
   // Check feature flag and redirect to new layout if enabled
   useEffect(() => {
-    // Check env variable
-    const useNewLayout = process.env.NEXT_PUBLIC_USE_NEW_LAYOUT === 'true'
+    // Check env variable (defaults to true, can opt-out with 'false')
+    const useNewLayout = process.env.NEXT_PUBLIC_USE_NEW_LAYOUT !== 'false'
 
     // Check cookie
     const layoutCookie = document.cookie
