@@ -1,5 +1,8 @@
 # V2 Dashboard UI Improvements
 
+> **📌 ACTIVE TODO FILE** - This is the current source of truth for Bready development.
+> Previous todo file archived at: `/tasks/todo.ARCHIVED.md`
+
 ## Overview
 Comprehensive UX improvements to make the V2 dashboard more intuitive, actionable, and visually engaging.
 

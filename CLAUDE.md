@@ -2,6 +2,32 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 📋 Documentation Structure
+
+**Active Documentation:**
+- **`/todo.md`** - Current development tasks (V2 Dashboard UI Improvements - Phase 3 in progress)
+- **`/CLAUDE.md`** - This file - technical reference and development guidelines
+
+**Archived:**
+- **`/tasks/todo.ARCHIVED.md`** - Outdated Phase 1-6 tracker (receipt upload & filtering already implemented)
+
+**Important:** Always refer to `/todo.md` for current work. Do not create duplicate todo files.
+
+## Current Project Status
+
+**Completed Features:**
+- ✅ Sidebar navigation with collapsible design
+- ✅ Month-based filtering across all pages
+- ✅ Receipt upload system with image viewer
+- ✅ Advanced expense filtering (user, category, type, amount range)
+- ✅ Mobile-responsive design (375px+)
+- ✅ Budget tracking and alerts
+- ✅ Settlement calculations
+- ✅ Contextual alerts and notifications
+
+**In Progress:**
+- 🚧 Phase 3: Polish & Accessibility (keyboard nav, ARIA labels, performance)
+
 ## Project Overview
 
 This is a **multi-user financial expense tracker** built with Next.js 15, supporting up to 4 users who can track and manage shared household expenses. Users can categorize expenses, view analytics, and see spending breakdowns across personal and shared expenses.
@@ -219,7 +245,7 @@ The singleton pattern in `lib/db.ts` prevents multiple instances in development 
 
 ### Additional Rules
 
-1. First think through the problem, read the codebase for relevant files, and write a plan to tasks/todo.md.
+1. First think through the problem, read the codebase for relevant files, and write a plan to `/todo.md` (the ACTIVE todo file).
 2. The plan should have a list of todo items that you can check off as you complete them.
 3. Before you begin working, check in with me and I will verify the plan.
 4. Then, begin working on the todo items, marking them as complete as you go.
