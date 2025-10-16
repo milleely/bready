@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Receipt, Target, Brain } from "lucide-react"
+import { LayoutDashboard, Receipt, Target, Brain, MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { MobileMoreMenu } from "./mobile-more-menu"
 
 interface NavItem {
   title: string
@@ -39,6 +40,7 @@ export function MobileNav() {
   const pathname = usePathname()
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false)
 
   useEffect(() => {
     let ticking = false
@@ -71,35 +73,65 @@ export function MobileNav() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [lastScrollY])
 
-  return (
-    <nav
-      className={cn(
-        "fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around bg-white border-t border-gray-200 px-4 py-2 safe-area-inset-bottom md:hidden transition-transform duration-300 ease-in-out",
-        isVisible ? "translate-y-0" : "translate-y-full"
-      )}
-    >
-      {navItems.map((item) => {
-        const Icon = item.icon
-        const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+  // Check if current page is in More menu
+  const moreMenuPages = ["/settlements", "/settings"]
+  const isMoreMenuActive = moreMenuPages.some(page => pathname === page || pathname.startsWith(page + '/'))
 
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              "flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all min-w-[64px]",
-              isActive
-                ? "text-amber-700 bg-amber-50"
-                : "text-gray-600 hover:text-amber-700 hover:bg-amber-50/50"
-            )}
-          >
-            <Icon className={cn("h-5 w-5", isActive && "text-amber-700")} />
-            <span className={cn("text-[10px] font-medium", isActive && "font-semibold")}>
-              {item.title}
-            </span>
-          </Link>
-        )
-      })}
-    </nav>
+  return (
+    <>
+      <nav
+        className={cn(
+          "fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around bg-white border-t border-gray-200 px-4 py-2 safe-area-inset-bottom md:hidden transition-transform duration-300 ease-in-out",
+          isVisible ? "translate-y-0" : "translate-y-full"
+        )}
+      >
+        {navItems.map((item) => {
+          const Icon = item.icon
+          const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all min-w-[64px]",
+                isActive
+                  ? "text-amber-700 bg-amber-50"
+                  : "text-gray-600 hover:text-amber-700 hover:bg-amber-50/50"
+              )}
+            >
+              <Icon className={cn("h-5 w-5", isActive && "text-amber-700")} />
+              <span className={cn("text-[10px] font-medium", isActive && "font-semibold")}>
+                {item.title}
+              </span>
+            </Link>
+          )
+        })}
+
+        {/* More Button */}
+        <button
+          onClick={() => setMoreMenuOpen(true)}
+          className={cn(
+            "flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all min-w-[64px]",
+            isMoreMenuActive
+              ? "text-amber-700 bg-amber-50"
+              : "text-gray-600 hover:text-amber-700 hover:bg-amber-50/50"
+          )}
+          aria-label="More menu"
+          aria-expanded={moreMenuOpen}
+        >
+          <MoreHorizontal className={cn("h-5 w-5", isMoreMenuActive && "text-amber-700")} />
+          <span className={cn("text-[10px] font-medium", isMoreMenuActive && "font-semibold")}>
+            More
+          </span>
+        </button>
+      </nav>
+
+      {/* More Menu Bottom Sheet */}
+      <MobileMoreMenu
+        isOpen={moreMenuOpen}
+        onClose={() => setMoreMenuOpen(false)}
+      />
+    </>
   )
 }

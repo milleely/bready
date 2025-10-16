@@ -214,14 +214,6 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
         <header className="sticky top-0 z-30 bg-white border-b border-gray-200 px-4 py-3 md:hidden">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSidebarOpen(true)}
-                aria-label="Open navigation menu"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
               <BreadyLogo size={32} />
               <h1 className="text-xl font-bold bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 bg-clip-text text-transparent">
                 Bready
