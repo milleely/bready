@@ -40,30 +40,30 @@ export function BreadyLogo({ size = 48, className, animate = true }: BreadyLogoP
            T 25 50"
         fill="url(#crustGradient)"
         stroke="url(#outlineGradient)"
-        strokeWidth="2"
+        strokeWidth="2.5"
       />
 
       {/* Bread scoring marks */}
       <path
         d="M 35 40 Q 40 45, 35 50"
-        stroke="#d97706"
+        stroke="#b45309"
         strokeWidth="2"
         strokeLinecap="round"
-        opacity="0.6"
+        opacity="0.8"
       />
       <path
         d="M 50 38 Q 50 45, 50 52"
-        stroke="#d97706"
+        stroke="#b45309"
         strokeWidth="2"
         strokeLinecap="round"
-        opacity="0.6"
+        opacity="0.8"
       />
       <path
         d="M 65 40 Q 60 45, 65 50"
-        stroke="#d97706"
+        stroke="#b45309"
         strokeWidth="2"
         strokeLinecap="round"
-        opacity="0.6"
+        opacity="0.8"
       />
 
       {/* Steam effects */}
@@ -110,10 +110,10 @@ export function BreadyLogo({ size = 48, className, animate = true }: BreadyLogoP
         </linearGradient>
 
         <linearGradient id="crustGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#fbbf24" />
-          <stop offset="30%" stopColor="#f59e0b" />
-          <stop offset="70%" stopColor="#d97706" />
-          <stop offset="100%" stopColor="#b45309" />
+          <stop offset="0%" stopColor="#f59e0b" />
+          <stop offset="30%" stopColor="#d97706" />
+          <stop offset="70%" stopColor="#b45309" />
+          <stop offset="100%" stopColor="#92400e" />
         </linearGradient>
 
         <linearGradient id="outlineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -131,7 +131,7 @@ export function BreadyLogo({ size = 48, className, animate = true }: BreadyLogoP
       {/* Apply shadow to the whole logo */}
       <style>{`
         svg {
-          filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+          filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.15));
         }
       `}</style>
     </svg>

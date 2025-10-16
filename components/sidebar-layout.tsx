@@ -18,11 +18,18 @@ interface SidebarLayoutProps {
   onMonthChange: (month: string) => void
 }
 
+interface User {
+  id: string
+  name: string
+  color: string
+}
+
 export function SidebarLayout({ children, selectedMonth, onMonthChange }: SidebarLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [storedCollapsed, setStoredCollapsed] = useState(false)
   const [expenseFormOpen, setExpenseFormOpen] = useState(false)
+  const [users, setUsers] = useState<User[]>([])
 
   // Load sidebar collapsed state from localStorage after hydration
   useEffect(() => {
@@ -31,6 +38,22 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
       setStoredCollapsed(stored === 'true')
     }
     setMounted(true)
+  }, [])
+
+  // Fetch users for expense form
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/users')
+        if (response.ok) {
+          const usersData = await response.json()
+          setUsers(usersData)
+        }
+      } catch (error) {
+        console.error('Failed to fetch users:', error)
+      }
+    }
+    fetchUsers()
   }, [])
 
   // Use default (false) until mounted, then use stored value
@@ -249,7 +272,7 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
       {/* Expense Form Dialog */}
       {expenseFormOpen && (
         <ExpenseForm
-          users={[]} // Will be passed from page context
+          users={users}
           onSubmit={async () => {
             setExpenseFormOpen(false)
           }}
