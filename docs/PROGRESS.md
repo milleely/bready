@@ -1,7 +1,7 @@
 # Bready Development Progress
 
-**Last Updated:** 2025-10-11
-**Status:** UI Polish Phase Complete ✅ | Ready for Phase 3
+**Last Updated:** 2025-10-15
+**Status:** Hero Card Polish & Page Reorganization Complete ✅ | Ready for Settlements Enhancement
 
 ## Overview
 
@@ -292,6 +292,97 @@ Bready is a multi-user expense tracking app built with Next.js 15, Prisma, and T
 - Consistent shadow and hover effects
 
 **Git Commit:** `[To be created]` - UI polish and bug fixes
+
+---
+
+### ✅ Hero Card Polish & Page Reorganization (2025-10-15)
+
+**Hero Card Improvements:**
+- **Fixed trend text wrapping issue**
+  - Added `whitespace-nowrap` CSS class to prevent "(+0% vs last mo)" from breaking to two lines
+  - Location: `app/(new-layout)/dashboard/page.tsx` line 327
+  - User experience: Cleaner, more professional single-line display
+
+- **Replaced emoji indicators with professional Lucide icons**
+  - Budget Health badge now uses contextual icons instead of emoji circles
+  - Healthy (on track): `CheckCircle2` with green-500 background
+  - Warning (>80%): `AlertCircle` with amber-400 background
+  - Over budget: `AlertTriangle` with red-500 background
+  - No budgets set: `CircleDashed` with gray-400 background
+  - Enhanced styling: rounded-2xl, backdrop-blur, shadow effects
+  - Location: `app/(new-layout)/dashboard/page.tsx` lines 351-376
+
+- **Added bread-themed emoji bullets**
+  - 🥖 (baguette) for shared expenses (communal bread)
+  - 🍞 (bread slice) for personal expenses (individual portions)
+  - Location: `app/(new-layout)/dashboard/page.tsx` lines 337, 341
+  - Design rationale: Reinforces Bready's bread-based brand identity
+
+**Page Reorganization: Insights → Expenses**
+- **Consolidated expense analytics with transaction data**
+  - Moved `EnhancedSpendingCharts` component from Insights page to Expenses page
+  - Rationale: Users expect visualizations near the data they represent (information scent)
+  - Reduces context switching between pages
+
+- **Implemented collapsible "Spending Analytics" section**
+  - Installed shadcn collapsible component (`npx shadcn@latest add @shadcn/collapsible`)
+  - Shows/hides category pie chart and per-person spending bar chart
+  - Show/Hide toggle button with ChevronUp/ChevronDown icons
+  - Amber gradient styling (`from-amber-50/50 to-orange-50/50`) matching brand theme
+  - Location: `app/(new-layout)/expenses/page.tsx` lines 197-232
+
+- **localStorage persistence for user preference**
+  - Key: `expenses-analytics-open`
+  - Defaults to expanded on first visit (most users want analytics)
+  - Remembers collapsed/expanded state across sessions
+  - SSR-safe with `typeof window !== 'undefined'` check
+  - Location: `app/(new-layout)/expenses/page.tsx` lines 60-67, 123-128
+
+- **Added stats API integration to Expenses page**
+  - Parallel fetch with `Promise.all` for optimal performance
+  - Fetches category breakdown and per-person spending data
+  - Location: `app/(new-layout)/expenses/page.tsx` lines 97-111
+
+- **Cleaned up Insights page**
+  - Removed `EnhancedSpendingCharts` component import and usage
+  - Removed "Top Spending Category" summary card
+  - Removed "Shared vs Personal" summary card
+  - Removed stats API call and state management
+  - Page now contains only AI Financial Insights placeholder card
+  - Reserved exclusively for future AI-powered features
+  - Location: `app/(new-layout)/insights/page.tsx` (entire file simplified)
+
+**Technical Implementation:**
+- **Files Modified:**
+  - `app/(new-layout)/dashboard/page.tsx` - Hero card icon system, text wrapping fix, bread emojis
+  - `app/(new-layout)/expenses/page.tsx` - Added collapsible analytics section with stats integration
+  - `app/(new-layout)/insights/page.tsx` - Removed charts and summary cards
+  - `components/ui/collapsible.tsx` - New shadcn component (Radix UI primitive)
+  - `package.json` and `package-lock.json` - Added @radix-ui/react-collapsible dependency
+
+- **Design Patterns Used:**
+  - Progressive disclosure: Secondary content hidden in collapsible sections
+  - Information architecture: Related content grouped together (analytics + expenses)
+  - Conditional rendering: Different icons based on budget health status
+  - State persistence: localStorage for UI preferences
+
+- **Performance Considerations:**
+  - Collapsible component only renders content when expanded
+  - Single API call fetches all stats data (no additional latency)
+  - Parallel Promise.all for multiple independent API calls
+
+**User Experience Impact:**
+- 3-second rule maintained: Dashboard still answers "Am I okay?" quickly
+- Reduced navigation friction: Expense analytics now one click away from expense list
+- Professional appearance: Icons replace emoji for better visual hierarchy
+- Persistent preferences: User's analytics collapsed/expanded choice remembered
+
+**Documentation Updated:**
+- `todo.md` - Added "Hero Card Final Polish" completion notes (lines 277-292)
+- `todo.md` - Added "Page Reorganization: Insights & Expenses" completion notes (lines 294-324)
+- `docs/PROGRESS.md` - This section (comprehensive session documentation)
+
+**Git Commit:** `[Next]` - feat: improve dashboard hero card and reorganize insights/expenses pages
 
 ---
 

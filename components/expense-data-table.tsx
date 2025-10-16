@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, FileImage, MoreHorizontal, Pencil, Repeat, Trash2 } from "lucide-react"
+import { ArrowUpDown, ChevronDown, FileImage, Loader2, MoreHorizontal, Pencil, Repeat, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -67,9 +67,10 @@ interface ExpenseDataTableProps {
   expenses: Expense[]
   onEdit?: (expense: Expense) => void
   onDelete?: (id: string) => void
+  optimisticIds?: string[]
 }
 
-export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTableProps) {
+export function ExpenseDataTable({ expenses, onEdit, onDelete, optimisticIds = [] }: ExpenseDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -124,14 +125,20 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
       },
       cell: ({ row }) => {
         const expense = row.original
+        const isOptimistic = optimisticIds.includes(expense.id)
         return (
           <div className="flex items-center gap-2">
+            {isOptimistic && (
+              <span title="Saving...">
+                <Loader2 className="h-4 w-4 text-amber-600 animate-spin" />
+              </span>
+            )}
             {expense.recurringExpenseId && (
               <span title="Recurring expense">
                 <Repeat className="h-4 w-4 text-purple-600" />
               </span>
             )}
-            <span>{expense.description}</span>
+            <span className={isOptimistic ? "opacity-70" : ""}>{expense.description}</span>
           </div>
         )
       },
@@ -395,22 +402,26 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete }: ExpenseDataTabl
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  className="border-golden-crust-primary/20 hover:bg-golden-crust-light/20"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map((row) => {
+                const expense = row.original
+                const isOptimistic = optimisticIds.includes(expense.id)
+                return (
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    className={`border-golden-crust-primary/20 hover:bg-golden-crust-light/20 ${isOptimistic ? 'opacity-70' : ''}`}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                )
+              })
             ) : (
               <TableRow>
                 <TableCell

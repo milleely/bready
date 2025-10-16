@@ -86,6 +86,21 @@ This project uses **Tailwind CSS v4**, which has different syntax from v3:
 
 ### Component Structure
 
+**Layout Components**:
+- `sidebar-layout.tsx` - Main layout with collapsible sidebar, month selector, and navigation
+- `month-selector-wrapper.tsx` - Suspense boundary wrapper for URL-based month selection
+- `mobile-nav.tsx` - Bottom navigation for mobile devices
+
+**Page Components** (`app/(new-layout)/*/page.tsx`):
+- All pages are async Server Components that receive `searchParams` as Promise
+- Pass `month` parameter to client-side content components
+- Examples: `budgets/page.tsx`, `dashboard/page.tsx`, `expenses/page.tsx`
+
+**Content Components** (`components/*-page-content.tsx`):
+- Client components that handle page logic and state
+- Accept `month` prop from parent page component
+- Examples: `budgets-page-content.tsx`, `dashboard-page-content.tsx`
+
 **Presentation Components** (`components/`):
 - `metrics-cards.tsx` - Dashboard stat cards with gradient backgrounds
 - `spending-charts.tsx` - Recharts visualizations (pie chart for categories, bar chart for users)
@@ -151,12 +166,56 @@ import { prisma } from '@/lib/db'
 
 The singleton pattern in `lib/db.ts` prevents multiple instances in development with hot reloading.
 
-###Development Notes
+### Development Notes
 
 - Auto-save occurs on editor content changes
 - Theme switching supports light/dark/system modes
 - Responsive design optimized for desktop use
 
+## Troubleshooting
+
+### Next.js 15 Build Issues
+
+**Problem**: `useSearchParams() should be wrapped in a suspense boundary` error during Vercel builds
+
+**Solution Pattern**:
+1. **For Page Components**: Use server-side `searchParams` prop instead of `useSearchParams()` hook
+   ```typescript
+   // Page component (Server Component)
+   export default async function Page({
+     searchParams,
+   }: {
+     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+   }) {
+     const { month } = await searchParams
+     return <PageContent month={month as string | undefined} />
+   }
+   ```
+
+2. **For Layout Components**: Extract `useSearchParams()` logic into separate component with Suspense boundary
+   ```typescript
+   // Wrapper component
+   export function Wrapper({ children }) {
+     return (
+       <Suspense fallback={<Loading />}>
+         <Client>{children}</Client>
+       </Suspense>
+     )
+   }
+
+   // Client component with useSearchParams
+   function Client({ children }) {
+     const searchParams = useSearchParams()
+     // ... logic here
+     return <Layout {...props}>{children}</Layout>
+   }
+   ```
+
+**Key Points**:
+- `useSearchParams()` in Client Components requires Suspense boundary for static generation
+- Layout components that use `useSearchParams()` need special handling (see `month-selector-wrapper.tsx`)
+- Server Components can access `searchParams` directly without Suspense
+- Local dev builds may succeed while production builds fail - always test with `next build`
 
 ### Additional Rules
 
@@ -171,3 +230,4 @@ The singleton pattern in `lib/db.ts` prevents multiple instances in development 
 9. MAKE ALL FIXES AND CODE CHANGES AS SIMPLE AS HUMANLY POSSIBLE. THEY SHOULD ONLY IMPACT NECESSARY CODE RELEVANT TO THE TASK AND NOTHING ELSE. IT SHOULD IMPACT AS LITTLE CODE AS POSSIBLE. YOUR GOAL IS TO NOT INTRODUCE ANY BUGS. IT'S ALL ABOUT SIMPLICITY.
 
 CRITICAL: When debugging, you MUST trace through the ENTIRE code flow step by step. No assumptions. No shortcuts.
+CRITICAL: Before pushing build to production, run locally to catch all errors in one cycle or in as few cycles needed.

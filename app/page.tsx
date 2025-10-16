@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { UserButton } from "@clerk/nextjs"
 import { EnhancedMetricsCards } from "@/components/enhanced-metrics-cards"
 import { EnhancedSpendingCharts } from "@/components/enhanced-spending-charts"
@@ -72,6 +73,24 @@ interface Settlement {
 }
 
 export default function Home() {
+  const router = useRouter()
+
+  // Check feature flag and redirect to new layout if enabled
+  useEffect(() => {
+    // Check env variable
+    const useNewLayout = process.env.NEXT_PUBLIC_USE_NEW_LAYOUT === 'true'
+
+    // Check cookie
+    const layoutCookie = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('layout-version='))
+      ?.split('=')[1]
+
+    if (layoutCookie === 'v2' || (layoutCookie !== 'v1' && useNewLayout)) {
+      router.push('/dashboard')
+    }
+  }, [router])
+
   // Get current month in YYYY-MM format
   const getCurrentMonth = () => {
     const today = new Date()
