@@ -1,5 +1,6 @@
 "use client"
 
+import { memo } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatCurrency } from "@/lib/utils"
 import { DollarSign, Users, Share2, TrendingUp } from "lucide-react"
@@ -11,7 +12,7 @@ interface MetricsCardsProps {
   avgPerPerson: number
 }
 
-export function MetricsCards({ totalSpent, sharedExpenses, userCount, avgPerPerson }: MetricsCardsProps) {
+export const MetricsCards = memo(function MetricsCards({ totalSpent, sharedExpenses, userCount, avgPerPerson }: MetricsCardsProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card className="bg-gradient-to-br from-amber-50 to-yellow-100 border-0 shadow-sm">
@@ -59,4 +60,4 @@ export function MetricsCards({ totalSpent, sharedExpenses, userCount, avgPerPers
       </Card>
     </div>
   )
-}
+})

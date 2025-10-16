@@ -25,7 +25,7 @@ interface SpendingChartsProps {
   spendingPerPerson: Array<{ name: string; total: number; shared: number; personal: number; color: string }>
 }
 
-export function EnhancedSpendingCharts({ spendingByCategory, spendingPerPerson }: SpendingChartsProps) {
+export const EnhancedSpendingCharts = React.memo(function EnhancedSpendingCharts({ spendingByCategory, spendingPerPerson }: SpendingChartsProps) {
   // Prepare category data for donut chart
   const categoryData = spendingByCategory.map((item, index) => {
     const category = categories.find(c => c.value === item.category)
@@ -175,4 +175,4 @@ export function EnhancedSpendingCharts({ spendingByCategory, spendingPerPerson }
       </Card>
     </div>
   )
-}
+})

@@ -1,8 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState, lazy } from "react"
 import { EnhancedBudgetProgress } from "@/components/enhanced-budget-progress"
-import { BudgetDialog } from "@/components/budget-dialog"
+
+// Lazy load dialog component (only when opened)
+const BudgetDialog = lazy(() => import("@/components/budget-dialog").then(mod => ({ default: mod.BudgetDialog })))
 
 interface User {
   id: string
@@ -129,19 +131,21 @@ export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
             Set and track your spending limits for each category.
           </p>
         </div>
-        <BudgetDialog
-          users={users}
-          onBudgetSet={fetchData}
-          budget={editingBudget}
-          {...(editingBudget && {
-            open: true,
-            onOpenChange: (open: boolean) => {
-              if (!open) {
-                setEditingBudget(undefined)
+        <Suspense fallback={null}>
+          <BudgetDialog
+            users={users}
+            onBudgetSet={fetchData}
+            budget={editingBudget}
+            {...(editingBudget && {
+              open: true,
+              onOpenChange: (open: boolean) => {
+                if (!open) {
+                  setEditingBudget(undefined)
+                }
               }
-            }
-          })}
-        />
+            })}
+          />
+        </Suspense>
       </div>
 
       {budgets.length === 0 ? (
@@ -152,10 +156,12 @@ export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
             <p className="text-sm text-gray-600 mb-4">
               Start tracking your spending by setting budgets for different categories.
             </p>
-            <BudgetDialog
-              users={users}
-              onBudgetSet={fetchData}
-            />
+            <Suspense fallback={null}>
+              <BudgetDialog
+                users={users}
+                onBudgetSet={fetchData}
+              />
+            </Suspense>
           </div>
         </div>
       ) : (

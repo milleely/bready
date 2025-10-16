@@ -1,9 +1,7 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useState, lazy } from "react"
 import { EnhancedRecentExpenses } from "@/components/enhanced-recent-expenses"
-import { ExpenseForm } from "@/components/expense-form"
-import { EnhancedSpendingCharts } from "@/components/enhanced-spending-charts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp, BarChart3, Plus } from "lucide-react"
@@ -12,6 +10,10 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+
+// Lazy load heavy components (only when needed)
+const EnhancedSpendingCharts = lazy(() => import("@/components/enhanced-spending-charts").then(mod => ({ default: mod.EnhancedSpendingCharts })))
+const ExpenseForm = lazy(() => import("@/components/expense-form").then(mod => ({ default: mod.ExpenseForm })))
 
 interface User {
   id: string
@@ -285,10 +287,21 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
           </CardHeader>
           <CollapsibleContent>
             <CardContent>
-              <EnhancedSpendingCharts
-                spendingByCategory={stats.spendingByCategory}
-                spendingPerPerson={stats.spendingPerPerson}
-              />
+              <Suspense fallback={
+                <div className="flex items-center justify-center py-12">
+                  <div className="text-center">
+                    <div className="animate-pulse mb-4">
+                      <BarChart3 className="h-12 w-12 text-amber-400 mx-auto" />
+                    </div>
+                    <p className="text-sm text-amber-700">Loading charts...</p>
+                  </div>
+                </div>
+              }>
+                <EnhancedSpendingCharts
+                  spendingByCategory={stats.spendingByCategory}
+                  spendingPerPerson={stats.spendingPerPerson}
+                />
+              </Suspense>
             </CardContent>
           </CollapsibleContent>
         </Card>
@@ -324,30 +337,34 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
 
       {/* Add Expense Form */}
       {addingExpense && (
-        <ExpenseForm
-          users={users}
-          onSubmit={async (expense) => {
-            await handleAddExpense(expense)
-            setAddingExpense(false)
-          }}
-          open={addingExpense}
-          onOpenChange={setAddingExpense}
-        />
+        <Suspense fallback={null}>
+          <ExpenseForm
+            users={users}
+            onSubmit={async (expense) => {
+              await handleAddExpense(expense)
+              setAddingExpense(false)
+            }}
+            open={addingExpense}
+            onOpenChange={setAddingExpense}
+          />
+        </Suspense>
       )}
 
       {/* Edit Expense Form */}
       {editingExpense && (
-        <ExpenseForm
-          users={users}
-          expense={editingExpense}
-          onSubmit={handleEditExpense}
-          open={!!editingExpense}
-          onOpenChange={(open) => {
-            if (!open) {
-              setEditingExpense(undefined)
-            }
-          }}
-        />
+        <Suspense fallback={null}>
+          <ExpenseForm
+            users={users}
+            expense={editingExpense}
+            onSubmit={handleEditExpense}
+            open={!!editingExpense}
+            onOpenChange={(open) => {
+              if (!open) {
+                setEditingExpense(undefined)
+              }
+            }}
+          />
+        </Suspense>
       )}
     </div>
   )
