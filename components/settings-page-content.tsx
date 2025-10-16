@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { UserManagement } from "@/components/user-management"
+import { KeyboardShortcutsCard } from "@/components/keyboard-shortcuts-card"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Bell, Settings as SettingsIcon } from "lucide-react"
@@ -67,8 +68,11 @@ export function SettingsPageContent() {
       {/* User Management Section */}
       <UserManagement users={users} onRefresh={fetchUsers} />
 
-      {/* Future Features - Placeholder Sections */}
+      {/* Settings Grid - Keyboard Shortcuts & Future Features */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Keyboard Shortcuts */}
+        <KeyboardShortcutsCard />
+
         {/* Notification Settings - Coming Soon */}
         <Card className="opacity-60 cursor-not-allowed">
           <CardHeader>

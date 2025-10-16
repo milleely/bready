@@ -7,7 +7,7 @@ import { MobileNav } from "@/components/mobile-nav/mobile-nav"
 import { BreadyLogo } from "@/components/bready-logo"
 import { ExpenseForm } from "@/components/expense-form"
 import { MonthSelector } from "@/components/month-selector"
-import { KeyboardShortcutsDialog } from "@/components/keyboard-shortcuts-dialog"
+import { KeyboardShortcutsNavigation } from "@/components/keyboard-shortcuts-dialog"
 import { Menu, X, Plus, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -266,8 +266,8 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
         />
       )}
 
-      {/* Keyboard Shortcuts Help */}
-      <KeyboardShortcutsDialog />
+      {/* Keyboard Shortcuts Navigation (? key to Settings) */}
+      <KeyboardShortcutsNavigation />
     </div>
   )
 }
