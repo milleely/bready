@@ -58,18 +58,18 @@ export function MobileMoreMenu({ isOpen, onClose }: MobileMoreMenuProps) {
       >
         {/* Handle bar */}
         <div className="flex justify-center pt-3 pb-2">
-          <div className="w-12 h-1 bg-gray-300 rounded-full" />
+          <div className="w-12 h-1 bg-amber-300 rounded-full" />
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pb-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">More</h2>
+        <div className="flex items-center justify-between px-6 pb-4 border-b border-[hsl(var(--border-golden-crust))]">
+          <h2 className="text-lg font-semibold text-amber-900">More</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg hover:bg-amber-100 transition-colors"
             aria-label="Close menu"
           >
-            <X className="h-5 w-5 text-gray-500" />
+            <X className="h-5 w-5 text-amber-700" />
           </button>
         </div>
 
@@ -87,17 +87,17 @@ export function MobileMoreMenu({ isOpen, onClose }: MobileMoreMenuProps) {
                 className={cn(
                   "flex items-center gap-4 px-4 py-4 rounded-xl transition-all",
                   isActive
-                    ? "bg-amber-50 text-amber-900"
-                    : "text-gray-700 hover:bg-gray-50"
+                    ? "bg-amber-50 text-amber-900 toast-texture-subtle"
+                    : "text-amber-800 hover:bg-amber-50"
                 )}
               >
                 <div className={cn(
                   "p-2.5 rounded-lg",
-                  isActive ? "bg-amber-100" : "bg-gray-100"
+                  isActive ? "bg-amber-100" : "bg-amber-50"
                 )}>
                   <Icon className={cn(
                     "h-5 w-5",
-                    isActive ? "text-amber-700" : "text-gray-600"
+                    isActive ? "text-amber-700" : "text-amber-600"
                   )} />
                 </div>
                 <div className="flex-1">
@@ -107,7 +107,7 @@ export function MobileMoreMenu({ isOpen, onClose }: MobileMoreMenuProps) {
                   )}>
                     {item.title}
                   </div>
-                  <div className="text-xs text-gray-500 mt-0.5">
+                  <div className="text-xs text-amber-700 mt-0.5">
                     {item.description}
                   </div>
                 </div>

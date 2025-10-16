@@ -129,7 +129,7 @@ export function SettlementCard({ settlements, onMarkAsPaid }: SettlementCardProp
                           onClick={() => handleMarkAsPaid(settlement)}
                           disabled={isProcessing}
                           size="sm"
-                          className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-md w-full sm:w-auto"
+                          className="toast-gradient-golden hover:toast-gradient-dark text-white font-semibold shadow-md w-full sm:w-auto"
                         >
                           {isProcessing ? (
                             "Processing..."
@@ -152,8 +152,8 @@ export function SettlementCard({ settlements, onMarkAsPaid }: SettlementCardProp
           </div>
         ) : (
           <div className="text-center py-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 mb-4">
-              <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 toast-texture-subtle mb-4">
+              <CheckCircle2 className="h-8 w-8 text-amber-600" />
             </div>
             <h3 className="text-lg font-bold text-golden-crust-dark mb-2">
               All Settled Up!

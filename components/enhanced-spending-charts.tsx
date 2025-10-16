@@ -160,7 +160,7 @@ export const EnhancedSpendingCharts = React.memo(function EnhancedSpendingCharts
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-sm bg-emerald-600" />
+                  <div className="w-3 h-3 rounded-sm bg-amber-400 toast-texture-subtle" />
                   <div>
                     <p className="text-xs font-semibold text-golden-crust-dark/70">Shared</p>
                     <p className="text-sm font-bold text-golden-crust-dark">

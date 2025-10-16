@@ -6,21 +6,21 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const categories = [
-  { value: 'groceries', label: 'Groceries', color: '#f59e0b', icon: '🥖' },
-  { value: 'utilities', label: 'Utilities', color: '#71717a', icon: '⚡' },
-  { value: 'subscriptions', label: 'Subscriptions', color: '#6366f1', icon: '📱' },
-  { value: 'dining', label: 'Dining Out', color: '#ea580c', icon: '🍽️' },
-  { value: 'transportation', label: 'Transportation', color: '#dc2626', icon: '🚗' },
-  { value: 'entertainment', label: 'Entertainment', color: '#a855f7', icon: '🎬' },
-  { value: 'healthcare', label: 'Healthcare', color: '#10b981', icon: '💊' },
-  { value: 'household', label: 'Household Items', color: '#0891b2', icon: '🏠' },
-  { value: 'personal-care', label: 'Personal Care', color: '#ec4899', icon: '✨' },
-  { value: 'shopping', label: 'Shopping', color: '#8b5cf6', icon: '👕' },
-  { value: 'pets', label: 'Pets', color: '#facc15', icon: '🐾' },
-  { value: 'gifts', label: 'Gifts', color: '#f43f5e', icon: '🎁' },
-  { value: 'travel', label: 'Travel', color: '#0284c7', icon: '✈️' },
-  { value: 'home-maintenance', label: 'Home Maintenance', color: '#64748b', icon: '🔧' },
-  { value: 'other', label: 'Other', color: '#78716c', icon: '📦' },
+  { value: 'groceries', label: 'Groceries', color: '#f59e0b', icon: '🥖' }, // amber-500 (perfect toast)
+  { value: 'utilities', label: 'Utilities', color: '#92400e', icon: '⚡' }, // amber-800 (dark crust)
+  { value: 'subscriptions', label: 'Subscriptions', color: '#fbbf24', icon: '📱' }, // amber-400 (fresh toast)
+  { value: 'dining', label: 'Dining Out', color: '#ea580c', icon: '🍽️' }, // orange-600 (compatible)
+  { value: 'transportation', label: 'Transportation', color: '#b45309', icon: '🚗' }, // amber-700 (burnt toast)
+  { value: 'entertainment', label: 'Entertainment', color: '#d97706', icon: '🎬' }, // amber-600 (golden toast)
+  { value: 'healthcare', label: 'Healthcare', color: '#fed7aa', icon: '💊' }, // orange-200 (light toast)
+  { value: 'household', label: 'Household Items', color: '#fde68a', icon: '🏠' }, // amber-200 (bread crumb)
+  { value: 'personal-care', label: 'Personal Care', color: '#fef3c7', icon: '✨' }, // amber-100 (lightest crumb)
+  { value: 'shopping', label: 'Shopping', color: '#fffbeb', icon: '👕' }, // amber-50 (soft crumb)
+  { value: 'pets', label: 'Pets', color: '#facc15', icon: '🐾' }, // yellow-400 (toast-compatible)
+  { value: 'gifts', label: 'Gifts', color: '#fb923c', icon: '🎁' }, // orange-400 (warm toast)
+  { value: 'travel', label: 'Travel', color: '#fdba74', icon: '✈️' }, // orange-300 (light orange)
+  { value: 'home-maintenance', label: 'Home Maintenance', color: '#78350f', icon: '🔧' }, // amber-900 (charred crust)
+  { value: 'other', label: 'Other', color: '#451a03', icon: '📦' }, // amber-950 (darkest crust)
 ] as const
 
 export type Category = typeof categories[number]['value']

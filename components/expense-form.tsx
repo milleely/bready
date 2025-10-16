@@ -387,7 +387,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                   variant="outline"
                   onClick={handleScanReceipt}
                   disabled={scanning}
-                  className="w-full border-2 border-purple-500 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold"
+                  className="w-full border-2 border-amber-500 bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold toast-texture-subtle"
                 >
                   <Sparkles className="mr-2 h-4 w-4" />
                   {scanning ? 'Analyzing Receipt...' : 'Scan Receipt with AI'}
@@ -421,7 +421,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
             <Button
               type="submit"
               disabled={loading || uploading}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold shadow-lg"
+              className="toast-gradient-golden hover:toast-gradient-dark text-white font-semibold shadow-lg"
             >
               {uploading ? 'Uploading...' : loading ? 'Saving...' : expense ? 'Update' : 'Add Expense'}
             </Button>
