@@ -1,7 +1,6 @@
 "use client"
 
 import { Suspense, useEffect, useState } from "react"
-import { useSearchParams} from "next/navigation"
 import { SettlementCard } from "@/components/settlement-card"
 import { SettlementSummaryCards } from "@/components/settlement-summary-cards"
 import { SettlementHistory } from "@/components/settlement-history"
@@ -24,8 +23,11 @@ interface SettlementHistoryItem {
   note: string | null
 }
 
-export function SettlementsPageContent() {
-  const searchParams = useSearchParams()
+interface SettlementsPageContentProps {
+  month?: string
+}
+
+export function SettlementsPageContent({ month }: SettlementsPageContentProps) {
   const [settlements, setSettlements] = useState<Settlement[]>([])
   const [settlementHistory, setSettlementHistory] = useState<SettlementHistoryItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -36,8 +38,8 @@ export function SettlementsPageContent() {
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`
   }
 
-  // Get selected month from URL or default to current
-  const selectedMonth = searchParams.get('month') || getCurrentMonth()
+  // Get selected month from prop or default to current
+  const selectedMonth = month || getCurrentMonth()
 
   // Format month for display (e.g., "September 2024")
   const getMonthName = (monthStr: string) => {

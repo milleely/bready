@@ -1,7 +1,6 @@
 "use client"
 
 import { Suspense, useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -71,8 +70,11 @@ interface RecurringExpense {
   nextDate: string
 }
 
-export function DashboardPageContent() {
-  const searchParams = useSearchParams()
+interface DashboardPageContentProps {
+  month?: string
+}
+
+export function DashboardPageContent({ month }: DashboardPageContentProps) {
   const [stats, setStats] = useState<Stats>({
     totalSpent: 0,
     sharedExpenses: 0,
@@ -91,8 +93,8 @@ export function DashboardPageContent() {
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
   }
 
-  // Get selected month from URL or default to current
-  const selectedMonth = searchParams.get('month') || getCurrentMonth()
+  // Get selected month from prop or default to current
+  const selectedMonth = month || getCurrentMonth()
 
   // Format month for display (e.g., "September 2024")
   const getMonthName = (monthStr: string) => {

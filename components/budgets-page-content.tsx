@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
 import { EnhancedBudgetProgress } from "@/components/enhanced-budget-progress"
 import { BudgetDialog } from "@/components/budget-dialog"
 import { ContextualAlerts, createOverBudgetAlert } from "@/components/contextual-alerts"
@@ -34,8 +33,11 @@ interface CategorySpending {
   amount: number
 }
 
-export function BudgetsPageContent() {
-  const searchParams = useSearchParams()
+interface BudgetsPageContentProps {
+  month?: string
+}
+
+export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
   const [users, setUsers] = useState<User[]>([])
   const [budgets, setBudgets] = useState<Budget[]>([])
   const [expenses, setExpenses] = useState<Expense[]>([])
@@ -49,8 +51,8 @@ export function BudgetsPageContent() {
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
   }
 
-  // Get selected month from URL or default to current
-  const selectedMonth = searchParams.get('month') || getCurrentMonth()
+  // Get selected month from prop or default to current
+  const selectedMonth = month || getCurrentMonth()
 
   // Format month for display (e.g., "September 2024")
   const getMonthName = (monthStr: string) => {

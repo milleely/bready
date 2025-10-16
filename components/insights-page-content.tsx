@@ -1,21 +1,22 @@
 "use client"
 
-import { useSearchParams } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Brain, Sparkles, TrendingUp, AlertCircle } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
-export function InsightsPageContent() {
-  const searchParams = useSearchParams()
+interface InsightsPageContentProps {
+  month?: string
+}
 
+export function InsightsPageContent({ month }: InsightsPageContentProps) {
   // Get current month
   const getCurrentMonth = () => {
     const today = new Date()
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`
   }
 
-  // Get selected month from URL or default to current
-  const selectedMonth = searchParams.get('month') || getCurrentMonth()
+  // Get selected month from prop or default to current
+  const selectedMonth = month || getCurrentMonth()
 
   // Format month for display (e.g., "September 2024")
   const getMonthName = (monthStr: string) => {
