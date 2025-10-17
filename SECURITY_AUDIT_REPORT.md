@@ -22,12 +22,14 @@ This comprehensive security audit examined the Bready expense tracking applicati
 **CVSS Score:** 9.8 (Critical)
 
 **Issue:**
-The `.env` file contains real, active credentials that are exposed:
+The `.env` file contains real, active credentials that must never be committed:
 ```
-DATABASE_URL="postgresql://neondb_owner:npg_4ZmYkOzaE0qN@ep-nameless-forest-adgif0y0-pooler.c-2.us-east-1.aws.neon.tech/neondb?sslmode=require"
-CLERK_SECRET_KEY=sk_test_JGMSeeG1zTsYXg6MbBiDtlFyeZgbELgoQPqv1BpbbC
-OPENAI_API_KEY=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
+DATABASE_URL="postgresql://username:password@host:5432/database?sslmode=require"
+CLERK_SECRET_KEY=sk_test_[REDACTED]
+OPENAI_API_KEY=sk-proj-[REDACTED]
 ```
+
+**Note:** Example credentials shown above have been redacted. Never commit actual API keys or database credentials to version control.
 
 **Impact:**
 - Unauthorized database access (read, modify, delete all data)

@@ -68,8 +68,8 @@
 - **Severity**: Critical
 - **Location**: `/Users/Owner/Desktop/cursor-tutorial/.env`
 - **Issue**: Clerk test API keys are exposed in the `.env` file:
-  - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_YmFsYW5jZWQtbGFtYi04Mi5jbGVyay5hY2NvdW50cy5kZXYk`
-  - `CLERK_SECRET_KEY=sk_test_JGMSeeG1zTsYXg6MbBiDtlFyeZgbELgoQPqv1BpbbC`
+  - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_[REDACTED]`
+  - `CLERK_SECRET_KEY=sk_test_[REDACTED]`
 - **Impact**: Anyone with access to these keys can impersonate your application and access user data
 - **Recommendation**:
   1. Immediately rotate these keys in Clerk dashboard
