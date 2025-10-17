@@ -139,7 +139,7 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
           </div>
 
           {/* Bottom Section */}
-          {!sidebarCollapsed && (
+          {mounted && !sidebarCollapsed && (
             <div className="p-4 border-t border-[hsl(var(--border-light-crust))]">
               <div className="flex items-center justify-center">
                 <UserButton
@@ -153,7 +153,7 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
               </div>
             </div>
           )}
-          {sidebarCollapsed && (
+          {mounted && sidebarCollapsed && (
             <div className="p-2 border-t border-[hsl(var(--border-light-crust))] flex justify-center">
               <UserButton
                 afterSignOutUrl="/sign-in"
@@ -212,16 +212,18 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
                   selectedMonth={selectedMonth}
                   onMonthChange={onMonthChange}
                 />
-                <div className="flex items-center justify-center">
-                  <UserButton
-                    afterSignOutUrl="/sign-in"
-                    appearance={{
-                      elements: {
-                        avatarBox: "w-10 h-10"
-                      }
-                    }}
-                  />
-                </div>
+                {mounted && (
+                  <div className="flex items-center justify-center">
+                    <UserButton
+                      afterSignOutUrl="/sign-in"
+                      appearance={{
+                        elements: {
+                          avatarBox: "w-10 h-10"
+                        }
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </aside>
@@ -242,14 +244,16 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
                 Bready
               </h1>
             </div>
-            <UserButton
-              afterSignOutUrl="/sign-in"
-              appearance={{
-                elements: {
-                  avatarBox: "w-9 h-9"
-                }
-              }}
-            />
+            {mounted && (
+              <UserButton
+                afterSignOutUrl="/sign-in"
+                appearance={{
+                  elements: {
+                    avatarBox: "w-9 h-9"
+                  }
+                }}
+              />
+            )}
           </div>
           {/* Add Expense Button */}
           <Button

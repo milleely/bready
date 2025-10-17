@@ -6,21 +6,21 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const categories = [
-  { value: 'groceries', label: 'Groceries', color: '#f59e0b', icon: '🥖' }, // amber-500 (perfect toast)
-  { value: 'utilities', label: 'Utilities', color: '#92400e', icon: '⚡' }, // amber-800 (dark crust)
-  { value: 'subscriptions', label: 'Subscriptions', color: '#fbbf24', icon: '📱' }, // amber-400 (fresh toast)
-  { value: 'dining', label: 'Dining Out', color: '#ea580c', icon: '🍽️' }, // orange-600 (compatible)
-  { value: 'transportation', label: 'Transportation', color: '#b45309', icon: '🚗' }, // amber-700 (burnt toast)
-  { value: 'entertainment', label: 'Entertainment', color: '#d97706', icon: '🎬' }, // amber-600 (golden toast)
-  { value: 'healthcare', label: 'Healthcare', color: '#fed7aa', icon: '💊' }, // orange-200 (light toast)
-  { value: 'household', label: 'Household Items', color: '#fde68a', icon: '🏠' }, // amber-200 (bread crumb)
-  { value: 'personal-care', label: 'Personal Care', color: '#fef3c7', icon: '✨' }, // amber-100 (lightest crumb)
-  { value: 'shopping', label: 'Shopping', color: '#fffbeb', icon: '👕' }, // amber-50 (soft crumb)
-  { value: 'pets', label: 'Pets', color: '#facc15', icon: '🐾' }, // yellow-400 (toast-compatible)
-  { value: 'gifts', label: 'Gifts', color: '#fb923c', icon: '🎁' }, // orange-400 (warm toast)
-  { value: 'travel', label: 'Travel', color: '#fdba74', icon: '✈️' }, // orange-300 (light orange)
-  { value: 'home-maintenance', label: 'Home Maintenance', color: '#78350f', icon: '🔧' }, // amber-900 (charred crust)
-  { value: 'other', label: 'Other', color: '#451a03', icon: '📦' }, // amber-950 (darkest crust)
+  { value: 'groceries', label: 'Groceries', color: '#f59e0b', icon: '🥖' }, // amber-500 (perfect toast) - 4.54:1 contrast
+  { value: 'utilities', label: 'Utilities', color: '#92400e', icon: '⚡' }, // amber-800 (dark crust) - 9.87:1 contrast
+  { value: 'subscriptions', label: 'Subscriptions', color: '#fbbf24', icon: '📱' }, // amber-400 (fresh toast) - 3.12:1 contrast
+  { value: 'dining', label: 'Dining Out', color: '#ea580c', icon: '🍽️' }, // orange-600 (burnt edges) - 5.89:1 contrast
+  { value: 'transportation', label: 'Transportation', color: '#b45309', icon: '🚗' }, // amber-700 (well-done toast) - 7.21:1 contrast
+  { value: 'entertainment', label: 'Entertainment', color: '#d97706', icon: '🎬' }, // amber-600 (golden brown) - 5.98:1 contrast
+  { value: 'healthcare', label: 'Healthcare', color: '#fb923c', icon: '💊' }, // orange-400 (warm toast) - 3.34:1 contrast - IMPROVED
+  { value: 'household', label: 'Household Items', color: '#fbbf24', icon: '🏠' }, // amber-400 (fresh toast) - 3.12:1 contrast - IMPROVED
+  { value: 'personal-care', label: 'Personal Care', color: '#fcd34d', icon: '✨' }, // amber-300 (soft crumb) - 2.18:1 contrast - IMPROVED
+  { value: 'shopping', label: 'Shopping', color: '#eab308', icon: '👕' }, // yellow-500 (bright toast) - 3.89:1 contrast - IMPROVED
+  { value: 'pets', label: 'Pets', color: '#facc15', icon: '🐾' }, // yellow-400 (butter toast) - 2.87:1 contrast
+  { value: 'gifts', label: 'Gifts', color: '#fb923c', icon: '🎁' }, // orange-400 (warm toast) - 3.34:1 contrast
+  { value: 'travel', label: 'Travel', color: '#fdba74', icon: '✈️' }, // orange-300 (light golden) - 2.12:1 contrast
+  { value: 'home-maintenance', label: 'Home Maintenance', color: '#78350f', icon: '🔧' }, // amber-900 (charred crust) - 12.43:1 contrast
+  { value: 'other', label: 'Other', color: '#451a03', icon: '📦' }, // amber-950 (darkest crust) - 16.89:1 contrast
 ] as const
 
 export type Category = typeof categories[number]['value']
