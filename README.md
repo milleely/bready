@@ -37,7 +37,6 @@ Bready is a warm and welcoming multi-user expense tracker designed for household
 
 ### 🎨 Beautiful Design
 - **Warm Color Palette:** Bread-themed design with amber, orange, and golden tones
-- **Dark/Light Mode:** Full theme support with automatic system detection
 - **Responsive:** Works seamlessly on mobile, tablet, and desktop
 - **Modern UI:** Built with shadcn/ui components and Tailwind CSS v4
 
