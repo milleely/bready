@@ -1,7 +1,28 @@
 {
-  "name": "cursor-tutorial",
-  "version": "0.1.0",
-  "private": true,
+  "name": "bready",
+  "version": "1.1.0",
+  "description": "Track your spending and watch your dough rise - A warm and welcoming multi-user expense tracker for households and roommates",
+  "author": "Bready Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/milleely/bready.git"
+  },
+  "bugs": {
+    "url": "https://github.com/milleely/bready/issues"
+  },
+  "homepage": "https://github.com/milleely/bready#readme",
+  "keywords": [
+    "expense-tracker",
+    "budgeting",
+    "finance",
+    "household",
+    "nextjs",
+    "typescript",
+    "prisma",
+    "clerk"
+  ],
+  "private": false,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

@@ -60,8 +60,8 @@ Bready is a warm and welcoming multi-user expense tracker designed for household
 
 1. **Clone the repository:**
    ```bash
-   git clone <your-repo-url>
-   cd cursor-tutorial
+   git clone https://github.com/milleely/bready.git
+   cd bready
    ```
 
 2. **Install dependencies:**
@@ -336,7 +336,7 @@ Your app will be live with automatic HTTPS, global CDN, and managed database.
 
 Have questions or found a bug?
 
-- **Issues:** [GitHub Issues](https://github.com/yourusername/bready/issues)
+- **Issues:** [GitHub Issues](https://github.com/milleely/bready/issues)
 - **Documentation:** Check [CLAUDE.md](./CLAUDE.md) for technical details
 - **PRD:** See [PRD.md](./PRD.md) for product information
 
