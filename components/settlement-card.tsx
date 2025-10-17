@@ -129,7 +129,7 @@ export function SettlementCard({ settlements, onMarkAsPaid }: SettlementCardProp
                           onClick={() => handleMarkAsPaid(settlement)}
                           disabled={isProcessing}
                           size="sm"
-                          className="toast-gradient-golden hover:toast-gradient-dark text-white font-semibold shadow-md w-full sm:w-auto"
+                          className="toast-gradient-golden hover:toast-gradient-dark text-white font-semibold shadow-md w-full sm:w-auto transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
                         >
                           {isProcessing ? (
                             "Processing..."
