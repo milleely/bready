@@ -12,11 +12,14 @@ import {
   AlertCircle,
   ArrowRight,
   Wallet,
-  CircleDashed
+  CircleDashed,
+  Plus
 } from "lucide-react"
 import { formatCurrency, categories } from "@/lib/utils"
 import Link from "next/link"
 import { SpendingSparkline } from "@/components/spending-sparkline"
+import { BreadyLogo } from "@/components/bready-logo"
+import { ExpenseForm } from "@/components/expense-form"
 
 interface Stats {
   totalSpent: number
@@ -63,6 +66,12 @@ interface RecurringExpense {
   nextDate: string
 }
 
+interface User {
+  id: string
+  name: string
+  color: string
+}
+
 interface DashboardPageContentProps {
   month?: string
 }
@@ -80,6 +89,8 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
   const [recurringExpenses, setRecurringExpenses] = useState<RecurringExpense[]>([])
   const [previousMonthTotal, setPreviousMonthTotal] = useState<number>(0)
   const [loading, setLoading] = useState(true)
+  const [expenseFormOpen, setExpenseFormOpen] = useState(false)
+  const [users, setUsers] = useState<User[]>([])
 
   const getCurrentMonth = () => {
     const today = new Date()
@@ -148,6 +159,22 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
   useEffect(() => {
     fetchData()
   }, [selectedMonth])
+
+  // Fetch users for expense form
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('/api/users')
+        if (response.ok) {
+          const usersData = await response.json()
+          setUsers(usersData)
+        }
+      } catch (error) {
+        console.error('Failed to fetch users:', error)
+      }
+    }
+    fetchUsers()
+  }, [])
 
   // Calculate budget health
   const getBudgetHealth = () => {
@@ -224,25 +251,38 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
 
         <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-0 shadow-lg">
           <CardContent className="pt-12 pb-12 text-center">
-            <div className="mb-6 text-6xl">🍞</div>
+            <div className="mb-6 flex justify-center">
+              <BreadyLogo size={64} />
+            </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Start Tracking Your Dough</h2>
             <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              You haven't added any expenses yet. Start by adding your first expense to see your financial insights.
+              You haven't added any expenses for this month yet. Start by adding your first expense to see your financial insights.
             </p>
             <div className="flex gap-3 justify-center">
-              <Link href="/expenses">
-                <Button size="lg" className="bg-amber-600 hover:bg-amber-700">
-                  Add Your First Expense
-                </Button>
-              </Link>
-              <Link href="/budgets">
-                <Button size="lg" variant="outline">
-                  Set a Budget
-                </Button>
-              </Link>
+              <Button
+                size="lg"
+                onClick={() => setExpenseFormOpen(true)}
+                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-md"
+              >
+                <Plus className="mr-2 h-5 w-5" />
+                Add Your First Expense
+              </Button>
             </div>
           </CardContent>
         </Card>
+
+        {/* Expense Form Dialog */}
+        {expenseFormOpen && (
+          <ExpenseForm
+            users={users}
+            onSubmit={async () => {
+              setExpenseFormOpen(false)
+              await fetchData()
+            }}
+            open={expenseFormOpen}
+            onOpenChange={setExpenseFormOpen}
+          />
+        )}
       </div>
     )
   }
@@ -507,6 +547,19 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* Expense Form Dialog */}
+      {expenseFormOpen && (
+        <ExpenseForm
+          users={users}
+          onSubmit={async () => {
+            setExpenseFormOpen(false)
+            await fetchData()
+          }}
+          open={expenseFormOpen}
+          onOpenChange={setExpenseFormOpen}
+        />
+      )}
     </div>
   )
 }

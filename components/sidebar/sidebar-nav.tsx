@@ -72,7 +72,7 @@ export function SidebarNav({ className, collapsed = false }: SidebarNavProps) {
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-amber-100/50",
               isActive
-                ? "bg-amber-200/80 text-amber-900 shadow-sm"
+                ? "bg-amber-300 text-amber-900 shadow-sm"
                 : "text-gray-700 hover:text-amber-900",
               collapsed && "justify-center px-2"
             )}
