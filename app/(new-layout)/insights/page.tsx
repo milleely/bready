@@ -1,5 +1,4 @@
 import { InsightsPageContent } from "@/components/insights-page-content"
-import { MobilePageSwiper } from "@/components/mobile-page-swiper"
 
 export default async function InsightsPage({
   searchParams,
@@ -8,9 +7,5 @@ export default async function InsightsPage({
 }) {
   const { month } = await searchParams
 
-  return (
-    <MobilePageSwiper>
-      <InsightsPageContent month={month as string | undefined} />
-    </MobilePageSwiper>
-  )
+  return <InsightsPageContent month={month as string | undefined} />
 }

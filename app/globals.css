@@ -126,19 +126,6 @@ select:focus-visible {
   border-radius: 0.5rem;
 }
 
-/* Mobile Swipe Navigation Animations */
-@media (max-width: 768px) {
-  .mobile-swipe-left {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-
-  .mobile-swipe-right {
-    transform: translateX(100%);
-    opacity: 0;
-  }
-}
-
 /* Bottom Sheet Animation */
 @keyframes fade-in {
   from {
