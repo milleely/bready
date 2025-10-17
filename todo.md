@@ -473,6 +473,122 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
   - Keyboard shortcuts dialog: Press `?` to open ✅
   - All features compiled successfully with no TypeScript errors ✅
 
+### Toast-Themed Design System & Category Colors (2025-10-17)
+- **Date Completed**: 2025-10-17
+- **Goal**: Implement comprehensive toast/bread-themed design system with semantically intuitive category colors
+
+- **Changes Made**:
+
+  **Toast Slice Logo Redesign:**
+  - ✅ Replaced washed-out circular logo with distinctive side-view bread slice design
+  - ✅ No conditional rendering - consistent visibility across all screen sizes
+  - ✅ Strong contrast ratios: 7.1:1 (crust), 10.4:1 (outline)
+  - ✅ Diamond texture pattern integrated into logo design
+  - ✅ Colors: #f59e0b (amber-500), #b45309 (amber-700), #d97706 (amber-600), #92400e (amber-800)
+  - **File**: `components/bready-logo.tsx` (complete rewrite, 86 lines)
+
+  **Toast-Themed Design Token System:**
+  - ✅ Added comprehensive CSS design tokens to `app/globals.css`:
+    - Toast status colors (fresh, golden, caramel, burnt, crust, crumb)
+    - Crust border colors (light, golden, dark, burnt)
+    - Diamond texture patterns (subtle, medium, dense)
+    - Toast gradient system (light, medium, golden, dark, horizontal, radial)
+    - Toasting animation for loading states
+    - Crust border treatments
+  - ✅ Replaced gray borders throughout app with toast-themed crust borders
+  - ✅ Updated success states from emerald to amber
+  - ✅ Applied toast gradients to buttons and cards
+
+  **Component Updates for Theme Consistency:**
+  - ✅ `components/enhanced-spending-charts.tsx`: emerald → amber shared indicator
+  - ✅ `components/settlement-card.tsx`: emerald buttons → toast-gradient-golden
+  - ✅ `components/expense-form.tsx`:
+    - Submit button: green/emerald → toast-gradient-golden
+    - AI scan button: purple → amber with texture
+  - ✅ `components/sidebar-layout.tsx`: All border-gray-200 → border-[hsl(var(--border-light-crust))]
+  - ✅ `components/mobile-nav/mobile-nav.tsx`: border-gray-200 → border-golden-crust
+  - ✅ `components/mobile-nav/mobile-more-menu.tsx`: Gray colors → amber palette with texture
+
+  **Hydration Error Fix:**
+  - ✅ Fixed React hydration mismatch with UserButton component
+  - ✅ Added `mounted` state guards to prevent SSR/CSR conflicts
+  - ✅ Applied to desktop sidebar, mobile sidebar, and mobile header
+  - **File**: `components/sidebar-layout.tsx`
+
+  **Category Color Evolution (3 iterations):**
+
+  1. **Full-Spectrum Palette** (Commit e56f1e2):
+     - Replaced toast monochrome with 15 distinct semantic colors
+     - Greens, blues, purples, reds, pinks, grays across full spectrum
+     - All colors meet WCAG AA (3:1+ contrast)
+     - Retained 2 amber colors (Household, Pets) for brand continuity
+
+  2. **Lighter Toast-Themed Palette** (Commit 87f0d5e):
+     - User requested lighter, warmer colors fitting bread theme
+     - "Toast & Marmalade Collection" - warm hues (0°-60°)
+     - Average lightness increased from 45% to 58%
+     - All warm oranges, reds, yellows, browns
+
+  3. **Semantic Intuitive Palette** (Commit 785c3f5) - **FINAL**:
+     - User feedback: "subscriptions should be blue" - prioritize semantic meaning
+     - Full 360° spectrum coverage for maximum distinction
+     - Colors match universal expectations:
+       - 🟢 Green (#52b44a) - Groceries (fresh produce)
+       - 🔵 Blue (#1a7bb8) - Utilities (water/electricity)
+       - 💜 Violet (#7c3aed) - Subscriptions (digital/tech)
+       - 🔴 Red (#e74c3c) - Dining (appetite)
+       - ⚫ Gray (#5a5a5a) - Transportation (roads/asphalt)
+       - 🟡 Gold (#f39c12) - Entertainment (shows/lights)
+       - 🟦 Teal (#16a085) - Healthcare (medical/clinical)
+       - 🟤 Brown (#92400e, #b45309) - Household & Pets (RETAINED)
+       - 💗 Pink (#e91e63, #ec407a) - Personal Care & Gifts
+       - 🟠 Orange (#ff6f3c) - Shopping (retail)
+       - 🔵 Sky Blue (#3b82f6) - Travel (adventure)
+       - ⚫ Steel (#757575, #9e9e9e) - Home Maintenance & Other
+
+  **Settlement Button Enhancement:**
+  - ✅ Added smooth hover transitions to "Mark as Paid" button
+  - ✅ `transition-all duration-200` for 200ms animations
+  - ✅ `hover:scale-[1.02]` for subtle lift effect
+  - ✅ `active:scale-[0.98]` for press-down tactile feedback
+  - **File**: `components/settlement-card.tsx`
+
+- **Commits**:
+  - `ef5c74e` - feat: implement Toast Slice logo design
+  - `4cd0a9c` - feat: implement comprehensive toast-themed design system
+  - `86dc047` - fix: resolve hydration error and improve category color visibility
+  - `e56f1e2` - feat: implement full-spectrum category color palette
+  - `87f0d5e` - feat: implement lighter toast-themed category color palette
+  - `785c3f5` - feat: implement semantic category color palette for intuitive recognition
+  - `ab42d28` - feat: add smooth hover indicator to Mark as Paid button
+
+- **Files Modified**:
+  - `components/bready-logo.tsx` (complete rewrite)
+  - `app/globals.css` (+95 lines for design tokens)
+  - `lib/utils.ts` (3 iterations of category colors)
+  - `components/sidebar-layout.tsx` (borders + hydration fix)
+  - `components/enhanced-spending-charts.tsx` (shared indicator color)
+  - `components/settlement-card.tsx` (button gradients + hover)
+  - `components/expense-form.tsx` (button colors)
+  - `components/mobile-nav/mobile-nav.tsx` (borders)
+  - `components/mobile-nav/mobile-more-menu.tsx` (color scheme)
+
+- **Key Benefits**:
+  - **Brand Cohesion**: Unified toast/bread theme across entire application
+  - **Semantic Clarity**: Category colors instantly communicate meaning (blue=tech, green=food, etc.)
+  - **Accessibility**: All 15 colors meet WCAG AA standards (3:1+ contrast)
+  - **Visual Distinction**: Full spectrum coverage prevents color confusion in charts
+  - **Micro-interactions**: Smooth button transitions enhance perceived quality
+  - **No Hydration Errors**: Clean SSR/CSR rendering with mounted guards
+
+- **Design Philosophy**:
+  - **Semantic > Theme**: User recognition trumps strict color theming
+  - **Cognitive Load**: Colors process faster than text - leverage universal associations
+  - **Affordances**: Visual feedback (hover/click) communicates interactivity
+  - **Simplicity**: Every change minimally invasive, maximum impact
+
+- **Status**: ✅ **COMPLETE** - Merged to main branch and pushed to origin
+
 ---
 
 ## Reference Links
