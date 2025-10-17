@@ -277,8 +277,26 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
       {expenseFormOpen && (
         <ExpenseForm
           users={users}
-          onSubmit={async () => {
-            setExpenseFormOpen(false)
+          onSubmit={async (expense) => {
+            try {
+              const response = await fetch('/api/expenses', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(expense),
+              })
+
+              if (response.ok) {
+                setExpenseFormOpen(false)
+                // Dispatch custom event to notify pages to refresh
+                window.dispatchEvent(new CustomEvent('expenseAdded'))
+              } else {
+                const error = await response.json()
+                alert(error.error || 'Failed to add expense. Please try again.')
+              }
+            } catch (error) {
+              console.error('Failed to add expense:', error)
+              alert('Failed to add expense. Please try again.')
+            }
           }}
           open={expenseFormOpen}
           onOpenChange={setExpenseFormOpen}

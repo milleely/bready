@@ -137,6 +137,16 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
     fetchData()
   }, [selectedMonth, selectedUser, selectedCategory, selectedType, minAmount, maxAmount])
 
+  // Listen for expense added event from sidebar
+  useEffect(() => {
+    const handleExpenseAdded = () => {
+      fetchData()
+    }
+
+    window.addEventListener('expenseAdded', handleExpenseAdded)
+    return () => window.removeEventListener('expenseAdded', handleExpenseAdded)
+  }, [selectedMonth, selectedUser, selectedCategory, selectedType, minAmount, maxAmount])
+
   // Persist analytics open state to localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {

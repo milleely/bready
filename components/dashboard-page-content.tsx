@@ -144,10 +144,10 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
       ])
 
       setStats(statsData)
-      setBudgets(budgetsData)
-      setExpenses(expensesData)
-      setSettlements(settlementsData)
-      setRecurringExpenses(recurringData)
+      setBudgets(Array.isArray(budgetsData) ? budgetsData : [])
+      setExpenses(Array.isArray(expensesData) ? expensesData : [])
+      setSettlements(Array.isArray(settlementsData) ? settlementsData : [])
+      setRecurringExpenses(Array.isArray(recurringData) ? recurringData : [])
       setPreviousMonthTotal(prevStatsData.totalSpent || 0)
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error)
@@ -158,6 +158,16 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
 
   useEffect(() => {
     fetchData()
+  }, [selectedMonth])
+
+  // Listen for expense added event from sidebar
+  useEffect(() => {
+    const handleExpenseAdded = () => {
+      fetchData()
+    }
+
+    window.addEventListener('expenseAdded', handleExpenseAdded)
+    return () => window.removeEventListener('expenseAdded', handleExpenseAdded)
   }, [selectedMonth])
 
   // Fetch users for expense form
@@ -340,7 +350,7 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
             </div>
 
             {/* Right Column: Visuals (40%) */}
-            <div className="flex flex-col items-end gap-2 w-full">
+            <div className="flex flex-col items-end gap-4 w-full">
               {/* Budget Health Indicator */}
               <div className="flex items-center gap-3 bg-white/10 rounded-2xl px-5 py-3 backdrop-blur-sm">
                 {overallHealth.status === 'healthy' && (
@@ -369,8 +379,8 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
                 </div>
               </div>
 
-              {/* 30-Day Sparkline - Enhanced */}
-              <div className="w-52 h-36 bg-white/10 rounded-lg overflow-hidden border border-white/20 shadow-[0_0_16px_rgba(255,255,255,0.2),0_2px_8px_rgba(0,0,0,0.1)]">
+              {/* 30-Day Sparkline - Enhanced & Enlarged */}
+              <div className="w-full md:w-72 h-44 bg-white/10 rounded-lg overflow-hidden border border-white/20 shadow-[0_0_16px_rgba(255,255,255,0.2),0_2px_8px_rgba(0,0,0,0.1)]">
                 <SpendingSparkline expenses={expenses} days={30} />
               </div>
               <p className="text-xs text-amber-100 font-medium">30-day trend</p>
