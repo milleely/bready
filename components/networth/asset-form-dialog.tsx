@@ -27,8 +27,7 @@ import {
 } from "@/components/ui/select"
 import { TrendingUp } from "lucide-react"
 import { toast } from "sonner"
-import type { Asset } from "@prisma/client"
-import type { AssetCategory } from "@/lib/types/networth"
+import type { Asset, AssetCategory } from "@/lib/types/networth"
 import { ASSET_CATEGORIES } from "@/lib/networth/categories"
 
 interface AssetFormDialogProps {

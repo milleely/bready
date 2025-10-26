@@ -25,9 +25,15 @@ import { LiabilityFormDialog } from "@/components/networth/liability-form-dialog
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { getSession, createSession, clearSession } from "@/lib/networth/session"
-import type { NetWorthDashboardData } from "@/lib/types/networth"
-import type { IncomeSource, Asset, Liability } from "@prisma/client"
-import type { IncomeFrequency, AssetCategory, LiabilityCategory } from "@/lib/types/networth"
+import type {
+  NetWorthDashboardData,
+  IncomeSource,
+  Asset,
+  Liability,
+  IncomeFrequency,
+  AssetCategory,
+  LiabilityCategory,
+} from "@/lib/types/networth"
 
 interface NetWorthPageContentProps {
   initialUsers: User[]

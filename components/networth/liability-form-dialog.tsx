@@ -27,8 +27,7 @@ import {
 } from "@/components/ui/select"
 import { TrendingDown } from "lucide-react"
 import { toast } from "sonner"
-import type { Liability } from "@prisma/client"
-import type { LiabilityCategory } from "@/lib/types/networth"
+import type { Liability, LiabilityCategory } from "@/lib/types/networth"
 import { LIABILITY_CATEGORIES } from "@/lib/networth/categories"
 
 interface LiabilityFormDialogProps {
