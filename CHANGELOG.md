@@ -7,6 +7,63 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.2.0] - 2025-10-26
+
+### Added - Net Worth Dashboard
+
+- **Net Worth Tracking:**
+  - Complete household net worth dashboard with PIN-based authentication
+  - Assets tracking (Cash, Investments, Property, Vehicles, Other Assets)
+  - Liabilities tracking (Mortgage, Student Loans, Credit Cards, Auto Loans, Other Liabilities)
+  - Real-time net worth calculations (Total Assets - Total Liabilities)
+  - Monthly income tracking with multiple income sources
+  - User and household-level financial summaries
+
+- **Budget Allocation System:**
+  - 50/30/20 budget rule visualization card
+  - Monthly paycheck allocation breakdown
+  - Automated expense categorization:
+    - Needs (50%): Groceries, Utilities, Healthcare, Transportation, Household, Home Maintenance
+    - Wants (30%): Dining, Entertainment, Shopping, Personal Care, Gifts, Travel, Pets, Subscriptions
+    - Savings (20%): Emergency fund, investments, retirement planning
+  - Visual breakdown with color-coded categories (Needs: blue, Wants: amber, Savings: emerald)
+
+- **Monthly Progress Tracking:**
+  - Real-time spending vs budget comparison for current month
+  - Color-coded progress bars (green: on track, yellow: warning ≥90%, red: over budget)
+  - Automatic expense categorization into needs/wants based on 15 expense categories
+  - Over-budget alerts with actionable CTAs
+  - Category breakdown showing all expense categories mapped to budget types
+  - Per-category spending status with remaining amounts
+
+### Fixed
+- **Critical Bug - Household Expense Calculation:**
+  - Fixed bug in `/api/networth/expense-breakdown` where API only counted authenticated user's personal and shared expenses
+  - Now correctly includes ALL household members' shared expenses divided by household size
+  - Ensures accurate budget tracking for multi-user households
+  - Split query logic: (1) User's expenses + (2) Other household members' shared expenses
+
+- **UI Alignment & Spacing:**
+  - Fixed card bottom border misalignment between Budget Allocation and Monthly Progress cards
+  - Added flexbox layout (`flex flex-col h-full`) to card content areas
+  - Used `mt-auto` to push footer sections to bottom for horizontal alignment
+  - Added proper spacing (`mb-4`) between allocation card sections and footers
+
+### Technical Details
+- **New API Routes:**
+  - `/api/networth/summary` - Complete dashboard data aggregation
+  - `/api/networth/assets` - Asset CRUD operations
+  - `/api/networth/liabilities` - Liability CRUD operations
+  - `/api/networth/income` - Income source CRUD operations
+  - `/api/networth/expense-breakdown` - Monthly spending by budget category
+  - `/api/networth/pin/*` - PIN authentication (setup, verify)
+- **Category Mapping:** Automatic classification of 15 expense categories into needs/wants/other via `EXPENSE_TO_BUDGET_MAPPING`
+- **Household-Aware Calculations:** All shared expenses properly divided by household member count
+- **Security:** PIN-based authentication system for personal financial data protection
+- **Session Management:** Client-side localStorage session management for auth persistence
+
+---
+
 ## [1.1.0] - 2025-10-14
 
 ### Added - Budget Tracking & Receipt Upload

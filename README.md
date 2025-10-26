@@ -4,7 +4,7 @@
 
 Bready is a warm and welcoming multi-user expense tracker designed for households and roommates to collaboratively manage shared and personal finances. With its bread-themed interface and intuitive design, managing your household's "dough" has never been easier.
 
-![Version](https://img.shields.io/badge/version-1.1.0-orange)
+![Version](https://img.shields.io/badge/version-1.2.0-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
 
@@ -34,6 +34,17 @@ Bready is a warm and welcoming multi-user expense tracker designed for household
 - **Budget Progress:** Visual progress bars with remaining amounts and over-budget alerts
 - **Settlement Calculations:** Automatic calculation of who owes whom
 - **Color-Coded Users:** Each household member has a unique color for easy identification
+
+### 💎 Net Worth Dashboard
+- **Complete Financial Picture:** Track assets, liabilities, and net worth in one place
+- **Asset Tracking:** Cash, investments, property, vehicles, and other assets
+- **Liability Management:** Mortgage, student loans, credit cards, auto loans tracking
+- **Income Sources:** Track multiple income streams with frequency settings
+- **50/30/20 Budget Rule:** Visual allocation breakdown (Needs/Wants/Savings)
+- **Monthly Progress Tracking:** Real-time spending vs budget comparison
+- **Automatic Categorization:** 15 expense categories mapped to needs/wants/savings
+- **PIN-Based Security:** Protect personal financial data with PIN authentication
+- **Household-Aware Calculations:** Shared expenses automatically divided among household members
 
 ### 🎨 Beautiful Design
 - **Warm Color Palette:** Bread-themed design with amber, orange, and golden tones

@@ -589,6 +589,176 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
 
 - **Status**: ✅ **COMPLETE** - Merged to main branch and pushed to origin
 
+### ⚠️ DEPRECATED: AI Insights Page Redesign (2025-10-20)
+> **NOTICE**: This feature has been **deprecated** as of 2025-10-24 and is being replaced with a **Net Worth Tracking Dashboard**.
+> This section is kept for historical reference only.
+
+- **Date Completed**: 2025-10-20
+- **Goal**: Transform Insights page from information-heavy cards to conversational, mascot-driven interface
+- **Status**: **DEPRECATED** - Replaced by Net Worth Dashboard
+
+- **Changes Made**:
+
+  **New Toast Mascot Component:**
+  - ✅ Created `components/insights/toast-mascot.tsx` with friendly AI character
+  - ✅ Side-view bread slice design matching logo (160x160 SVG)
+  - ✅ Breathing animation with `@keyframes breathe` (1.5s cycle, scale 1.0→1.03)
+  - ✅ Speech bubble: "Hi! I'm Toasty, your financial assistant 🍞"
+  - ✅ Subtle pulsing sparkle effect for visual interest
+  - ✅ Happy face with eyes and smile for friendly approachability
+
+  **AI Chat Interface Component:**
+  - ✅ Created `components/insights/ai-chat-interface.tsx` for conversational UX
+  - ✅ Text input field: "Ask me anything about your spending..."
+  - ✅ 3 suggestion question buttons:
+    - "Where could I be saving based on my spending?" 💰
+    - "How am I doing this month compared to last month?" 📊
+    - "What are my biggest expense categories?" 🔍
+  - ✅ Polished placeholder state with sonner toast notification
+  - ✅ Toast message: "🔮 AI chat coming soon! We're teaching Toasty to read your expenses."
+  - ✅ Gradient amber styling matching brand theme
+
+  **Compact Insight Card Component:**
+  - ✅ Created `components/insights/insight-card-compact.tsx` for top insights
+  - ✅ Severity-based visual coding (critical/warning/info/positive)
+  - ✅ Color-coded icons and gradient backgrounds per severity
+  - ✅ Compact layout: icon, badge, title, 1-line explanation, metric, CTA
+  - ✅ Metric display with current value, budget, change percentage
+  - ✅ Trend indicators (up/down arrows with color coding)
+  - ✅ Optional CTA button with amber gradient styling
+
+  **Main Insights Page Refactor:**
+  - ✅ Completely redesigned `components/insights-page-content.tsx`
+  - ✅ **Removed 60-day requirement** - mascot shows immediately
+  - ✅ Removed complex sections: hero card, budget alerts, trend analysis
+  - ✅ New layout: Toast Mascot → AI Chat → Top 3 Insights → Info Footer
+  - ✅ Top 3 insights selected by highest priority score
+  - ✅ Empty state (<10 expenses): "Feed Me Some Expenses! 🍞" with progress bar
+  - ✅ Loading state with content-shaped skeletons
+  - ✅ Error state shows mascot + friendly error message
+
+  **Global Toast Notifications:**
+  - ✅ Installed `sonner` component (shadcn's toast replacement)
+  - ✅ Added `<Toaster />` to `app/layout.tsx` for app-wide notifications
+  - ✅ Integrated with chat interface for "Coming Soon" feedback
+
+  **CSS Animations:**
+  - ✅ Added `@keyframes breathe` animation to `app/globals.css`
+  - ✅ Smooth 1.5s cycle preventing motion sickness
+  - ✅ GPU-accelerated CSS transforms for performance
+
+- **Files Created**:
+  - `components/insights/toast-mascot.tsx` (87 lines)
+  - `components/insights/ai-chat-interface.tsx` (111 lines)
+  - `components/insights/insight-card-compact.tsx` (144 lines)
+  - `components/ui/sonner.tsx` (shadcn component)
+
+- **Files Modified**:
+  - `components/insights-page-content.tsx` (complete rewrite, 293 lines)
+  - `app/globals.css` (+12 lines for breathing animation)
+  - `app/layout.tsx` (+2 lines for Toaster component)
+
+- **Files Kept for Reference**:
+  - `components/insights/hero-insight-card.tsx` (archived, may reuse later)
+  - `components/insights/budget-alerts-section.tsx` (archived)
+  - `components/insights/trend-analysis-section.tsx` (archived)
+
+- **Design Principles Applied**:
+  - **3-Second Rule**: Mascot + chat immediately communicate "ask questions here"
+  - **Hierarchy**: Mascot largest, chat second, insight cards tertiary
+  - **Actionability**: Suggestion questions guide users on what to ask
+  - **Simplicity**: Removed 4 complex sections, replaced with 1 clear conversational interface
+
+- **Key Benefits**:
+  - **Approachability**: Friendly mascot reduces intimidation factor of financial data
+  - **Discoverability**: Suggestion questions teach users what the AI can do
+  - **Reduced Cognitive Load**: Focused on top 3 insights instead of overwhelming detail
+  - **Future-Ready**: Chat interface prepared for real AI integration
+  - **Immediate Access**: No 60-day barrier - mascot welcomes users from day 1
+
+- **Issues Encountered**: None - smooth implementation with no compilation errors
+
+- **Testing Notes**:
+  - ✅ Dev server compiled successfully on http://localhost:3001
+  - ✅ No TypeScript errors
+  - ✅ All animations rendering smoothly
+  - ✅ Toast notifications working correctly
+  - ✅ Responsive design maintained
+
+- **Status**: ✅ **COMPLETE** - Ready for review and testing
+
+---
+
+## Net Worth Dashboard Feature (2025-10-26) **✅ COMPLETE**
+**Goal**: Complete household net worth tracking with budget allocation and progress monitoring
+**Completion Date**: 2025-10-26
+
+### Features Implemented
+- [x] **Net Worth Summary Dashboard**
+  - Personal vs household view with PIN authentication
+  - Assets tracking (Cash, Investments, Property, Vehicles, Other)
+  - Liabilities tracking (Mortgage, Student Loans, Credit Cards, Auto Loans, Other)
+  - Real-time net worth calculations (Assets - Liabilities)
+  - Monthly income tracking with paycheck allocation
+
+- [x] **Budget Allocation & Progress Tracking**
+  - 50/30/20 budget rule visualization card
+  - Real-time progress bars for needs/wants spending
+  - Category-based expense mapping (15 categories → needs/wants/other)
+  - Monthly income display with bi-weekly calculation (grossAmount × 2.167)
+  - Visual breakdown: Needs (blue), Wants (amber), Savings (emerald)
+
+- [x] **Bug Fixes & UI Polish**
+  - **Fixed expense calculation bug** - API now correctly includes all household shared expenses
+  - **Fixed UI alignment** - Card bottom borders now align horizontally using flexbox
+  - **Added proper spacing** - Allocation cards and footer sections have breathing room (mb-4)
+
+### Changes Made
+
+**API Route Fix (`app/api/networth/expense-breakdown/route.ts`):**
+- Lines 14-31: Added household user queries to get all household member IDs
+- Lines 38-68: Split query into two parts:
+  1. User's expenses (personal 100% + shared ÷ userCount)
+  2. Other household members' SHARED expenses (÷ userCount)
+- Lines 75-115: Updated calculation logic to sum both parts correctly
+- **Before**: Only counted authenticated user's expenses
+- **After**: Includes all household shared expenses divided by household size
+
+**UI Alignment Fixes:**
+- `components/networth/budget-allocation-card.tsx`:
+  - Line 44: Added `flex flex-col h-full` to CardContent
+  - Line 67: Added `mb-4` for spacing between allocation cards and footer
+  - Line 91: Changed `mt-4` to `mt-auto` for footer alignment
+
+- `components/networth/monthly-progress-tracker.tsx`:
+  - Line 112: Added `flex flex-col h-full` to CardContent
+  - Line 219: Changed `mt-4` to `mt-auto` for category breakdown alignment
+
+### Technical Details
+- **Net Worth API Routes**: `/api/networth/*` (summary, assets, liabilities, income, expense-breakdown, PIN auth)
+- **Category Mapping**: Automatic classification via `EXPENSE_TO_BUDGET_MAPPING` in `lib/networth/category-mapping.ts`
+- **Household-Aware Calculations**: Shared expenses divided by household member count
+- **Security**: PIN-based authentication for personal financial data
+- **Session Management**: Client-side session storage for auth state
+
+### Files Modified
+- `app/api/networth/expense-breakdown/route.ts` - Fixed household expense calculation
+- `components/networth/budget-allocation-card.tsx` - UI alignment + spacing
+- `components/networth/monthly-progress-tracker.tsx` - UI alignment
+
+### Issues Encountered
+None - all fixes implemented smoothly with no TypeScript errors
+
+### Testing Notes
+- ✅ Dev server compiled successfully
+- ✅ Expense calculation now accurate for multi-user households
+- ✅ Card borders align perfectly at bottom
+- ✅ Proper spacing between card sections
+- ✅ No hydration errors or console warnings
+
+### Status
+✅ **COMPLETE** - All features working correctly, ready for production deployment
+
 ---
 
 ## Reference Links
