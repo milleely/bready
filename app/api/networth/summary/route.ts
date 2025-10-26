@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/db"
 import {
   generateNetWorthSummary,
@@ -20,15 +21,32 @@ import { startOfMonth, endOfMonth } from "date-fns"
 // GET - Get complete net worth dashboard data
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url)
-    const userId = searchParams.get("userId")
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
 
-    if (!userId) {
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(req.url)
+    const requestedUserId = searchParams.get("userId")
+
+    if (!requestedUserId) {
       return NextResponse.json(
         { error: "Missing required parameter: userId" },
         { status: 400 }
       )
     }
+
+    // Verify the authenticated user is requesting their own data
+    if (clerkUserId !== requestedUserId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot access other users' data" },
+        { status: 403 }
+      )
+    }
+
+    const userId = requestedUserId
 
     // Verify user exists
     const user = await prisma.user.findUnique({

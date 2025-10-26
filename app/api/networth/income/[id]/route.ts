@@ -7,6 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/db"
 import { incomeSourceSchema } from "@/lib/networth/validation"
 import type { IncomeSource, IncomeFrequency } from "@/lib/types/networth"
@@ -17,6 +18,13 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
+
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const { id } = await params
 
     const incomeSource = await prisma.incomeSource.findUnique({
@@ -27,6 +35,14 @@ export async function GET(
       return NextResponse.json(
         { error: "Income source not found" },
         { status: 404 }
+      )
+    }
+
+    // Verify the authenticated user owns this income source
+    if (clerkUserId !== incomeSource.userId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot access other users' income sources" },
+        { status: 403 }
       )
     }
 
@@ -52,6 +68,13 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
+
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const { id } = await params
     const body = await req.json()
 
@@ -73,6 +96,14 @@ export async function PUT(
       return NextResponse.json(
         { error: "Income source not found" },
         { status: 404 }
+      )
+    }
+
+    // Verify the authenticated user owns this income source
+    if (clerkUserId !== existing.userId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot update other users' income sources" },
+        { status: 403 }
       )
     }
 
@@ -104,6 +135,13 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
+
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const { id } = await params
 
     // Check if income source exists
@@ -115,6 +153,14 @@ export async function DELETE(
       return NextResponse.json(
         { error: "Income source not found" },
         { status: 404 }
+      )
+    }
+
+    // Verify the authenticated user owns this income source
+    if (clerkUserId !== existing.userId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot delete other users' income sources" },
+        { status: 403 }
       )
     }
 

@@ -1,19 +1,35 @@
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/db"
 import { categorizeBudgetType } from "@/lib/networth/category-mapping"
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const userId = searchParams.get("userId")
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
 
-    if (!userId) {
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const requestedUserId = searchParams.get("userId")
+
+    if (!requestedUserId) {
       return NextResponse.json({ error: "userId is required" }, { status: 400 })
+    }
+
+    // Verify the authenticated user is requesting their own data
+    if (clerkUserId !== requestedUserId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot access other users' data" },
+        { status: 403 }
+      )
     }
 
     // Get user's household to query all household expenses
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: requestedUserId },
       select: { householdId: true }
     })
 
@@ -38,7 +54,7 @@ export async function GET(request: NextRequest) {
     // Query 1: Your expenses (personal 100% + shared ÷ userCount)
     const userExpenses = await prisma.expense.findMany({
       where: {
-        userId,  // Only your expenses
+        userId: requestedUserId,  // Only your expenses
         date: {
           gte: startOfMonth,
           lte: endOfMonth,
@@ -54,7 +70,7 @@ export async function GET(request: NextRequest) {
     // Query 2: Other household members' SHARED expenses (÷ userCount)
     const otherSharedExpenses = await prisma.expense.findMany({
       where: {
-        userId: { in: householdUserIds, not: userId },  // Other members only
+        userId: { in: householdUserIds, not: requestedUserId },  // Other members only
         isShared: true,  // Only shared expenses
         date: {
           gte: startOfMonth,

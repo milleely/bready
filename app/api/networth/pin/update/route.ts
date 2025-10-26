@@ -6,20 +6,51 @@
  */
 
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/db"
 import { hashPin, verifyPin } from "@/lib/networth/pin-auth"
 import { pinSchema } from "@/lib/networth/validation"
+import { rateLimit } from "@/lib/rate-limit"
 
 export async function PUT(req: NextRequest) {
   try {
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
+
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const body = await req.json()
-    const { userId, currentPin, newPin } = body
+    const { userId: requestedUserId, currentPin, newPin } = body
 
     // Validate required fields
-    if (!userId || !currentPin || !newPin) {
+    if (!requestedUserId || !currentPin || !newPin) {
       return NextResponse.json(
         { error: "Missing required fields: userId, currentPin, and newPin" },
         { status: 400 }
+      )
+    }
+
+    // Verify the authenticated user is updating their own PIN
+    if (clerkUserId !== requestedUserId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot update other users' PIN" },
+        { status: 403 }
+      )
+    }
+
+    // Apply rate limiting: 5 attempts per hour per user
+    const rateLimitResult = rateLimit(`pin-update:${requestedUserId}`, 5, 60 * 60 * 1000)
+
+    if (!rateLimitResult.success) {
+      const resetInMinutes = Math.ceil((rateLimitResult.resetAt - Date.now()) / 60000)
+      return NextResponse.json(
+        {
+          error: `Too many PIN update attempts. Please try again in ${resetInMinutes} minute${resetInMinutes !== 1 ? "s" : ""}.`,
+          retryAfter: rateLimitResult.resetAt,
+        },
+        { status: 429 }
       )
     }
 
@@ -34,7 +65,7 @@ export async function PUT(req: NextRequest) {
 
     // Get user's current PIN from database
     const userPin = await prisma.userPin.findUnique({
-      where: { userId },
+      where: { userId: requestedUserId },
     })
 
     if (!userPin) {
@@ -59,7 +90,7 @@ export async function PUT(req: NextRequest) {
 
     // Update the PIN
     await prisma.userPin.update({
-      where: { userId },
+      where: { userId: requestedUserId },
       data: {
         pin: hashedNewPin,
         updatedAt: new Date(),

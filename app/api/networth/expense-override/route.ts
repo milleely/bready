@@ -6,24 +6,40 @@
  */
 
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/db"
 import { expenseOverrideSchema } from "@/lib/networth/validation"
 
 // GET - Get expense override for a user
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url)
-    const userId = searchParams.get("userId")
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
 
-    if (!userId) {
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(req.url)
+    const requestedUserId = searchParams.get("userId")
+
+    if (!requestedUserId) {
       return NextResponse.json(
         { error: "Missing required parameter: userId" },
         { status: 400 }
       )
     }
 
+    // Verify the authenticated user is requesting their own data
+    if (clerkUserId !== requestedUserId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot access other users' data" },
+        { status: 403 }
+      )
+    }
+
     const expenseOverride = await prisma.monthlyExpenseOverride.findUnique({
-      where: { userId },
+      where: { userId: requestedUserId },
     })
 
     // Return null if not found (user hasn't set an override yet)
@@ -40,13 +56,28 @@ export async function GET(req: NextRequest) {
 // PUT - Create or update expense override
 export async function PUT(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { userId, ...data } = body
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
 
-    if (!userId) {
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const body = await req.json()
+    const { userId: requestedUserId, ...data } = body
+
+    if (!requestedUserId) {
       return NextResponse.json(
         { error: "Missing required field: userId" },
         { status: 400 }
+      )
+    }
+
+    // Verify the authenticated user is updating their own data
+    if (clerkUserId !== requestedUserId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot update other users' data" },
+        { status: 403 }
       )
     }
 
@@ -61,7 +92,7 @@ export async function PUT(req: NextRequest) {
 
     // Verify user exists
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: requestedUserId },
     })
 
     if (!user) {
@@ -70,10 +101,10 @@ export async function PUT(req: NextRequest) {
 
     // Upsert (create or update) expense override
     const expenseOverride = await prisma.monthlyExpenseOverride.upsert({
-      where: { userId },
+      where: { userId: requestedUserId },
       update: validation.data,
       create: {
-        userId,
+        userId: requestedUserId,
         ...validation.data,
       },
     })

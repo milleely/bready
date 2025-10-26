@@ -7,25 +7,42 @@
  */
 
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/db"
 import { hashPin } from "@/lib/networth/pin-auth"
 import { pinSchema } from "@/lib/networth/validation"
+import { rateLimit } from "@/lib/rate-limit"
 
 // GET - Check if user has a PIN
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url)
-    const userId = searchParams.get("userId")
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
 
-    if (!userId) {
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(req.url)
+    const requestedUserId = searchParams.get("userId")
+
+    if (!requestedUserId) {
       return NextResponse.json(
         { error: "Missing required parameter: userId" },
         { status: 400 }
       )
     }
 
+    // Verify the authenticated user is requesting their own data
+    if (clerkUserId !== requestedUserId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot access other users' data" },
+        { status: 403 }
+      )
+    }
+
     const userPin = await prisma.userPin.findUnique({
-      where: { userId },
+      where: { userId: requestedUserId },
     })
 
     return NextResponse.json({ hasPin: !!userPin })
@@ -41,14 +58,43 @@ export async function GET(req: NextRequest) {
 // POST - Create new PIN
 export async function POST(req: NextRequest) {
   try {
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
+
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const body = await req.json()
-    const { userId, pin } = body
+    const { userId: requestedUserId, pin } = body
 
     // Validate required fields
-    if (!userId || !pin) {
+    if (!requestedUserId || !pin) {
       return NextResponse.json(
         { error: "Missing required fields: userId and pin" },
         { status: 400 }
+      )
+    }
+
+    // Verify the authenticated user is creating for their own account
+    if (clerkUserId !== requestedUserId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot create PIN for other users" },
+        { status: 403 }
+      )
+    }
+
+    // Apply rate limiting: 5 attempts per hour per user
+    const rateLimitResult = rateLimit(`pin-setup:${requestedUserId}`, 5, 60 * 60 * 1000)
+
+    if (!rateLimitResult.success) {
+      const resetInMinutes = Math.ceil((rateLimitResult.resetAt - Date.now()) / 60000)
+      return NextResponse.json(
+        {
+          error: `Too many PIN setup attempts. Please try again in ${resetInMinutes} minute${resetInMinutes !== 1 ? "s" : ""}.`,
+          retryAfter: rateLimitResult.resetAt,
+        },
+        { status: 429 }
       )
     }
 
@@ -63,7 +109,7 @@ export async function POST(req: NextRequest) {
 
     // Check if user exists
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: requestedUserId },
     })
 
     if (!user) {
@@ -72,7 +118,7 @@ export async function POST(req: NextRequest) {
 
     // Check if PIN already exists for this user
     const existingPin = await prisma.userPin.findUnique({
-      where: { userId },
+      where: { userId: requestedUserId },
     })
 
     if (existingPin) {
@@ -88,7 +134,7 @@ export async function POST(req: NextRequest) {
     // Create PIN record
     const userPin = await prisma.userPin.create({
       data: {
-        userId,
+        userId: requestedUserId,
         pin: hashedPin,
       },
     })

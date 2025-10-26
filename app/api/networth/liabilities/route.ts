@@ -6,6 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/db"
 import { liabilitySchema } from "@/lib/networth/validation"
 import type { Liability, LiabilityCategory } from "@/lib/types/networth"
@@ -13,18 +14,33 @@ import type { Liability, LiabilityCategory } from "@/lib/types/networth"
 // GET - List all liabilities for a user
 export async function GET(req: NextRequest) {
   try {
-    const { searchParams } = new URL(req.url)
-    const userId = searchParams.get("userId")
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
 
-    if (!userId) {
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(req.url)
+    const requestedUserId = searchParams.get("userId")
+
+    if (!requestedUserId) {
       return NextResponse.json(
         { error: "Missing required parameter: userId" },
         { status: 400 }
       )
     }
 
+    // Verify the authenticated user is requesting their own data
+    if (clerkUserId !== requestedUserId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot access other users' data" },
+        { status: 403 }
+      )
+    }
+
     const liabilities = await prisma.liability.findMany({
-      where: { userId },
+      where: { userId: requestedUserId },
       orderBy: [{ category: "asc" }, { createdAt: "desc" }],
     })
 
@@ -47,13 +63,28 @@ export async function GET(req: NextRequest) {
 // POST - Create a new liability
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { userId, ...data } = body
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
 
-    if (!userId) {
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const body = await req.json()
+    const { userId: requestedUserId, ...data } = body
+
+    if (!requestedUserId) {
       return NextResponse.json(
         { error: "Missing required field: userId" },
         { status: 400 }
+      )
+    }
+
+    // Verify the authenticated user is creating for their own account
+    if (clerkUserId !== requestedUserId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot create liabilities for other users" },
+        { status: 403 }
       )
     }
 
@@ -68,7 +99,7 @@ export async function POST(req: NextRequest) {
 
     // Verify user exists
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: requestedUserId },
     })
 
     if (!user) {
@@ -78,7 +109,7 @@ export async function POST(req: NextRequest) {
     // Create liability
     const liability = await prisma.liability.create({
       data: {
-        userId,
+        userId: requestedUserId,
         ...validation.data,
       },
     })

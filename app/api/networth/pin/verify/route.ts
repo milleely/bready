@@ -5,20 +5,51 @@
  */
 
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/db"
 import { verifyPin } from "@/lib/networth/pin-auth"
 import { pinSchema } from "@/lib/networth/validation"
+import { rateLimit, clearRateLimit } from "@/lib/rate-limit"
 
 export async function POST(req: NextRequest) {
   try {
+    // Get authenticated Clerk user
+    const { userId: clerkUserId } = await auth()
+
+    if (!clerkUserId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const body = await req.json()
-    const { userId, pin } = body
+    const { userId: requestedUserId, pin } = body
 
     // Validate required fields
-    if (!userId || !pin) {
+    if (!requestedUserId || !pin) {
       return NextResponse.json(
         { error: "Missing required fields: userId and pin" },
         { status: 400 }
+      )
+    }
+
+    // Verify the authenticated user is verifying their own PIN
+    if (clerkUserId !== requestedUserId) {
+      return NextResponse.json(
+        { error: "Forbidden: Cannot verify other users' PIN" },
+        { status: 403 }
+      )
+    }
+
+    // Apply rate limiting: 5 attempts per 15 minutes per user
+    const rateLimitResult = rateLimit(`pin-verify:${requestedUserId}`, 5, 15 * 60 * 1000)
+
+    if (!rateLimitResult.success) {
+      const resetInMinutes = Math.ceil((rateLimitResult.resetAt - Date.now()) / 60000)
+      return NextResponse.json(
+        {
+          error: `Too many PIN attempts. Please try again in ${resetInMinutes} minute${resetInMinutes !== 1 ? "s" : ""}.`,
+          retryAfter: rateLimitResult.resetAt,
+        },
+        { status: 429 }
       )
     }
 
@@ -33,7 +64,7 @@ export async function POST(req: NextRequest) {
 
     // Get user's PIN from database
     const userPin = await prisma.userPin.findUnique({
-      where: { userId },
+      where: { userId: requestedUserId },
     })
 
     if (!userPin) {
@@ -58,7 +89,7 @@ export async function POST(req: NextRequest) {
 
     // Get user details for response
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: requestedUserId },
       select: {
         id: true,
         name: true,
