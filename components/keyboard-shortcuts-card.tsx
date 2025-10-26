@@ -18,7 +18,7 @@ const shortcuts: Shortcut[] = [
   { keys: ['Escape'], description: 'Close open dialog or modal', category: 'Navigation' },
 
   // Quick Actions
-  { keys: ['?'], description: 'Jump to Settings page', category: 'Quick Actions' },
+  { keys: [','], description: 'Jump to Settings page', category: 'Quick Actions' },
 ]
 
 export function KeyboardShortcutsCard() {

@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Receipt, Target, Brain, Settings, Scale } from "lucide-react"
+import { LayoutDashboard, Receipt, Target, Wallet, Settings, Scale } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface NavItem {
@@ -38,10 +38,10 @@ const navItems: NavItem[] = [
     description: "Balance payments",
   },
   {
-    title: "Insights",
+    title: "Net Worth",
     href: "/insights",
-    icon: Brain,
-    description: "AI-powered analytics",
+    icon: Wallet,
+    description: "Track your net worth",
   },
   {
     title: "Settings",

@@ -90,7 +90,7 @@ export function SettlementHistory({ history, onUnmark }: SettlementHistoryProps)
 
   return (
     <Collapsible open={historyOpen} onOpenChange={setHistoryOpen}>
-      <Card className="border-stone-200 bg-gradient-to-br from-stone-50/50 to-stone-100/50 shadow-xl">
+      <Card className="border-[hsl(var(--border-light-crust))] bg-gradient-to-br from-stone-50/50 to-stone-100/50 shadow-xl">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -124,10 +124,10 @@ export function SettlementHistory({ history, onUnmark }: SettlementHistoryProps)
         <CollapsibleContent>
           <CardContent>
             {hasHistory ? (
-              <div className="rounded-lg border border-stone-200 bg-white/60 backdrop-blur-sm">
+              <div className="rounded-lg border border-[hsl(var(--border-light-crust))] bg-white/60 backdrop-blur-sm">
                 <Table>
                   <TableHeader>
-                    <TableRow className="hover:bg-transparent border-stone-200">
+                    <TableRow className="hover:bg-transparent border-[hsl(var(--border-light-crust))]">
                       <TableHead className="text-stone-700">Date Paid</TableHead>
                       <TableHead className="text-stone-700">From → To</TableHead>
                       <TableHead className="text-right text-stone-700">Amount</TableHead>
@@ -136,7 +136,7 @@ export function SettlementHistory({ history, onUnmark }: SettlementHistoryProps)
                   </TableHeader>
                   <TableBody>
                     {history.map((settlement) => (
-                      <TableRow key={settlement.id} className="hover:bg-stone-50/50 border-stone-200">
+                      <TableRow key={settlement.id} className="hover:bg-stone-50/50 border-[hsl(var(--border-light-crust))]">
                         <TableCell className="text-stone-600 font-medium">
                           {formatDate(settlement.date)}
                         </TableCell>
@@ -194,7 +194,7 @@ export function SettlementHistory({ history, onUnmark }: SettlementHistoryProps)
                 </Table>
               </div>
             ) : (
-              <div className="text-center py-8 bg-white/40 rounded-lg border border-stone-200">
+              <div className="text-center py-8 bg-white/40 rounded-lg border border-[hsl(var(--border-light-crust))]">
                 <History className="h-12 w-12 text-stone-400 mx-auto mb-3" />
                 <p className="text-stone-600 font-medium mb-1">No settlement history</p>
                 <p className="text-sm text-stone-500">

@@ -19,7 +19,7 @@ We take the security of Bready seriously. If you discover a security vulnerabili
 
 Instead, please report security vulnerabilities by:
 
-1. **Email**: Send details to [maintainer email - update this]
+1. **Email**: Send details to [milleely1999@gmail.com]
 2. **Subject Line**: Start with `[SECURITY]` followed by a brief description
 3. **Include**:
    - Description of the vulnerability
