@@ -14,7 +14,7 @@ import {
   generatePaycheckAllocation,
   calculateMonthlyIncome,
 } from "@/lib/networth/calculations"
-import type { NetWorthDashboardData } from "@/lib/types/networth"
+import type { NetWorthDashboardData, IncomeSource, IncomeFrequency } from "@/lib/types/networth"
 import { startOfMonth, endOfMonth } from "date-fns"
 
 // GET - Get complete net worth dashboard data
@@ -62,6 +62,12 @@ export async function GET(req: NextRequest) {
       }),
     ])
 
+    // Cast Prisma string types to TypeScript union types for type safety
+    const typedIncomeSources: IncomeSource[] = incomeSources.map(income => ({
+      ...income,
+      frequency: income.frequency as IncomeFrequency,
+    }))
+
     // Calculate monthly expenses (either from override or auto-calculated)
     let monthlyExpenses = 0
 
@@ -106,7 +112,7 @@ export async function GET(req: NextRequest) {
     // Generate net worth summary
     const summary = generateNetWorthSummary(
       userId,
-      incomeSources,
+      typedIncomeSources,
       assets,
       liabilities,
       monthlyExpenses
@@ -117,12 +123,12 @@ export async function GET(req: NextRequest) {
     const liabilitiesByCategory = groupLiabilitiesByCategory(liabilities)
 
     // Generate budget allocation (50/30/20 rule by default)
-    const monthlyIncome = calculateMonthlyIncome(incomeSources)
+    const monthlyIncome = calculateMonthlyIncome(typedIncomeSources)
     const budgetAllocation = generateBudgetAllocation(monthlyIncome)
 
     // Generate paycheck allocation (bi-weekly breakdown)
     const paycheckAllocation =
-      incomeSources.length > 0 ? generatePaycheckAllocation(monthlyIncome) : undefined
+      typedIncomeSources.length > 0 ? generatePaycheckAllocation(monthlyIncome) : undefined
 
     // Fetch actual spending breakdown (categorized by needs/wants/savings)
     let actualSpending = undefined
@@ -144,7 +150,7 @@ export async function GET(req: NextRequest) {
         name: user.name,
       },
       summary,
-      incomeSources,
+      incomeSources: typedIncomeSources,
       assetsByCategory,
       liabilitiesByCategory,
       budgetAllocation,
