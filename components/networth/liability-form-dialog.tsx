@@ -112,9 +112,9 @@ export function LiabilityFormDialog({
         category,
         name: name.trim(),
         balance: parsedBalance,
-        interestRate: parsedInterestRate ?? null,
-        minimumPayment: parsedMinPayment ?? null,
-        notes: notes.trim() || null,
+        interestRate: parsedInterestRate ?? undefined,
+        minimumPayment: parsedMinPayment ?? undefined,
+        notes: notes.trim() || undefined,
       })
       toast.success(isEditing ? "Liability updated" : "Liability added")
       onOpenChange(false)

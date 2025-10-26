@@ -14,7 +14,7 @@ import {
   generatePaycheckAllocation,
   calculateMonthlyIncome,
 } from "@/lib/networth/calculations"
-import type { NetWorthDashboardData, IncomeSource, IncomeFrequency } from "@/lib/types/networth"
+import type { NetWorthDashboardData, IncomeSource, IncomeFrequency, Asset, AssetCategory, Liability, LiabilityCategory } from "@/lib/types/networth"
 import { startOfMonth, endOfMonth } from "date-fns"
 
 // GET - Get complete net worth dashboard data
@@ -68,6 +68,16 @@ export async function GET(req: NextRequest) {
       frequency: income.frequency as IncomeFrequency,
     }))
 
+    const typedAssets: Asset[] = assets.map(asset => ({
+      ...asset,
+      category: asset.category as AssetCategory,
+    }))
+
+    const typedLiabilities: Liability[] = liabilities.map(liability => ({
+      ...liability,
+      category: liability.category as LiabilityCategory,
+    }))
+
     // Calculate monthly expenses (either from override or auto-calculated)
     let monthlyExpenses = 0
 
@@ -113,14 +123,14 @@ export async function GET(req: NextRequest) {
     const summary = generateNetWorthSummary(
       userId,
       typedIncomeSources,
-      assets,
-      liabilities,
+      typedAssets,
+      typedLiabilities,
       monthlyExpenses
     )
 
     // Group assets and liabilities by category
-    const assetsByCategory = groupAssetsByCategory(assets)
-    const liabilitiesByCategory = groupLiabilitiesByCategory(liabilities)
+    const assetsByCategory = groupAssetsByCategory(typedAssets)
+    const liabilitiesByCategory = groupLiabilitiesByCategory(typedLiabilities)
 
     // Generate budget allocation (50/30/20 rule by default)
     const monthlyIncome = calculateMonthlyIncome(typedIncomeSources)

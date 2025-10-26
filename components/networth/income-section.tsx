@@ -10,7 +10,7 @@ import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, Pencil, Trash2, DollarSign } from "lucide-react"
-import type { IncomeSource } from "@prisma/client"
+import type { IncomeSource } from "@/lib/types/networth"
 import { getIncomeFrequencyLabel } from "@/lib/networth/categories"
 import { normalizeIncomeToMonthly } from "@/lib/networth/calculations"
 

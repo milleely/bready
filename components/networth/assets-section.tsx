@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, Pencil, Trash2, TrendingUp } from "lucide-react"
 import type { AssetsByCategory } from "@/lib/types/networth"
-import type { Asset } from "@prisma/client"
+import type { Asset } from "@/lib/types/networth"
 import { getAssetCategoryLabel } from "@/lib/networth/categories"
 
 interface AssetsSectionProps {

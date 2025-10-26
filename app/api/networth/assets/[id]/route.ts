@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { assetSchema } from "@/lib/networth/validation"
+import type { Asset, AssetCategory } from "@/lib/types/networth"
 
 // GET - Get a single asset
 export async function GET(
@@ -29,7 +30,13 @@ export async function GET(
       )
     }
 
-    return NextResponse.json(asset)
+    // Cast Prisma string type to TypeScript union type
+    const typedAsset: Asset = {
+      ...asset,
+      category: asset.category as AssetCategory,
+    }
+
+    return NextResponse.json(typedAsset)
   } catch (error) {
     console.error("Error fetching asset:", error)
     return NextResponse.json(
@@ -75,7 +82,13 @@ export async function PUT(
       data: validation.data,
     })
 
-    return NextResponse.json(asset)
+    // Cast Prisma string type to TypeScript union type
+    const typedAsset: Asset = {
+      ...asset,
+      category: asset.category as AssetCategory,
+    }
+
+    return NextResponse.json(typedAsset)
   } catch (error) {
     console.error("Error updating asset:", error)
     return NextResponse.json(

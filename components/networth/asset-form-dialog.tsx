@@ -87,7 +87,7 @@ export function AssetFormDialog({ open, onOpenChange, asset, onSave }: AssetForm
         category,
         name: name.trim(),
         value: parsedValue,
-        notes: notes.trim() || null,
+        notes: notes.trim() || undefined,
       })
       toast.success(isEditing ? "Asset updated" : "Asset added")
       onOpenChange(false)

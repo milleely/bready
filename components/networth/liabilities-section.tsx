@@ -10,7 +10,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, Pencil, Trash2, TrendingDown } from "lucide-react"
 import type { LiabilitiesByCategory } from "@/lib/types/networth"
-import type { Liability } from "@prisma/client"
+import type { Liability } from "@/lib/types/networth"
 import { getLiabilityCategoryLabel } from "@/lib/networth/categories"
 
 interface LiabilitiesSectionProps {

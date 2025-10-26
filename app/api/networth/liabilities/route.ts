@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { liabilitySchema } from "@/lib/networth/validation"
+import type { Liability, LiabilityCategory } from "@/lib/types/networth"
 
 // GET - List all liabilities for a user
 export async function GET(req: NextRequest) {
@@ -27,7 +28,13 @@ export async function GET(req: NextRequest) {
       orderBy: [{ category: "asc" }, { createdAt: "desc" }],
     })
 
-    return NextResponse.json(liabilities)
+    // Cast Prisma string types to TypeScript union types
+    const typedLiabilities: Liability[] = liabilities.map(liability => ({
+      ...liability,
+      category: liability.category as LiabilityCategory,
+    }))
+
+    return NextResponse.json(typedLiabilities)
   } catch (error) {
     console.error("Error fetching liabilities:", error)
     return NextResponse.json(
@@ -76,7 +83,13 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    return NextResponse.json(liability, { status: 201 })
+    // Cast Prisma string type to TypeScript union type
+    const typedLiability: Liability = {
+      ...liability,
+      category: liability.category as LiabilityCategory,
+    }
+
+    return NextResponse.json(typedLiability, { status: 201 })
   } catch (error) {
     console.error("Error creating liability:", error)
     return NextResponse.json(

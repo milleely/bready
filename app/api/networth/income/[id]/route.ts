@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { incomeSourceSchema } from "@/lib/networth/validation"
+import type { IncomeSource, IncomeFrequency } from "@/lib/types/networth"
 
 // GET - Get a single income source
 export async function GET(
@@ -29,7 +30,13 @@ export async function GET(
       )
     }
 
-    return NextResponse.json(incomeSource)
+    // Cast Prisma string type to TypeScript union type
+    const typedIncomeSource: IncomeSource = {
+      ...incomeSource,
+      frequency: incomeSource.frequency as IncomeFrequency,
+    }
+
+    return NextResponse.json(typedIncomeSource)
   } catch (error) {
     console.error("Error fetching income source:", error)
     return NextResponse.json(
@@ -75,7 +82,13 @@ export async function PUT(
       data: validation.data,
     })
 
-    return NextResponse.json(incomeSource)
+    // Cast Prisma string type to TypeScript union type
+    const typedIncomeSource: IncomeSource = {
+      ...incomeSource,
+      frequency: incomeSource.frequency as IncomeFrequency,
+    }
+
+    return NextResponse.json(typedIncomeSource)
   } catch (error) {
     console.error("Error updating income source:", error)
     return NextResponse.json(

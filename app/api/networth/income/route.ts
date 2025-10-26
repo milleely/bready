@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { incomeSourceSchema } from "@/lib/networth/validation"
+import type { IncomeSource, IncomeFrequency } from "@/lib/types/networth"
 
 // GET - List all income sources for a user
 export async function GET(req: NextRequest) {
@@ -27,7 +28,13 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: "desc" },
     })
 
-    return NextResponse.json(incomeSources)
+    // Cast Prisma string types to TypeScript union types
+    const typedIncomeSources: IncomeSource[] = incomeSources.map(income => ({
+      ...income,
+      frequency: income.frequency as IncomeFrequency,
+    }))
+
+    return NextResponse.json(typedIncomeSources)
   } catch (error) {
     console.error("Error fetching income sources:", error)
     return NextResponse.json(
@@ -76,7 +83,13 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    return NextResponse.json(incomeSource, { status: 201 })
+    // Cast Prisma string type to TypeScript union type
+    const typedIncomeSource: IncomeSource = {
+      ...incomeSource,
+      frequency: incomeSource.frequency as IncomeFrequency,
+    }
+
+    return NextResponse.json(typedIncomeSource, { status: 201 })
   } catch (error) {
     console.error("Error creating income source:", error)
     return NextResponse.json(

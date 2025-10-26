@@ -53,7 +53,7 @@ export interface Asset {
   category: AssetCategory
   name: string              // "Chase Checking", "401(k)", etc.
   value: number             // Current value
-  notes?: string | null
+  notes: string | null      // Prisma returns nullable fields as required properties
   createdAt: Date
   updatedAt: Date
 }
@@ -67,9 +67,9 @@ export interface Liability {
   category: LiabilityCategory
   name: string              // "Chase Freedom", "Student Loan", etc.
   balance: number           // Current balance owed
-  interestRate?: number | null     // APR (optional)
-  minimumPayment?: number | null   // Monthly minimum (optional)
-  notes?: string | null
+  interestRate: number | null      // APR (Prisma returns nullable fields as required properties)
+  minimumPayment: number | null    // Monthly minimum (Prisma returns nullable fields as required properties)
+  notes: string | null
   createdAt: Date
   updatedAt: Date
 }
@@ -198,16 +198,16 @@ export interface AssetInput {
   category: AssetCategory
   name: string
   value: number
-  notes?: string
+  notes?: string | null  // Allow both undefined (omitted) and null (explicitly empty)
 }
 
 export interface LiabilityInput {
   category: LiabilityCategory
   name: string
   balance: number
-  interestRate?: number
-  minimumPayment?: number
-  notes?: string
+  interestRate?: number | null    // Allow both undefined and null
+  minimumPayment?: number | null  // Allow both undefined and null
+  notes?: string | null           // Allow both undefined and null
 }
 
 export interface ExpenseOverrideInput {

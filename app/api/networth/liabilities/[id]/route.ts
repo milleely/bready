@@ -9,6 +9,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 import { liabilitySchema } from "@/lib/networth/validation"
+import type { Liability, LiabilityCategory } from "@/lib/types/networth"
 
 // GET - Get a single liability
 export async function GET(
@@ -29,7 +30,13 @@ export async function GET(
       )
     }
 
-    return NextResponse.json(liability)
+    // Cast Prisma string type to TypeScript union type
+    const typedLiability: Liability = {
+      ...liability,
+      category: liability.category as LiabilityCategory,
+    }
+
+    return NextResponse.json(typedLiability)
   } catch (error) {
     console.error("Error fetching liability:", error)
     return NextResponse.json(
@@ -75,7 +82,13 @@ export async function PUT(
       data: validation.data,
     })
 
-    return NextResponse.json(liability)
+    // Cast Prisma string type to TypeScript union type
+    const typedLiability: Liability = {
+      ...liability,
+      category: liability.category as LiabilityCategory,
+    }
+
+    return NextResponse.json(typedLiability)
   } catch (error) {
     console.error("Error updating liability:", error)
     return NextResponse.json(
