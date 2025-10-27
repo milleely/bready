@@ -297,7 +297,7 @@ export function NetWorthPageContent({ initialUsers, month }: NetWorthPageContent
   // Not authenticated - show user selector
   if (!authenticatedUserId || !dashboardData) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold text-stone-900">Net Worth Dashboard</h1>
         </div>
@@ -335,7 +335,7 @@ export function NetWorthPageContent({ initialUsers, month }: NetWorthPageContent
 
   // Authenticated - show dashboard
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
