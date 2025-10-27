@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Receipt, Target, Brain, MoreHorizontal } from "lucide-react"
+import { LayoutDashboard, Receipt, Target, Wallet, MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MobileMoreMenu } from "./mobile-more-menu"
 
@@ -30,9 +30,9 @@ const navItems: NavItem[] = [
     icon: Target,
   },
   {
-    title: "Insights",
+    title: "Net Worth",
     href: "/insights",
-    icon: Brain,
+    icon: Wallet,
   },
 ]
 
