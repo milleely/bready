@@ -126,8 +126,8 @@ export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{getMonthName(selectedMonth)} Budgets</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{getMonthName(selectedMonth)} Budgets</h1>
+          <p className="hidden md:block text-muted-foreground mt-1">
             Set and track your spending limits for each category.
           </p>
         </div>
