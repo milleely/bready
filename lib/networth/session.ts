@@ -1,12 +1,20 @@
 /**
- * Net Worth Session Management
+ * Net Worth Session Management (SECURE VERSION)
  *
- * Manages user authentication sessions for the Net Worth dashboard.
- * Sessions are stored in localStorage with a 30-minute timeout.
+ * Manages user authentication sessions for the Net Worth dashboard using httpOnly cookies.
+ * Sessions are stored in secure, httpOnly cookies that are inaccessible to JavaScript (XSS protection).
+ *
+ * Security features:
+ * - httpOnly: Cookies cannot be accessed via JavaScript
+ * - Secure: Cookies only sent over HTTPS in production
+ * - SameSite=Strict: CSRF protection
+ * - 7-day expiration with automatic cleanup
  */
 
-const SESSION_KEY = "networth_session"
-const SESSION_TIMEOUT_MS = 30 * 60 * 1000 // 30 minutes
+import { cookies } from "next/headers"
+
+const SESSION_COOKIE_NAME = "networth_session"
+const SESSION_TIMEOUT_DAYS = 7 // 7 days (more user-friendly than 30 min)
 
 export interface NetWorthSession {
   userId: string
@@ -15,104 +23,125 @@ export interface NetWorthSession {
 }
 
 /**
- * Create a new session for a user
+ * Create a new session for a user (SERVER-SIDE ONLY)
+ * Sets a secure httpOnly cookie that cannot be accessed by JavaScript
+ *
  * @param userId - The user ID to create session for
  */
-export function createSession(userId: string): NetWorthSession {
+export async function createSession(userId: string): Promise<NetWorthSession> {
   const now = Date.now()
+  const expiresAt = now + SESSION_TIMEOUT_DAYS * 24 * 60 * 60 * 1000 // 7 days
+
   const session: NetWorthSession = {
     userId,
     authenticatedAt: now,
-    expiresAt: now + SESSION_TIMEOUT_MS,
+    expiresAt,
   }
 
-  if (typeof window !== "undefined") {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session))
-  }
+  const cookieStore = await cookies()
+
+  // Set httpOnly cookie with security flags
+  cookieStore.set(SESSION_COOKIE_NAME, JSON.stringify(session), {
+    httpOnly: true, // Cannot be accessed by JavaScript (XSS protection)
+    secure: process.env.NODE_ENV === "production", // HTTPS only in production
+    sameSite: "strict", // CSRF protection
+    maxAge: SESSION_TIMEOUT_DAYS * 24 * 60 * 60, // 7 days in seconds
+    path: "/", // Available across entire app
+  })
 
   return session
 }
 
 /**
- * Get the current active session
+ * Get the current active session (SERVER-SIDE ONLY)
+ * Reads from httpOnly cookie
+ *
  * @returns The active session or null if no valid session exists
  */
-export function getSession(): NetWorthSession | null {
-  if (typeof window === "undefined") {
-    return null
-  }
+export async function getSession(): Promise<NetWorthSession | null> {
+  const cookieStore = await cookies()
+  const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME)
 
-  const sessionData = localStorage.getItem(SESSION_KEY)
-  if (!sessionData) {
+  if (!sessionCookie?.value) {
     return null
   }
 
   try {
-    const session: NetWorthSession = JSON.parse(sessionData)
+    const session: NetWorthSession = JSON.parse(sessionCookie.value)
 
     // Check if session has expired
     if (Date.now() > session.expiresAt) {
-      clearSession()
+      await clearSession()
       return null
     }
 
     return session
   } catch {
     // Invalid session data, clear it
-    clearSession()
+    await clearSession()
     return null
   }
 }
 
 /**
- * Check if there is an active session
+ * Check if there is an active session (SERVER-SIDE ONLY)
+ *
  * @returns true if session exists and is valid, false otherwise
  */
-export function hasActiveSession(): boolean {
-  return getSession() !== null
+export async function hasActiveSession(): Promise<boolean> {
+  const session = await getSession()
+  return session !== null
 }
 
 /**
- * Get the authenticated user ID from the current session
+ * Get the authenticated user ID from the current session (SERVER-SIDE ONLY)
+ *
  * @returns The user ID or null if no active session
  */
-export function getAuthenticatedUserId(): string | null {
-  const session = getSession()
+export async function getAuthenticatedUserId(): Promise<string | null> {
+  const session = await getSession()
   return session?.userId ?? null
 }
 
 /**
- * Extend the current session by resetting the expiration time
+ * Extend the current session by resetting the expiration time (SERVER-SIDE ONLY)
  * Useful for keeping sessions alive during active use
  */
-export function extendSession(): void {
-  const session = getSession()
+export async function extendSession(): Promise<void> {
+  const session = await getSession()
   if (!session) {
     return
   }
 
-  session.expiresAt = Date.now() + SESSION_TIMEOUT_MS
+  // Update expiration time
+  session.expiresAt = Date.now() + SESSION_TIMEOUT_DAYS * 24 * 60 * 60 * 1000
 
-  if (typeof window !== "undefined") {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(session))
-  }
+  const cookieStore = await cookies()
+
+  cookieStore.set(SESSION_COOKIE_NAME, JSON.stringify(session), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: SESSION_TIMEOUT_DAYS * 24 * 60 * 60,
+    path: "/",
+  })
 }
 
 /**
- * Clear the current session (logout)
+ * Clear the current session (logout) (SERVER-SIDE ONLY)
  */
-export function clearSession(): void {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem(SESSION_KEY)
-  }
+export async function clearSession(): Promise<void> {
+  const cookieStore = await cookies()
+  cookieStore.delete(SESSION_COOKIE_NAME)
 }
 
 /**
- * Get the remaining time in the current session (in milliseconds)
+ * Get the remaining time in the current session (in milliseconds) (SERVER-SIDE ONLY)
+ *
  * @returns Remaining time or 0 if no active session
  */
-export function getSessionRemainingTime(): number {
-  const session = getSession()
+export async function getSessionRemainingTime(): Promise<number> {
+  const session = await getSession()
   if (!session) {
     return 0
   }
@@ -122,16 +151,23 @@ export function getSessionRemainingTime(): number {
 }
 
 /**
- * Format remaining session time as a readable string
- * @returns Formatted time string like "25 minutes" or "Session expired"
+ * Format remaining session time as a readable string (SERVER-SIDE ONLY)
+ *
+ * @returns Formatted time string like "6 days" or "Session expired"
  */
-export function formatSessionRemainingTime(): string {
-  const remaining = getSessionRemainingTime()
+export async function formatSessionRemainingTime(): Promise<string> {
+  const remaining = await getSessionRemainingTime()
 
   if (remaining === 0) {
     return "Session expired"
   }
 
-  const minutes = Math.ceil(remaining / 60000)
-  return `${minutes} minute${minutes !== 1 ? "s" : ""}`
+  const days = Math.ceil(remaining / (24 * 60 * 60 * 1000))
+
+  if (days > 1) {
+    return `${days} days`
+  }
+
+  const hours = Math.ceil(remaining / (60 * 60 * 1000))
+  return `${hours} hour${hours !== 1 ? "s" : ""}`
 }
