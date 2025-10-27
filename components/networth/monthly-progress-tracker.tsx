@@ -227,7 +227,7 @@ export function MonthlyProgressTracker({
         )}
 
         {/* Category Breakdown */}
-        <div className="mt-auto p-4 rounded-lg bg-white border border-[hsl(var(--border-light-crust))]">
+        <div className="mt-4 p-4 rounded-lg bg-white border border-[hsl(var(--border-light-crust))]">
           <h3 className="text-sm font-semibold text-stone-900 mb-3">📊 Category Breakdown</h3>
           <p className="text-xs text-stone-600 mb-3">
             Expense categories are automatically classified into Needs and Wants:

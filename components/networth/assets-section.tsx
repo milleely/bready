@@ -47,7 +47,7 @@ export function AssetsSection({
           <Button
             onClick={onAdd}
             size="sm"
-            className="bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600"
+            className="flex items-center bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600"
           >
             <Plus className="h-4 w-4 mr-1" />
             Add Asset
@@ -94,14 +94,14 @@ export function AssetsSection({
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => onEdit(asset)}
-                            className="p-2 rounded-lg hover:bg-stone-100 text-stone-600 hover:text-stone-900 transition-colors"
+                            className="p-2.5 md:p-2 rounded-lg hover:bg-stone-100 text-stone-600 hover:text-stone-900 transition-colors"
                             aria-label={`Edit ${asset.name}`}
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => onDelete(asset.id)}
-                            className="p-2 rounded-lg hover:bg-red-50 text-stone-600 hover:text-red-600 transition-colors"
+                            className="p-2.5 md:p-2 rounded-lg hover:bg-red-50 text-stone-600 hover:text-red-600 transition-colors"
                             aria-label={`Delete ${asset.name}`}
                           >
                             <Trash2 className="h-4 w-4" />

@@ -101,7 +101,7 @@ export function MobileNav() {
               )}
             >
               <Icon className={cn("h-5 w-5", isActive && "text-amber-700")} />
-              <span className={cn("text-[10px] font-medium", isActive && "font-semibold")}>
+              <span className={cn("text-[10px] font-medium whitespace-nowrap", isActive && "font-semibold")}>
                 {item.title}
               </span>
             </Link>
