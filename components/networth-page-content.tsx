@@ -24,7 +24,7 @@ import { AssetFormDialog } from "@/components/networth/asset-form-dialog"
 import { LiabilityFormDialog } from "@/components/networth/liability-form-dialog"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import { getSession, createSession, clearSession } from "@/lib/networth/session"
+import { createSessionAction, logoutAction } from "@/app/actions/networth-session"
 import type {
   NetWorthDashboardData,
   IncomeSource,
@@ -37,15 +37,17 @@ import type {
 
 interface NetWorthPageContentProps {
   initialUsers: User[]
+  authenticated: boolean
+  userId: string | null
   month?: string // Optional month parameter (format: YYYY-MM)
 }
 
-export function NetWorthPageContent({ initialUsers, month }: NetWorthPageContentProps) {
-  // Authentication state
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, userId: initialUserId, month }: NetWorthPageContentProps) {
+  // Authentication state (initialized from server-side props)
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(initialUserId)
   const [showPinDialog, setShowPinDialog] = useState(false)
   const [showPinSetupDialog, setShowPinSetupDialog] = useState(false)
-  const [authenticatedUserId, setAuthenticatedUserId] = useState<string | null>(null)
+  const [authenticatedUserId, setAuthenticatedUserId] = useState<string | null>(initialUserId)
 
   // Dashboard data state
   const [dashboardData, setDashboardData] = useState<NetWorthDashboardData | null>(null)
@@ -68,14 +70,8 @@ export function NetWorthPageContent({ initialUsers, month }: NetWorthPageContent
 
   const selectedUser = initialUsers.find((u) => u.id === selectedUserId)
 
-  // Check for existing session on mount
-  useEffect(() => {
-    const session = getSession()
-    if (session) {
-      setAuthenticatedUserId(session.userId)
-      setSelectedUserId(session.userId)
-    }
-  }, [])
+  // No need to check session on mount - authentication state comes from server props
+  // The Server Component wrapper (app/(new-layout)/networth/page.tsx) handles session checks
 
   // Fetch dashboard data when user is authenticated or month changes
   useEffect(() => {
@@ -134,9 +130,12 @@ export function NetWorthPageContent({ initialUsers, month }: NetWorthPageContent
 
       const data = await response.json()
       if (data.success) {
-        createSession(selectedUserId!)
-        setAuthenticatedUserId(selectedUserId)
-        return true
+        // Use server action to create session (httpOnly cookie)
+        const sessionResult = await createSessionAction(selectedUserId!)
+        if (sessionResult.success) {
+          setAuthenticatedUserId(selectedUserId)
+          return true
+        }
       }
       return false
     } catch (error) {
@@ -156,9 +155,12 @@ export function NetWorthPageContent({ initialUsers, month }: NetWorthPageContent
       const data = await response.json()
       if (data.success) {
         // After successful setup, authenticate the user immediately
-        createSession(selectedUserId!)
-        setAuthenticatedUserId(selectedUserId)
-        return true
+        // Use server action to create session (httpOnly cookie)
+        const sessionResult = await createSessionAction(selectedUserId!)
+        if (sessionResult.success) {
+          setAuthenticatedUserId(selectedUserId)
+          return true
+        }
       }
       return false
     } catch (error) {
@@ -167,8 +169,9 @@ export function NetWorthPageContent({ initialUsers, month }: NetWorthPageContent
     }
   }
 
-  const handleLogout = () => {
-    clearSession()
+  const handleLogout = async () => {
+    // Use server action to clear session (httpOnly cookie)
+    await logoutAction()
     setAuthenticatedUserId(null)
     setSelectedUserId(null)
     setDashboardData(null)
