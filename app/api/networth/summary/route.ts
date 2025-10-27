@@ -15,6 +15,7 @@ import {
   generatePaycheckAllocation,
   calculateMonthlyIncome,
 } from "@/lib/networth/calculations"
+import { categorizeBudgetType } from "@/lib/networth/category-mapping"
 import type { NetWorthDashboardData, IncomeSource, IncomeFrequency, Asset, AssetCategory, Liability, LiabilityCategory } from "@/lib/types/networth"
 import { startOfMonth, endOfMonth } from "date-fns"
 
@@ -149,17 +150,111 @@ export async function GET(req: NextRequest) {
     const paycheckAllocation =
       typedIncomeSources.length > 0 ? generatePaycheckAllocation(monthlyIncome) : undefined
 
-    // Fetch actual spending breakdown (categorized by needs/wants/savings)
+    // Calculate actual spending breakdown (categorized by needs/wants/savings)
     let actualSpending = undefined
     try {
-      const baseUrl = req.nextUrl.origin
-      const response = await fetch(`${baseUrl}/api/networth/expense-breakdown?userId=${userId}`)
-      if (response.ok) {
-        actualSpending = await response.json()
+      // Get all household member IDs for shared expense queries
+      const householdUsers = await prisma.user.findMany({
+        where: { householdId },
+        select: { id: true }
+      })
+
+      const householdUserIds = householdUsers.map(u => u.id)
+      const userCount = householdUsers.length
+
+      // Get current month boundaries
+      const now = new Date()
+      const monthStart = startOfMonth(now)
+      const monthEnd = endOfMonth(now)
+
+      // Query 1: User's expenses (personal 100% + shared ÷ userCount)
+      const userExpenses = await prisma.expense.findMany({
+        where: {
+          userId,  // Only this user's expenses
+          date: {
+            gte: monthStart,
+            lte: monthEnd,
+          },
+        },
+        select: {
+          amount: true,
+          category: true,
+          isShared: true,
+        },
+      })
+
+      // Query 2: Other household members' SHARED expenses (÷ userCount)
+      const otherSharedExpenses = await prisma.expense.findMany({
+        where: {
+          userId: { in: householdUserIds, not: userId },  // Other members only
+          isShared: true,  // Only shared expenses
+          date: {
+            gte: monthStart,
+            lte: monthEnd,
+          },
+        },
+        select: {
+          amount: true,
+          category: true,
+        },
+      })
+
+      // Calculate totals by budget category
+      let needsSpent = 0
+      let wantsSpent = 0
+      let otherSpent = 0
+
+      // Process user's expenses
+      userExpenses.forEach((expense) => {
+        const budgetCategory = categorizeBudgetType(expense.category)
+
+        // Personal: 100%, Shared: your portion (÷ userCount)
+        const amount = expense.isShared
+          ? expense.amount / Math.max(userCount, 1)
+          : expense.amount
+
+        switch (budgetCategory) {
+          case "needs":
+            needsSpent += amount
+            break
+          case "wants":
+            wantsSpent += amount
+            break
+          case "other":
+            otherSpent += amount
+            break
+        }
+      })
+
+      // Process other household members' shared expenses
+      otherSharedExpenses.forEach((expense) => {
+        const budgetCategory = categorizeBudgetType(expense.category)
+
+        // Always divide by userCount (these are all shared)
+        const yourShare = expense.amount / Math.max(userCount, 1)
+
+        switch (budgetCategory) {
+          case "needs":
+            needsSpent += yourShare
+            break
+          case "wants":
+            wantsSpent += yourShare
+            break
+          case "other":
+            otherSpent += yourShare
+            break
+        }
+      })
+
+      actualSpending = {
+        needsSpent: Math.round(needsSpent * 100) / 100, // Round to 2 decimals
+        wantsSpent: Math.round(wantsSpent * 100) / 100,
+        savingsSpent: 0, // Not tracking yet - future feature
+        total: Math.round((needsSpent + wantsSpent + otherSpent) * 100) / 100,
       }
     } catch (error) {
       // If expense breakdown fails, continue without it (feature is optional)
-      console.warn("Failed to fetch expense breakdown:", error)
+      console.warn("Failed to calculate expense breakdown:", error)
     }
 
     // Assemble complete dashboard data
