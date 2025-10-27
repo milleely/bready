@@ -339,10 +339,10 @@ export function NetWorthPageContent({ initialUsers, month }: NetWorthPageContent
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-stone-900">
+          <h1 className="text-2xl md:text-3xl font-bold text-stone-900">
             {dashboardData.user.name.trim()}'s Net Worth
           </h1>
-          <p className="text-sm text-stone-600 mt-1">Track your financial health in one place</p>
+          <p className="hidden md:block text-sm text-stone-600 mt-1">Track your financial health in one place</p>
         </div>
         <button
           onClick={handleLogout}

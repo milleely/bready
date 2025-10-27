@@ -70,12 +70,12 @@ export function BudgetAllocationCard({
               key={allocation.label}
               className={`p-4 rounded-lg border border-[hsl(var(--border-light-crust))] ${allocation.bgColor}`}
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${allocation.color}`} />
-                  <span className="font-medium text-stone-900">{allocation.label}</span>
+              <div className="flex items-center justify-between gap-3 mb-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className={`w-3 h-3 rounded-full ${allocation.color} shrink-0`} />
+                  <span className="font-medium text-stone-900 truncate">{allocation.label}</span>
                 </div>
-                <span className={`text-sm font-semibold ${allocation.textColor}`}>
+                <span className={`text-sm font-semibold ${allocation.textColor} shrink-0 whitespace-nowrap`}>
                   {allocation.percentage}%
                 </span>
               </div>

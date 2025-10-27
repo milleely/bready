@@ -32,14 +32,14 @@ export function AssetsSection({
     <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 shadow-xl">
       <CardContent className="pt-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-3 mb-4">
+          <div className="flex items-center gap-2 min-w-0">
             <div className="p-2 rounded-lg bg-emerald-100">
               <TrendingUp className="h-5 w-5 text-emerald-600" />
             </div>
-            <div>
-              <h2 className="text-lg font-semibold text-stone-900">Assets</h2>
-              <p className="text-sm text-stone-600">
+            <div className="min-w-0">
+              <h2 className="text-base md:text-lg font-semibold text-stone-900">Assets</h2>
+              <p className="text-xs md:text-sm text-stone-600 truncate">
                 Total: ${totalAssets.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </p>
             </div>
@@ -47,7 +47,7 @@ export function AssetsSection({
           <Button
             onClick={onAdd}
             size="sm"
-            className="flex items-center bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600"
+            className="flex items-center shrink-0 text-xs md:text-sm bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600"
           >
             <Plus className="h-4 w-4 mr-1" />
             Add Asset
@@ -79,19 +79,19 @@ export function AssetsSection({
                   {categoryGroup.items.map((asset) => (
                     <div
                       key={asset.id}
-                      className="flex items-center justify-between p-3 rounded-lg bg-white border border-[hsl(var(--border-light-crust))] hover:border-[hsl(var(--border-golden-crust))] transition-colors"
+                      className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white border border-[hsl(var(--border-light-crust))] hover:border-[hsl(var(--border-golden-crust))] transition-colors"
                     >
-                      <div className="flex-1">
-                        <p className="font-medium text-stone-900">{asset.name}</p>
+                      <div className="flex-1 min-w-0 mr-3">
+                        <p className="font-medium text-stone-900 truncate">{asset.name}</p>
                         {asset.notes && (
-                          <p className="text-xs text-stone-500 mt-1">{asset.notes}</p>
+                          <p className="text-xs text-stone-500 mt-1 truncate">{asset.notes}</p>
                         )}
                       </div>
-                      <div className="flex items-center gap-4">
-                        <span className="text-sm font-semibold text-stone-900">
+                      <div className="flex items-center gap-2 md:gap-4 shrink-0">
+                        <span className="text-sm font-semibold text-stone-900 whitespace-nowrap">
                           ${asset.value.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                         </span>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 md:gap-2">
                           <button
                             onClick={() => onEdit(asset)}
                             className="p-2.5 md:p-2 rounded-lg hover:bg-stone-100 text-stone-600 hover:text-stone-900 transition-colors"
