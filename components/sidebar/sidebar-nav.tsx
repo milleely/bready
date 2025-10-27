@@ -39,7 +39,7 @@ const navItems: NavItem[] = [
   },
   {
     title: "Net Worth",
-    href: "/insights",
+    href: "/networth",
     icon: Wallet,
     description: "Track your net worth",
   },
