@@ -53,6 +53,16 @@ export async function GET(req: NextRequest) {
 
     const userId = requestedUserId
 
+    // Parse optional month parameter (format: YYYY-MM) or default to current month
+    const monthParam = searchParams.get("month")
+    let targetDate: Date
+    if (monthParam && /^\d{4}-\d{2}$/.test(monthParam)) {
+      const [year, month] = monthParam.split('-').map(Number)
+      targetDate = new Date(year, month - 1) // month is 0-indexed in Date constructor
+    } else {
+      targetDate = new Date() // Current month
+    }
+
     // Fetch all data in parallel
     const [incomeSources, assets, liabilities, expenseOverride] = await Promise.all([
       prisma.incomeSource.findMany({
@@ -95,38 +105,55 @@ export async function GET(req: NextRequest) {
       // Use manual override
       monthlyExpenses = expenseOverride.amount
     } else {
-      // Auto-calculate from expense tracker (current month)
-      const now = new Date()
-      const monthStart = startOfMonth(now)
-      const monthEnd = endOfMonth(now)
+      // Auto-calculate from expense tracker (selected month)
+      const monthStart = startOfMonth(targetDate)
+      const monthEnd = endOfMonth(targetDate)
 
-      const expenses = await prisma.expense.findMany({
+      // Get all household member IDs
+      const householdUsers = await prisma.user.findMany({
+        where: { householdId },
+        select: { id: true }
+      })
+      const householdUserIds = householdUsers.map(u => u.id)
+      const userCount = householdUsers.length
+
+      // Query 1: User's expenses (personal 100% + shared ÷ userCount)
+      const userExpenses = await prisma.expense.findMany({
         where: {
           userId,
-          date: {
-            gte: monthStart,
-            lte: monthEnd,
-          },
+          date: { gte: monthStart, lte: monthEnd },
         },
+        select: { amount: true, isShared: true },
       })
 
-      // Calculate total (personal expenses + share of shared expenses)
-      const personalExpenses = expenses
-        .filter((e) => !e.isShared)
-        .reduce((sum, e) => sum + e.amount, 0)
-
-      const sharedExpenses = expenses
-        .filter((e) => e.isShared)
-        .reduce((sum, e) => sum + e.amount, 0)
-
-      // Get total number of users in household to split shared expenses
-      const householdUsers = await prisma.user.count({
-        where: { householdId: user.id },
+      // Query 2: Other household members' SHARED expenses (÷ userCount)
+      const otherSharedExpenses = await prisma.expense.findMany({
+        where: {
+          userId: { in: householdUserIds, not: userId },
+          isShared: true,
+          date: { gte: monthStart, lte: monthEnd },
+        },
+        select: { amount: true },
       })
 
-      const sharedPerPerson = householdUsers > 0 ? sharedExpenses / householdUsers : 0
+      // Calculate user's total monthly expenses
+      let total = 0
 
-      monthlyExpenses = personalExpenses + sharedPerPerson
+      // Process user's expenses
+      userExpenses.forEach((expense) => {
+        const amount = expense.isShared
+          ? expense.amount / Math.max(userCount, 1)
+          : expense.amount
+        total += amount
+      })
+
+      // Process other household members' shared expenses
+      otherSharedExpenses.forEach((expense) => {
+        const yourShare = expense.amount / Math.max(userCount, 1)
+        total += yourShare
+      })
+
+      monthlyExpenses = Math.round(total * 100) / 100
     }
 
     // Generate net worth summary
@@ -162,10 +189,9 @@ export async function GET(req: NextRequest) {
       const householdUserIds = householdUsers.map(u => u.id)
       const userCount = householdUsers.length
 
-      // Get current month boundaries
-      const now = new Date()
-      const monthStart = startOfMonth(now)
-      const monthEnd = endOfMonth(now)
+      // Get selected month boundaries (same as monthlyExpenses calculation)
+      const monthStart = startOfMonth(targetDate)
+      const monthEnd = endOfMonth(targetDate)
 
       // Query 1: User's expenses (personal 100% + shared ÷ userCount)
       const userExpenses = await prisma.expense.findMany({

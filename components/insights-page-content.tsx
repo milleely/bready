@@ -1,14 +1,25 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Brain, Sparkles, TrendingUp, AlertCircle } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import { useEffect, useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Plus, Info, TrendingUp } from "lucide-react"
+import { Progress } from "@/components/ui/progress"
+import type { RuleBasedInsightsResponse } from "@/lib/types/insights"
+import { ToastMascot } from "@/components/insights/toast-mascot"
+import { AIChatInterface } from "@/components/insights/ai-chat-interface"
+import { InsightCardCompact } from "@/components/insights/insight-card-compact"
+import Link from "next/link"
 
 interface InsightsPageContentProps {
   month?: string
 }
 
 export function InsightsPageContent({ month }: InsightsPageContentProps) {
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [insightsData, setInsightsData] = useState<RuleBasedInsightsResponse | null>(null)
+
   // Get current month
   const getCurrentMonth = () => {
     const today = new Date()
@@ -18,102 +29,259 @@ export function InsightsPageContent({ month }: InsightsPageContentProps) {
   // Get selected month from prop or default to current
   const selectedMonth = month || getCurrentMonth()
 
-  // Format month for display (e.g., "September 2024")
+  // Format month for display (e.g., "October 2025")
   const getMonthName = (monthStr: string) => {
-    const [year, month] = monthStr.split('-').map(Number)
-    const date = new Date(year, month - 1)
+    const [year, monthNum] = monthStr.split('-').map(Number)
+    const date = new Date(year, monthNum - 1)
     return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
   }
 
+  // Fetch insights data
+  useEffect(() => {
+    const fetchInsights = async () => {
+      setLoading(true)
+      setError(null)
+
+      try {
+        const response = await fetch(`/api/insights/rules?month=${selectedMonth}`)
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch insights')
+        }
+
+        const data: RuleBasedInsightsResponse = await response.json()
+        setInsightsData(data)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred')
+        console.error('Error fetching insights:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchInsights()
+  }, [selectedMonth])
+
+  // Loading state
+  if (loading) {
+    return <LoadingState month={selectedMonth} />
+  }
+
+  // Error state
+  if (error) {
+    return <ErrorState error={error} />
+  }
+
+  // Empty state (< 10 expenses)
+  if (!insightsData || insightsData.metadata.dataPoints.expenseCount < 10) {
+    const expenseCount = insightsData?.metadata.dataPoints.expenseCount || 0
+    return <EmptyState expenseCount={expenseCount} />
+  }
+
+  // Get top 3 insights by score
+  const top3Insights = [...insightsData.insights]
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">{getMonthName(selectedMonth)} Insights</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {getMonthName(selectedMonth)} Financial Insights
+        </h1>
         <p className="text-muted-foreground mt-1">
-          AI-powered analytics and spending patterns to help you make better financial decisions.
+          Chat with Toasty about your spending patterns and financial health.
         </p>
       </div>
 
-      {/* AI Insights Placeholder Card */}
-      <Card className="bg-gradient-to-br from-purple-50 to-indigo-50 border-0 shadow-lg">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-purple-900">
-              <Brain className="h-6 w-6" />
-              AI Financial Insights
-            </CardTitle>
-            <Badge variant="secondary" className="bg-purple-200 text-purple-900">
-              <Sparkles className="h-3 w-3 mr-1" />
-              Coming Soon
-            </Badge>
+      {/* Toast Mascot */}
+      <ToastMascot />
+
+      {/* AI Chat Interface */}
+      <AIChatInterface month={selectedMonth} />
+
+      {/* Top 3 Insights */}
+      {top3Insights.length > 0 && (
+        <div className="space-y-4">
+          <h2 className="text-2xl font-semibold text-stone-800">
+            Top Insights for You
+          </h2>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {top3Insights.map((insight) => (
+              <InsightCardCompact key={insight.id} insight={insight} />
+            ))}
           </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-gray-700">
-            Get personalized financial coaching powered by AI. Soon you'll receive:
-          </p>
+        </div>
+      )}
 
-          <div className="space-y-3">
-            {/* Insight Examples */}
-            <div className="bg-white/70 rounded-lg p-4 border border-purple-100">
-              <div className="flex gap-3">
-                <div className="flex-shrink-0">
-                  <div className="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                    <AlertCircle className="h-5 w-5 text-amber-700" />
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Budget Alerts</h4>
-                  <p className="text-sm text-gray-600">
-                    "You've spent $450 on dining (150% of budget). Try limiting to 2x/week to save $150."
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white/70 rounded-lg p-4 border border-purple-100">
-              <div className="flex gap-3">
-                <div className="flex-shrink-0">
-                  <div className="h-10 w-10 rounded-lg bg-green-100 flex items-center justify-center">
-                    <TrendingUp className="h-5 w-5 text-green-700" />
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Spending Trends</h4>
-                  <p className="text-sm text-gray-600">
-                    "Your grocery spending is 15% lower than last month. Great job!"
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white/70 rounded-lg p-4 border border-purple-100">
-              <div className="flex gap-3">
-                <div className="flex-shrink-0">
-                  <div className="h-10 w-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                    <Sparkles className="h-5 w-5 text-blue-700" />
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-1">Smart Recommendations</h4>
-                  <p className="text-sm text-gray-600">
-                    "Consider setting a $50/week dining budget to stay on track."
-                  </p>
-                </div>
-              </div>
-            </div>
+      {/* Info Footer */}
+      <Card className="bg-gradient-to-br from-stone-50 to-stone-100 border-stone-200/50 shadow-md">
+        <CardContent className="flex items-start gap-3 pt-6">
+          <div className="p-2 rounded-lg bg-amber-100">
+            <Info className="h-5 w-5 text-amber-700" />
           </div>
-
-          <div className="mt-4 text-sm text-gray-600 bg-white/50 rounded-lg p-3 border border-purple-100">
-            <p className="font-medium text-purple-900 mb-1">What's next?</p>
-            <p>
-              We're building AI-powered insights that will analyze your spending patterns, detect anomalies,
-              predict future expenses, and provide personalized financial coaching.
+          <div>
+            <p className="text-sm font-semibold text-stone-900 mb-1">
+              How Insights Work
+            </p>
+            <p className="text-sm text-stone-700">
+              These insights are generated by analyzing your spending patterns, budget usage,
+              and month-over-month trends. Check back regularly to stay on top of your finances!
             </p>
           </div>
         </CardContent>
       </Card>
+    </div>
+  )
+}
 
+/**
+ * Loading State Component
+ */
+function LoadingState({ month }: { month: string }) {
+  const getMonthName = (monthStr: string) => {
+    const [year, monthNum] = monthStr.split('-').map(Number)
+    const date = new Date(year, monthNum - 1)
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  }
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {getMonthName(month)} Financial Insights
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Chat with Toasty about your spending patterns and financial health.
+        </p>
+      </div>
+
+      {/* Mascot Skeleton */}
+      <div className="flex flex-col items-center py-12">
+        <div className="h-40 w-40 bg-stone-200 rounded-full animate-pulse mb-6" />
+        <div className="h-20 w-80 bg-stone-200 rounded-2xl animate-pulse" />
+      </div>
+
+      {/* Chat Skeleton */}
+      <Card className="min-h-[300px] bg-gradient-to-br from-stone-50 to-stone-100 border-stone-200/50">
+        <CardContent className="pt-6 space-y-4">
+          <div className="h-8 w-1/3 bg-stone-200 rounded animate-pulse" />
+          <div className="h-12 w-full bg-stone-200 rounded animate-pulse" />
+          <div className="space-y-2">
+            <div className="h-12 w-full bg-stone-200 rounded animate-pulse" />
+            <div className="h-12 w-full bg-stone-200 rounded animate-pulse" />
+            <div className="h-12 w-full bg-stone-200 rounded animate-pulse" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+/**
+ * Error State Component
+ */
+function ErrorState({ error }: { error: string }) {
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">Financial Insights</h1>
+        <p className="text-muted-foreground mt-1">
+          Chat with Toasty about your spending patterns and financial health.
+        </p>
+      </div>
+
+      {/* Toast Mascot (show even on error) */}
+      <ToastMascot />
+
+      <Card className="bg-gradient-to-br from-red-50 to-orange-50 border-red-200/50 shadow-md">
+        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="p-4 rounded-full bg-red-100 mb-4">
+            <Info className="h-12 w-12 text-red-600" />
+          </div>
+          <h3 className="text-xl font-semibold text-stone-900 mb-2">
+            Unable to Load Insights
+          </h3>
+          <p className="text-stone-600 max-w-md mb-4">
+            {error}
+          </p>
+          <Button onClick={() => window.location.reload()}>
+            Try Again
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+/**
+ * Empty State Component (< 10 expenses)
+ */
+function EmptyState({ expenseCount }: { expenseCount: number }) {
+  const progress = Math.min((expenseCount / 10) * 100, 100)
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">Financial Insights</h1>
+        <p className="text-muted-foreground mt-1">
+          AI-powered analytics to help you make better financial decisions.
+        </p>
+      </div>
+
+      {/* Toast Mascot */}
+      <ToastMascot />
+
+      {/* Empty State Card */}
+      <Card className="bg-gradient-to-br from-stone-50 to-stone-100 border-stone-200/50 shadow-xl">
+        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+          {/* Icon */}
+          <div className="relative mb-6">
+            <div className="p-6 rounded-full bg-amber-100 backdrop-blur">
+              <TrendingUp className="h-16 w-16 text-amber-600" />
+            </div>
+          </div>
+
+          {/* Heading */}
+          <h2 className="text-3xl font-bold text-stone-900 mb-3">
+            Feed Me Some Expenses! 🍞
+          </h2>
+
+          {/* Explanation */}
+          <p className="text-lg text-stone-700 max-w-md mb-6 leading-relaxed">
+            I need at least <strong>10 expenses</strong> to generate meaningful insights.
+            Keep tracking your spending and I'll have personalized advice for you soon!
+          </p>
+
+          {/* Progress Indicator */}
+          <div className="w-full max-w-sm space-y-2">
+            <div className="flex justify-between text-sm text-stone-600">
+              <span>Progress</span>
+              <span className="font-semibold">{expenseCount} / 10 expenses</span>
+            </div>
+            <Progress value={progress} className="h-2" />
+          </div>
+
+          {/* CTA */}
+          <Link href="/expenses">
+            <Button
+              size="lg"
+              className="mt-8 bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 transition-all duration-200 shadow-md hover:shadow-lg"
+            >
+              Add Expense Now
+              <Plus className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
+
+          {/* Help Text */}
+          <p className="mt-6 text-sm text-stone-600">
+            <Info className="inline h-4 w-4 mr-1" />
+            Insights include budget alerts, spending trends, and personalized recommendations.
+          </p>
+        </CardContent>
+      </Card>
     </div>
   )
 }

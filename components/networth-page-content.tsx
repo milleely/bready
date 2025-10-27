@@ -37,9 +37,10 @@ import type {
 
 interface NetWorthPageContentProps {
   initialUsers: User[]
+  month?: string // Optional month parameter (format: YYYY-MM)
 }
 
-export function NetWorthPageContent({ initialUsers }: NetWorthPageContentProps) {
+export function NetWorthPageContent({ initialUsers, month }: NetWorthPageContentProps) {
   // Authentication state
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
   const [showPinDialog, setShowPinDialog] = useState(false)
@@ -76,19 +77,23 @@ export function NetWorthPageContent({ initialUsers }: NetWorthPageContentProps) 
     }
   }, [])
 
-  // Fetch dashboard data when user is authenticated
+  // Fetch dashboard data when user is authenticated or month changes
   useEffect(() => {
     if (authenticatedUserId) {
       fetchDashboardData(authenticatedUserId)
     } else {
       setDashboardData(null)
     }
-  }, [authenticatedUserId])
+  }, [authenticatedUserId, month])
 
   const fetchDashboardData = async (userId: string) => {
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/networth/summary?userId=${userId}`)
+      // Build URL with userId and optional month parameter
+      const params = new URLSearchParams({ userId })
+      if (month) params.set('month', month)
+
+      const response = await fetch(`/api/networth/summary?${params.toString()}`)
       if (!response.ok) throw new Error("Failed to fetch data")
       const data: NetWorthDashboardData = await response.json()
       setDashboardData(data)

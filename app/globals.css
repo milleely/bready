@@ -220,3 +220,28 @@ select:focus-visible {
 .animate-toasting {
   animation: toasting 2s ease-in-out infinite;
 }
+
+/* Breathing Animation (for Toast Mascot) */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+.animate-breathe {
+  animation: breathe 1.5s ease-in-out infinite;
+}
+
+/* Toast Mascot 3D Depth Enhancements */
+.toast-mascot-3d {
+  filter: drop-shadow(2px 4px 6px rgba(146, 64, 14, 0.15));
+}
+
+.toast-mascot-3d:hover {
+  filter: drop-shadow(3px 6px 8px rgba(146, 64, 14, 0.25));
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
