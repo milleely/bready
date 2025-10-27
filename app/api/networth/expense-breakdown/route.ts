@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
+import { getHouseholdId } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { categorizeBudgetType } from "@/lib/networth/category-mapping"
 
 export async function GET(request: NextRequest) {
   try {
-    // Get authenticated Clerk user
-    const { userId: clerkUserId } = await auth()
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
 
     const { searchParams } = new URL(request.url)
     const requestedUserId = searchParams.get("userId")
@@ -19,22 +16,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "userId is required" }, { status: 400 })
     }
 
-    // Verify the authenticated user is requesting their own data
-    if (clerkUserId !== requestedUserId) {
-      return NextResponse.json(
-        { error: "Forbidden: Cannot access other users' data" },
-        { status: 403 }
-      )
-    }
-
-    // Get user's household to query all household expenses
-    const user = await prisma.user.findUnique({
-      where: { id: requestedUserId },
+    // Verify the userId belongs to the authenticated user's household
+    const user = await prisma.user.findFirst({
+      where: {
+        id: requestedUserId,
+        householdId,
+      },
       select: { householdId: true }
     })
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 })
+      return NextResponse.json(
+        { error: "User not found in your household" },
+        { status: 403 }
+      )
     }
 
     // Get all household member IDs for shared expense queries

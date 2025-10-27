@@ -5,20 +5,17 @@
  */
 
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/db"
 import { verifyPin } from "@/lib/networth/pin-auth"
 import { pinSchema } from "@/lib/networth/validation"
 import { rateLimit, clearRateLimit } from "@/lib/rate-limit"
+import { getHouseholdId } from "@/lib/auth"
 
 export async function POST(req: NextRequest) {
   try {
-    // Get authenticated Clerk user
-    const { userId: clerkUserId } = await auth()
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
 
     const body = await req.json()
     const { userId: requestedUserId, pin } = body
@@ -31,10 +28,17 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Verify the authenticated user is verifying their own PIN
-    if (clerkUserId !== requestedUserId) {
+    // Verify the userId belongs to the authenticated user's household
+    const user = await prisma.user.findFirst({
+      where: {
+        id: requestedUserId,
+        householdId,
+      },
+    })
+
+    if (!user) {
       return NextResponse.json(
-        { error: "Forbidden: Cannot verify other users' PIN" },
+        { error: "User not found in your household" },
         { status: 403 }
       )
     }
@@ -87,21 +91,16 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Get user details for response
-    const user = await prisma.user.findUnique({
-      where: { id: requestedUserId },
-      select: {
-        id: true,
-        name: true,
-        avatar: true,
-        color: true,
-      },
-    })
-
+    // Return success response with user details already fetched
     return NextResponse.json({
       success: true,
       message: "PIN verified successfully",
-      user,
+      user: {
+        id: user.id,
+        name: user.name,
+        avatar: user.avatar,
+        color: user.color,
+      },
     })
   } catch (error) {
     console.error("PIN verification error:", error)

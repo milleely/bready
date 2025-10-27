@@ -7,21 +7,18 @@
  */
 
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/db"
 import { hashPin } from "@/lib/networth/pin-auth"
 import { pinSchema } from "@/lib/networth/validation"
 import { rateLimit } from "@/lib/rate-limit"
+import { getHouseholdId } from "@/lib/auth"
 
 // GET - Check if user has a PIN
 export async function GET(req: NextRequest) {
   try {
-    // Get authenticated Clerk user
-    const { userId: clerkUserId } = await auth()
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
 
     const { searchParams } = new URL(req.url)
     const requestedUserId = searchParams.get("userId")
@@ -33,10 +30,17 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    // Verify the authenticated user is requesting their own data
-    if (clerkUserId !== requestedUserId) {
+    // Verify the userId belongs to the authenticated user's household
+    const user = await prisma.user.findFirst({
+      where: {
+        id: requestedUserId,
+        householdId,
+      },
+    })
+
+    if (!user) {
       return NextResponse.json(
-        { error: "Forbidden: Cannot access other users' data" },
+        { error: "User not found in your household" },
         { status: 403 }
       )
     }
@@ -58,12 +62,9 @@ export async function GET(req: NextRequest) {
 // POST - Create new PIN
 export async function POST(req: NextRequest) {
   try {
-    // Get authenticated Clerk user
-    const { userId: clerkUserId } = await auth()
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
 
     const body = await req.json()
     const { userId: requestedUserId, pin } = body
@@ -76,10 +77,17 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Verify the authenticated user is creating for their own account
-    if (clerkUserId !== requestedUserId) {
+    // Verify the userId belongs to the authenticated user's household
+    const user = await prisma.user.findFirst({
+      where: {
+        id: requestedUserId,
+        householdId,
+      },
+    })
+
+    if (!user) {
       return NextResponse.json(
-        { error: "Forbidden: Cannot create PIN for other users" },
+        { error: "User not found in your household" },
         { status: 403 }
       )
     }
@@ -105,15 +113,6 @@ export async function POST(req: NextRequest) {
         { error: validation.error.issues[0].message },
         { status: 400 }
       )
-    }
-
-    // Check if user exists
-    const user = await prisma.user.findUnique({
-      where: { id: requestedUserId },
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 })
     }
 
     // Check if PIN already exists for this user

@@ -6,20 +6,17 @@
  */
 
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
 import { prisma } from "@/lib/db"
 import { hashPin, verifyPin } from "@/lib/networth/pin-auth"
 import { pinSchema } from "@/lib/networth/validation"
 import { rateLimit } from "@/lib/rate-limit"
+import { getHouseholdId } from "@/lib/auth"
 
 export async function PUT(req: NextRequest) {
   try {
-    // Get authenticated Clerk user
-    const { userId: clerkUserId } = await auth()
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
 
     const body = await req.json()
     const { userId: requestedUserId, currentPin, newPin } = body
@@ -32,10 +29,17 @@ export async function PUT(req: NextRequest) {
       )
     }
 
-    // Verify the authenticated user is updating their own PIN
-    if (clerkUserId !== requestedUserId) {
+    // Verify the userId belongs to the authenticated user's household
+    const user = await prisma.user.findFirst({
+      where: {
+        id: requestedUserId,
+        householdId,
+      },
+    })
+
+    if (!user) {
       return NextResponse.json(
-        { error: "Forbidden: Cannot update other users' PIN" },
+        { error: "User not found in your household" },
         { status: 403 }
       )
     }

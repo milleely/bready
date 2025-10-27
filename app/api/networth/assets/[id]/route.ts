@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
+import { getHouseholdId } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { assetSchema } from "@/lib/networth/validation"
 import type { Asset, AssetCategory } from "@/lib/types/networth"
@@ -18,12 +18,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get authenticated Clerk user
-    const { userId: clerkUserId } = await auth()
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
 
     const { id } = await params
 
@@ -38,10 +35,15 @@ export async function GET(
       )
     }
 
-    // Verify the authenticated user owns this asset
-    if (clerkUserId !== asset.userId) {
+    // Verify the asset belongs to a user in the authenticated user's household
+    const assetOwner = await prisma.user.findUnique({
+      where: { id: asset.userId },
+      select: { householdId: true },
+    })
+
+    if (!assetOwner || assetOwner.householdId !== householdId) {
       return NextResponse.json(
-        { error: "Forbidden: Cannot access other users' assets" },
+        { error: "Asset not found in your household" },
         { status: 403 }
       )
     }
@@ -68,12 +70,9 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get authenticated Clerk user
-    const { userId: clerkUserId } = await auth()
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
 
     const { id } = await params
     const body = await req.json()
@@ -99,10 +98,15 @@ export async function PUT(
       )
     }
 
-    // Verify the authenticated user owns this asset
-    if (clerkUserId !== existing.userId) {
+    // Verify the asset belongs to a user in the authenticated user's household
+    const assetOwner = await prisma.user.findUnique({
+      where: { id: existing.userId },
+      select: { householdId: true },
+    })
+
+    if (!assetOwner || assetOwner.householdId !== householdId) {
       return NextResponse.json(
-        { error: "Forbidden: Cannot update other users' assets" },
+        { error: "Asset not found in your household" },
         { status: 403 }
       )
     }
@@ -135,12 +139,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Get authenticated Clerk user
-    const { userId: clerkUserId } = await auth()
-
-    if (!clerkUserId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+    // Require authentication and get household ID
+    const householdId = await getHouseholdId()
+    if (householdId instanceof NextResponse) return householdId
 
     const { id } = await params
 
@@ -156,10 +157,15 @@ export async function DELETE(
       )
     }
 
-    // Verify the authenticated user owns this asset
-    if (clerkUserId !== existing.userId) {
+    // Verify the asset belongs to a user in the authenticated user's household
+    const assetOwner = await prisma.user.findUnique({
+      where: { id: existing.userId },
+      select: { householdId: true },
+    })
+
+    if (!assetOwner || assetOwner.householdId !== householdId) {
       return NextResponse.json(
-        { error: "Forbidden: Cannot delete other users' assets" },
+        { error: "Asset not found in your household" },
         { status: 403 }
       )
     }
