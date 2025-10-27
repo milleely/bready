@@ -25,6 +25,20 @@ export function MonthlyProgressTracker({
   actualSpending,
   month = "This Month",
 }: MonthlyProgressTrackerProps) {
+  // Format month for display (YYYY-MM → "October 2025")
+  const formatMonthDisplay = (monthStr?: string): string => {
+    if (!monthStr || monthStr === "This Month") return "This Month"
+
+    // Validate format: YYYY-MM
+    if (!/^\d{4}-\d{2}$/.test(monthStr)) return "This Month"
+
+    const [year, monthNum] = monthStr.split('-').map(Number)
+    const date = new Date(year, monthNum - 1) // monthNum is 1-indexed, Date is 0-indexed
+    return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  }
+
+  const displayMonth = formatMonthDisplay(month)
+
   // Calculate monthly income from bi-weekly amount (grossAmount * 2.167)
   const monthlyIncome = paycheckAllocation.grossAmount * 2.167
 
@@ -117,7 +131,7 @@ export function MonthlyProgressTracker({
           </div>
           <div>
             <h2 className="text-lg font-semibold text-stone-900">Your Progress</h2>
-            <p className="text-sm text-stone-600">{month} - Actual spending vs budget allocation</p>
+            <p className="text-sm text-stone-600">{displayMonth} - Actual spending vs budget allocation</p>
           </div>
         </div>
 
@@ -126,7 +140,6 @@ export function MonthlyProgressTracker({
           {allocations.map((allocation) => {
             const status = getSpendingStatus(allocation.actualSpent, allocation.monthlyBudget)
             const StatusIcon = status.icon
-            const hasSpendingData = actualSpending && allocation.actualSpent > 0
 
             return (
               <div
@@ -147,9 +160,8 @@ export function MonthlyProgressTracker({
                   </p>
                 </div>
 
-                {/* Spending Comparison (only if data available) */}
-                {hasSpendingData && (
-                  <div className="mt-3 pt-3 border-t border-stone-100">
+                {/* Spending Comparison (always show, even with $0) */}
+                <div className="mt-3 pt-3 border-t border-stone-100">
                     {/* Progress Bar - Enhanced height */}
                     <div className="mb-2">
                       <div className="h-3 bg-stone-100 rounded-full overflow-hidden">
@@ -194,7 +206,6 @@ export function MonthlyProgressTracker({
                       </span>
                     </div>
                   </div>
-                )}
               </div>
             )
           })}

@@ -398,7 +398,7 @@ export function NetWorthPageContent({ initialUsers, month }: NetWorthPageContent
               <MonthlyProgressTracker
                 paycheckAllocation={dashboardData.paycheckAllocation}
                 actualSpending={dashboardData.actualSpending}
-                month="October 2025"
+                month={month}
               />
             )}
           </div>
