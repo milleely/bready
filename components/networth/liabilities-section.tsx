@@ -75,7 +75,7 @@ export function LiabilitiesSection({
                 </div>
 
                 {/* Liabilities in Category */}
-                <div className="space-y-2 px-4">
+                <div className="space-y-2 pl-4">
                   {categoryGroup.items.map((liability) => (
                     <div
                       key={liability.id}

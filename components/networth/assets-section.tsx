@@ -75,7 +75,7 @@ export function AssetsSection({
                 </div>
 
                 {/* Assets in Category */}
-                <div className="space-y-2 px-4">
+                <div className="space-y-2 pl-4">
                   {categoryGroup.items.map((asset) => (
                     <div
                       key={asset.id}
