@@ -31,7 +31,7 @@ const navItems: NavItem[] = [
   },
   {
     title: "Net Worth",
-    href: "/insights",
+    href: "/networth",
     icon: Wallet,
   },
 ]
