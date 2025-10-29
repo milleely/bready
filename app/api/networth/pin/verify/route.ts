@@ -91,6 +91,9 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Clear rate limit after successful verification (forgive previous failed attempts)
+    clearRateLimit(`pin-verify:${requestedUserId}`)
+
     // Return success response with user details already fetched
     return NextResponse.json({
       success: true,

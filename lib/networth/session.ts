@@ -14,12 +14,14 @@
 import { cookies } from "next/headers"
 
 const SESSION_COOKIE_NAME = "networth_session"
-const SESSION_TIMEOUT_DAYS = 7 // 7 days (more user-friendly than 30 min)
+const SESSION_TIMEOUT_DAYS = 7 // 7 days absolute expiration
+const INACTIVITY_TIMEOUT_MS = 30 * 60 * 1000 // 30 minutes of inactivity
 
 export interface NetWorthSession {
   userId: string
-  authenticatedAt: number // Timestamp
-  expiresAt: number // Timestamp
+  authenticatedAt: number // Timestamp when session was created
+  expiresAt: number // Absolute expiration timestamp (7 days)
+  lastActivityAt: number // Last activity timestamp (for 30-min timeout)
 }
 
 /**
@@ -36,6 +38,7 @@ export async function createSession(userId: string): Promise<NetWorthSession> {
     userId,
     authenticatedAt: now,
     expiresAt,
+    lastActivityAt: now, // Initialize activity timestamp
   }
 
   const cookieStore = await cookies()
@@ -68,9 +71,16 @@ export async function getSession(): Promise<NetWorthSession | null> {
 
   try {
     const session: NetWorthSession = JSON.parse(sessionCookie.value)
+    const now = Date.now()
 
-    // Check if session has expired
-    if (Date.now() > session.expiresAt) {
+    // Check if session has expired (absolute 7-day limit)
+    if (now > session.expiresAt) {
+      await clearSession()
+      return null
+    }
+
+    // Check if session is inactive (30 minutes of inactivity)
+    if (now - session.lastActivityAt > INACTIVITY_TIMEOUT_MS) {
       await clearSession()
       return null
     }
@@ -113,8 +123,11 @@ export async function extendSession(): Promise<void> {
     return
   }
 
-  // Update expiration time
-  session.expiresAt = Date.now() + SESSION_TIMEOUT_DAYS * 24 * 60 * 60 * 1000
+  const now = Date.now()
+
+  // Update both expiration time and last activity
+  session.expiresAt = now + SESSION_TIMEOUT_DAYS * 24 * 60 * 60 * 1000
+  session.lastActivityAt = now
 
   const cookieStore = await cookies()
 

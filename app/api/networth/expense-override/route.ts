@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getHouseholdId } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { expenseOverrideSchema } from "@/lib/networth/validation"
+import { updateActivity } from "@/lib/networth/activity-tracker"
 
 // GET - Get expense override for a user
 export async function GET(req: NextRequest) {
@@ -16,6 +17,9 @@ export async function GET(req: NextRequest) {
     // Require authentication and get household ID
     const householdId = await getHouseholdId()
     if (householdId instanceof NextResponse) return householdId
+
+    // Update activity timestamp to prevent inactivity timeout
+    await updateActivity()
 
     const { searchParams } = new URL(req.url)
     const requestedUserId = searchParams.get("userId")
@@ -63,6 +67,9 @@ export async function PUT(req: NextRequest) {
     // Require authentication and get household ID
     const householdId = await getHouseholdId()
     if (householdId instanceof NextResponse) return householdId
+
+    // Update activity timestamp to prevent inactivity timeout
+    await updateActivity()
 
     const body = await req.json()
     const { userId: requestedUserId, ...data } = body

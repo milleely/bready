@@ -82,6 +82,52 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     }
   }, [authenticatedUserId, month])
 
+  // Inactivity timeout: Auto-logout after 30 minutes of inactivity (matches server-side timeout)
+  useEffect(() => {
+    if (!authenticatedUserId) return // Only run when authenticated
+
+    const INACTIVITY_TIMEOUT = 30 * 60 * 1000 // 30 minutes
+    const WARNING_TIME = 29 * 60 * 1000 // 29 minutes (1 min before logout)
+
+    let inactivityTimer: NodeJS.Timeout
+    let warningTimer: NodeJS.Timeout
+
+    const resetTimers = () => {
+      // Clear existing timers
+      clearTimeout(inactivityTimer)
+      clearTimeout(warningTimer)
+
+      // Set warning timer (29 minutes)
+      warningTimer = setTimeout(() => {
+        toast.warning("⏱️ Session expiring in 1 minute due to inactivity...", {
+          duration: 60000, // Show for 1 minute
+        })
+      }, WARNING_TIME)
+
+      // Set logout timer (30 minutes)
+      inactivityTimer = setTimeout(() => {
+        toast.error("Session expired due to inactivity")
+        handleLogout()
+      }, INACTIVITY_TIMEOUT)
+    }
+
+    // Activity events to monitor
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart']
+
+    // Attach listeners with passive flag for performance
+    events.forEach(event => window.addEventListener(event, resetTimers, { passive: true }))
+
+    // Initialize timers
+    resetTimers()
+
+    // Cleanup on unmount or when authentication changes
+    return () => {
+      clearTimeout(inactivityTimer)
+      clearTimeout(warningTimer)
+      events.forEach(event => window.removeEventListener(event, resetTimers))
+    }
+  }, [authenticatedUserId])
+
   const fetchDashboardData = async (userId: string) => {
     setIsLoading(true)
     try {
