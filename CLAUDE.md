@@ -16,17 +16,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Current Project Status
 
 **Completed Features:**
-- ✅ Sidebar navigation with collapsible design
-- ✅ Month-based filtering across all pages
+- ✅ V2 Dashboard UI with toast-themed design system (see `/docs/CHANGELOG_V2_DASHBOARD.md`)
+  - Collapsible sidebar navigation
+  - Month-based filtering with URL state management
+  - Keyboard shortcuts and accessibility (WCAG 2.1 AA compliant)
+  - Semantic category color palette (15 categories)
+- ✅ Net Worth Dashboard with 50/30/20 budget tracking (see `/docs/CHANGELOG_NET_WORTH.md`)
+  - Assets/liabilities tracking with PIN authentication
+  - Automatic expense categorization (needs/wants/savings)
+  - Household-aware calculations with httpOnly cookie sessions
 - ✅ Receipt upload system with image viewer
 - ✅ Advanced expense filtering (user, category, type, amount range)
 - ✅ Mobile-responsive design (375px+)
 - ✅ Budget tracking and alerts
 - ✅ Settlement calculations
-- ✅ Contextual alerts and notifications
 
 **In Progress:**
-- 🚧 Phase 3: Polish & Accessibility (keyboard nav, ARIA labels, performance)
+- 🚧 Security Hardening: CSRF protection, security headers, rate limiting
+- 🚧 Notification System: Email alerts for budgets, settlements, recurring expenses
 
 ## Project Overview
 
@@ -142,12 +149,30 @@ This project uses **Tailwind CSS v4**, which has different syntax from v3:
 
 All routes follow Next.js 15 App Router conventions:
 
+**Expense Tracking:**
 - `GET /api/users` - List all users
 - `GET /api/expenses?userId=&category=&startDate=&endDate=` - List expenses with optional filters
 - `POST /api/expenses` - Create expense
 - `PUT /api/expenses/[id]` - Update expense
 - `DELETE /api/expenses/[id]` - Delete expense
 - `GET /api/stats?startDate=&endDate=` - Computed statistics with optional date range
+
+**Net Worth Dashboard:**
+- `GET /api/networth/summary` - Fetch net worth summary (assets, liabilities, net worth)
+- `GET /api/networth/assets` - List all asset entries
+- `POST /api/networth/assets` - Create new asset entry
+- `PUT /api/networth/assets/[id]` - Update existing asset
+- `DELETE /api/networth/assets/[id]` - Remove asset
+- `GET /api/networth/liabilities` - List all liability entries
+- `POST /api/networth/liabilities` - Create new liability entry
+- `PUT /api/networth/liabilities/[id]` - Update existing liability
+- `DELETE /api/networth/liabilities/[id]` - Remove liability
+- `GET /api/networth/income` - Fetch monthly income data
+- `POST /api/networth/income` - Create/update income entry
+- `GET /api/networth/expense-breakdown` - Get needs/wants/savings spending totals (household-aware)
+- `POST /api/networth/auth/verify-pin` - Verify PIN for authentication
+- `POST /api/networth/auth/setup-pin` - Create new PIN
+- `POST /api/networth/auth/update-pin` - Change existing PIN
 
 ## Important Implementation Notes
 
@@ -242,6 +267,60 @@ The singleton pattern in `lib/db.ts` prevents multiple instances in development 
 - Layout components that use `useSearchParams()` need special handling (see `month-selector-wrapper.tsx`)
 - Server Components can access `searchParams` directly without Suspense
 - Local dev builds may succeed while production builds fail - always test with `next build`
+
+### Next.js 15 Async Cookies Production Error
+
+**Problem**: Production deployment crashes with "Application error: a server-side exception has occurred" for pages using `await cookies()` while local development works fine.
+
+**Symptoms**:
+- Specific page fails in production (e.g., Net Worth page)
+- Other pages work correctly
+- No errors in local development mode
+- Error digest appears in production logs
+
+**Root Cause**:
+1. Next.js 15's `cookies()` is async and requires runtime cookie access
+2. Without `dynamic = 'force-dynamic'`, Vercel attempts static optimization
+3. Production builds aggressively optimize for static generation
+4. Development mode is more forgiving with dynamic rendering
+
+**Solution Pattern** (see `app/(new-layout)/networth/page.tsx`):
+
+```typescript
+import { cookies } from 'next/headers'
+
+// REQUIRED: Force dynamic rendering
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs' // Ensure Node.js runtime (not Edge)
+
+export default async function Page() {
+  try {
+    // Now safe to use async cookies
+    const session = await getSession() // uses await cookies() internally
+
+    return <PageContent session={session} />
+  } catch (error) {
+    // Production error logging
+    console.error('[Page Error]:', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
+      timestamp: new Date().toISOString(),
+    })
+
+    // User-friendly error display
+    return <ErrorDisplay error={error} />
+  }
+}
+```
+
+**Key Points**:
+- Always add `export const dynamic = 'force-dynamic'` when using `await cookies()`
+- Specify `export const runtime = 'nodejs'` to avoid Edge runtime issues
+- Wrap page logic in try/catch for graceful error handling
+- Test production builds locally with `next build && next start` before deploying
+- Error boundary prevents entire site from crashing if one page fails
+
+**Security Note**: This pattern is used for httpOnly cookie sessions (Net Worth PIN authentication). The cookies are server-only and never exposed to client-side JavaScript.
 
 ### Additional Rules
 

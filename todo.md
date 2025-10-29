@@ -285,479 +285,13 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
 
 ---
 
-## Review Section
-*To be filled after each phase is complete*
+## Completed Features Summary
 
-### Phase 1 Completion Notes
-- **Date Completed**: 2025-10-15
-- **Changes Made**:
-  - ✅ Created prominent hero card with "This Month at a Glance" showing total spending + trend indicator
-  - ✅ Added 30-day spending sparkline chart showing daily spending patterns
-  - ✅ Implemented overall budget health indicator (🟢/🟡/🔴 emoji badge)
-  - ✅ Built Budget Health summary card with on-track/warning/over counts
-  - ✅ Added Settlements card with pending payment tracking
-  - ✅ Created Top 3 Categories section with progress bars and category icons
-  - ✅ Integrated ContextualAlerts component for actionable warnings (over-budget, settlements, recurring, inactivity)
-  - ✅ Added "View detailed breakdown" links to Expenses, Budgets, and Insights pages
-  - ✅ Applied consistent warm amber/orange color theme across all dashboard cards
-  - ✅ Removed detailed charts (moved to Insights page)
-- **Issues Encountered**:
-  - None - implementation was straightforward
-  - Database connection warning (unrelated to dashboard changes)
-- **Remaining Work**:
-  - Phase 1 is complete
-  - Ready to proceed with Phase 2: Enhanced Interactivity (keyboard shortcuts, optimistic UI)
+**V2 Dashboard UI Improvements** (Phases 1-3): ✅ Complete
+- See detailed implementation notes in `/docs/CHANGELOG_V2_DASHBOARD.md`
 
-### Phase 2 Completion Notes
-- **Date Completed**: 2025-10-15
-- **Changes Made**:
-
-  **Navigation Improvements:**
-  - ✅ Collapsible sidebar toggle implemented in `components/sidebar-layout.tsx`
-  - Added `sidebarCollapsed` state with localStorage persistence
-  - Implemented icon-only mode (64px collapsed, 256px expanded)
-  - Added ChevronLeft/ChevronRight toggle button in sidebar header
-  - Smooth CSS transitions (duration-300) for collapse/expand
-  - Adaptive main content margin (md:ml-16 vs md:ml-64)
-  - Conditional rendering: logo text, MonthSelector, and UserButton sizing
-  - Mobile navigation unaffected (uses separate state)
-  - ✅ Keyboard shortcuts descoped per user request
-
-  **UX Enhancements:**
-  - ✅ Optimistic UI already implemented in Expenses page
-    - Uses temporary IDs for instant UI updates
-    - Rollback on API failure with error handling
-    - Prevents editing/deleting optimistic expenses
-  - ✅ Contextual quick actions already implemented
-    - ContextualAlerts component showing over-budget warnings
-    - Pending settlements alerts with action buttons
-    - Recurring expense due notifications
-    - Inactivity reminders (>3 days without expenses)
-    - Integrated on Dashboard, Expenses, and Budgets pages
-
-  **User Management & Settings:**
-  - ✅ Created Settings page at `/settings`
-  - ✅ Added Settings navigation item to sidebar
-  - ✅ Implemented full user CRUD operations:
-    - Create user with UserForm dialog (name, email, color)
-    - Edit user with inline dialog
-    - Delete user with cascade warning
-    - 4-user household limit enforced
-  - ✅ Added placeholder sections for future features
-
-  **Global Month Selector:**
-  - ✅ Repositioned MonthSelector to optimal UX location (below Add Expense)
-  - ✅ Implemented URL-based state management (`?month=YYYY-MM`)
-  - ✅ Month selection syncs across all pages automatically
-  - ✅ Updated all page headers to show dynamic month names
-  - ✅ Removed redundant page-specific selectors
-
-- **Issues Encountered**: None - all features either already existed or implemented smoothly
-
-- **Files Modified**:
-  - `components/sidebar-layout.tsx` (collapsible sidebar + global month selector)
-  - `components/sidebar/sidebar-nav.tsx` (added Settings nav item)
-  - `app/(new-layout)/settings/page.tsx` (new Settings page)
-  - `app/(new-layout)/dashboard/page.tsx` (dynamic month header)
-  - `app/(new-layout)/expenses/page.tsx` (dynamic month header)
-  - `app/(new-layout)/budgets/page.tsx` (dynamic month header)
-  - `app/(new-layout)/settlements/page.tsx` (removed local selector, dynamic header)
-  - `app/(new-layout)/insights/page.tsx` (dynamic month header)
-  - `todo.md` (documentation)
-
-- **Phase Status**: ✅ **COMPLETE** - All planned features implemented or already present
-
-### Hero Card Final Polish (2025-10-15)
-- **Date Completed**: 2025-10-15
-- **Changes Made**:
-  - ✅ Fixed trend text wrapping by adding `whitespace-nowrap` to "(+0% vs last mo)" text
-  - ✅ Replaced emoji circle indicators (🟢🟡🔴) with professional Lucide icons:
-    - CheckCircle2 (green background) for healthy budgets
-    - AlertCircle (amber background) for warning state
-    - AlertTriangle (red background) for over budget
-    - CircleDashed (gray background) for no budgets set
-  - ✅ Added bread-themed emoji bullets to expense breakdown:
-    - 🥖 (baguette) for shared expenses (communal)
-    - 🍞 (bread slice) for personal expenses (individual)
-  - ✅ Enhanced budget health badge styling with rounded-2xl, backdrop-blur, and shadow effects
-- **Issues Encountered**: None - straightforward CSS and component updates
-- **Files Modified**:
-  - `app/(new-layout)/dashboard/page.tsx` (lines 7-15, 173-183, 327-328, 337, 341, 351-376)
-
-### Page Reorganization: Insights & Expenses (2025-10-15)
-- **Date Completed**: 2025-10-15
-- **Goal**: Consolidate expense-related analytics with transaction data, reserve Insights page for AI features
-- **Changes Made**:
-  - ✅ Moved `EnhancedSpendingCharts` component from Insights page to Expenses page
-  - ✅ Installed shadcn collapsible component (`npx shadcn@latest add @shadcn/collapsible`)
-  - ✅ Created collapsible "Spending Analytics" section on Expenses page:
-    - Category pie chart and per-person spending cards
-    - Show/Hide toggle button with ChevronUp/ChevronDown icons
-    - localStorage persistence (`expenses-analytics-open` key)
-    - Defaults to expanded on first visit
-    - Amber gradient styling matching brand theme
-  - ✅ Added stats API call to Expenses page to fetch analytics data
-  - ✅ Removed charts and summary cards from Insights page:
-    - Removed `EnhancedSpendingCharts` component
-    - Removed "Top Spending Category" card
-    - Removed "Shared vs Personal" card
-    - Removed stats API call and state
-  - ✅ Insights page now contains only AI Financial Insights placeholder card
-- **Issues Encountered**: None - clean separation of concerns
-- **Files Modified**:
-  - `app/(new-layout)/expenses/page.tsx` (added imports, stats state, analytics section)
-  - `app/(new-layout)/insights/page.tsx` (removed charts, cards, and API calls)
-  - `components/ui/collapsible.tsx` (new shadcn component)
-- **Rationale**:
-  - Users expect expense-related visualizations near expense data (information scent)
-  - Reduces context switching between pages
-  - Insights page reserved for future AI-powered features (clean separation)
-  - Collapsible design prevents clutter while maintaining accessibility
-- **Remaining Work**:
-  - None for this feature - fully complete
-
-### Phase 3 Completion Notes (Partial - Accessibility Focus)
-- **Date Completed**: 2025-10-16 (accessibility features only)
-- **Status**: Accessibility improvements complete. Mobile UX, onboarding, and performance optimizations remain for future phases.
-
-- **Changes Made**:
-
-  **Keyboard Navigation & Focus Management:**
-  - ✅ Added comprehensive global focus styles to `app/globals.css`:
-    - `:focus-visible` selectors for keyboard-only focus indicators
-    - 2-3px solid outlines with `outline-offset` for clear visibility
-    - Enhanced box-shadows for buttons and interactive elements
-    - Form input focus styling with border color changes
-    - WCAG 2.1 AA compliant (3:1 contrast ratio)
-
-  - ✅ Audited all modal components for keyboard accessibility:
-    - `expense-form.tsx`, `budget-dialog.tsx`, `user-form.tsx` - all use Radix UI Dialog
-    - `receipt-lightbox.tsx`, `export-dialog.tsx` - also use Radix UI Dialog
-    - Radix UI provides automatic focus trapping, Escape key handling, and focus restoration
-    - No additional keyboard handlers needed (built-in accessibility)
-
-  - ✅ Created keyboard shortcuts system:
-    - **Hook**: `hooks/use-keyboard-shortcut.ts` - reusable hook for keyboard commands
-    - **Dialog**: `components/keyboard-shortcuts-dialog.tsx` - help interface
-    - **Features**:
-      - Floating "Shortcuts" button in bottom-right corner
-      - Press `?` to open help dialog (matches GitHub, Gmail patterns)
-      - Grouped shortcuts by category (Navigation, Quick Actions)
-      - Styled kbd elements for visual key representation
-    - **Integration**: Added to `components/sidebar-layout.tsx` (available on all pages)
-
-  **ARIA Labels:**
-  - ✅ Previously completed - icon-only buttons have contextual labels
-
-- **Files Created**:
-  - `hooks/use-keyboard-shortcut.ts` - Keyboard shortcut hook
-  - `components/keyboard-shortcuts-dialog.tsx` - Help dialog component
-
-- **Files Modified**:
-  - `app/globals.css` - Added focus styles (45 lines)
-  - `components/sidebar-layout.tsx` - Added KeyboardShortcutsDialog import and component
-  - `todo.md` - Updated Phase 3 Accessibility section
-
-- **Issues Encountered**: None - Radix UI provided excellent accessibility foundation
-
-- **Remaining Work** (Phase 3):
-  - Mobile Experience: Swipe navigation, smart FAB
-  - Onboarding: First-time user tour, contextual tooltips
-  - Accessibility: ARIA live regions, screen reader announcements, semantic HTML audit
-  - Performance: Code splitting, memoization, bundle analysis
-
-- **Testing Notes**:
-  - All modals tested: Escape key closes dialogs ✅
-  - Focus trap working: Tab stays within modal ✅
-  - Focus indicators visible: Blue outline on keyboard navigation ✅
-  - Keyboard shortcuts dialog: Press `?` to open ✅
-  - All features compiled successfully with no TypeScript errors ✅
-
-### Toast-Themed Design System & Category Colors (2025-10-17)
-- **Date Completed**: 2025-10-17
-- **Goal**: Implement comprehensive toast/bread-themed design system with semantically intuitive category colors
-
-- **Changes Made**:
-
-  **Toast Slice Logo Redesign:**
-  - ✅ Replaced washed-out circular logo with distinctive side-view bread slice design
-  - ✅ No conditional rendering - consistent visibility across all screen sizes
-  - ✅ Strong contrast ratios: 7.1:1 (crust), 10.4:1 (outline)
-  - ✅ Diamond texture pattern integrated into logo design
-  - ✅ Colors: #f59e0b (amber-500), #b45309 (amber-700), #d97706 (amber-600), #92400e (amber-800)
-  - **File**: `components/bready-logo.tsx` (complete rewrite, 86 lines)
-
-  **Toast-Themed Design Token System:**
-  - ✅ Added comprehensive CSS design tokens to `app/globals.css`:
-    - Toast status colors (fresh, golden, caramel, burnt, crust, crumb)
-    - Crust border colors (light, golden, dark, burnt)
-    - Diamond texture patterns (subtle, medium, dense)
-    - Toast gradient system (light, medium, golden, dark, horizontal, radial)
-    - Toasting animation for loading states
-    - Crust border treatments
-  - ✅ Replaced gray borders throughout app with toast-themed crust borders
-  - ✅ Updated success states from emerald to amber
-  - ✅ Applied toast gradients to buttons and cards
-
-  **Component Updates for Theme Consistency:**
-  - ✅ `components/enhanced-spending-charts.tsx`: emerald → amber shared indicator
-  - ✅ `components/settlement-card.tsx`: emerald buttons → toast-gradient-golden
-  - ✅ `components/expense-form.tsx`:
-    - Submit button: green/emerald → toast-gradient-golden
-    - AI scan button: purple → amber with texture
-  - ✅ `components/sidebar-layout.tsx`: All border-gray-200 → border-[hsl(var(--border-light-crust))]
-  - ✅ `components/mobile-nav/mobile-nav.tsx`: border-gray-200 → border-golden-crust
-  - ✅ `components/mobile-nav/mobile-more-menu.tsx`: Gray colors → amber palette with texture
-
-  **Hydration Error Fix:**
-  - ✅ Fixed React hydration mismatch with UserButton component
-  - ✅ Added `mounted` state guards to prevent SSR/CSR conflicts
-  - ✅ Applied to desktop sidebar, mobile sidebar, and mobile header
-  - **File**: `components/sidebar-layout.tsx`
-
-  **Category Color Evolution (3 iterations):**
-
-  1. **Full-Spectrum Palette** (Commit e56f1e2):
-     - Replaced toast monochrome with 15 distinct semantic colors
-     - Greens, blues, purples, reds, pinks, grays across full spectrum
-     - All colors meet WCAG AA (3:1+ contrast)
-     - Retained 2 amber colors (Household, Pets) for brand continuity
-
-  2. **Lighter Toast-Themed Palette** (Commit 87f0d5e):
-     - User requested lighter, warmer colors fitting bread theme
-     - "Toast & Marmalade Collection" - warm hues (0°-60°)
-     - Average lightness increased from 45% to 58%
-     - All warm oranges, reds, yellows, browns
-
-  3. **Semantic Intuitive Palette** (Commit 785c3f5) - **FINAL**:
-     - User feedback: "subscriptions should be blue" - prioritize semantic meaning
-     - Full 360° spectrum coverage for maximum distinction
-     - Colors match universal expectations:
-       - 🟢 Green (#52b44a) - Groceries (fresh produce)
-       - 🔵 Blue (#1a7bb8) - Utilities (water/electricity)
-       - 💜 Violet (#7c3aed) - Subscriptions (digital/tech)
-       - 🔴 Red (#e74c3c) - Dining (appetite)
-       - ⚫ Gray (#5a5a5a) - Transportation (roads/asphalt)
-       - 🟡 Gold (#f39c12) - Entertainment (shows/lights)
-       - 🟦 Teal (#16a085) - Healthcare (medical/clinical)
-       - 🟤 Brown (#92400e, #b45309) - Household & Pets (RETAINED)
-       - 💗 Pink (#e91e63, #ec407a) - Personal Care & Gifts
-       - 🟠 Orange (#ff6f3c) - Shopping (retail)
-       - 🔵 Sky Blue (#3b82f6) - Travel (adventure)
-       - ⚫ Steel (#757575, #9e9e9e) - Home Maintenance & Other
-
-  **Settlement Button Enhancement:**
-  - ✅ Added smooth hover transitions to "Mark as Paid" button
-  - ✅ `transition-all duration-200` for 200ms animations
-  - ✅ `hover:scale-[1.02]` for subtle lift effect
-  - ✅ `active:scale-[0.98]` for press-down tactile feedback
-  - **File**: `components/settlement-card.tsx`
-
-- **Commits**:
-  - `ef5c74e` - feat: implement Toast Slice logo design
-  - `4cd0a9c` - feat: implement comprehensive toast-themed design system
-  - `86dc047` - fix: resolve hydration error and improve category color visibility
-  - `e56f1e2` - feat: implement full-spectrum category color palette
-  - `87f0d5e` - feat: implement lighter toast-themed category color palette
-  - `785c3f5` - feat: implement semantic category color palette for intuitive recognition
-  - `ab42d28` - feat: add smooth hover indicator to Mark as Paid button
-
-- **Files Modified**:
-  - `components/bready-logo.tsx` (complete rewrite)
-  - `app/globals.css` (+95 lines for design tokens)
-  - `lib/utils.ts` (3 iterations of category colors)
-  - `components/sidebar-layout.tsx` (borders + hydration fix)
-  - `components/enhanced-spending-charts.tsx` (shared indicator color)
-  - `components/settlement-card.tsx` (button gradients + hover)
-  - `components/expense-form.tsx` (button colors)
-  - `components/mobile-nav/mobile-nav.tsx` (borders)
-  - `components/mobile-nav/mobile-more-menu.tsx` (color scheme)
-
-- **Key Benefits**:
-  - **Brand Cohesion**: Unified toast/bread theme across entire application
-  - **Semantic Clarity**: Category colors instantly communicate meaning (blue=tech, green=food, etc.)
-  - **Accessibility**: All 15 colors meet WCAG AA standards (3:1+ contrast)
-  - **Visual Distinction**: Full spectrum coverage prevents color confusion in charts
-  - **Micro-interactions**: Smooth button transitions enhance perceived quality
-  - **No Hydration Errors**: Clean SSR/CSR rendering with mounted guards
-
-- **Design Philosophy**:
-  - **Semantic > Theme**: User recognition trumps strict color theming
-  - **Cognitive Load**: Colors process faster than text - leverage universal associations
-  - **Affordances**: Visual feedback (hover/click) communicates interactivity
-  - **Simplicity**: Every change minimally invasive, maximum impact
-
-- **Status**: ✅ **COMPLETE** - Merged to main branch and pushed to origin
-
-### ⚠️ DEPRECATED: AI Insights Page Redesign (2025-10-20)
-> **NOTICE**: This feature has been **deprecated** as of 2025-10-24 and is being replaced with a **Net Worth Tracking Dashboard**.
-> This section is kept for historical reference only.
-
-- **Date Completed**: 2025-10-20
-- **Goal**: Transform Insights page from information-heavy cards to conversational, mascot-driven interface
-- **Status**: **DEPRECATED** - Replaced by Net Worth Dashboard
-
-- **Changes Made**:
-
-  **New Toast Mascot Component:**
-  - ✅ Created `components/insights/toast-mascot.tsx` with friendly AI character
-  - ✅ Side-view bread slice design matching logo (160x160 SVG)
-  - ✅ Breathing animation with `@keyframes breathe` (1.5s cycle, scale 1.0→1.03)
-  - ✅ Speech bubble: "Hi! I'm Toasty, your financial assistant 🍞"
-  - ✅ Subtle pulsing sparkle effect for visual interest
-  - ✅ Happy face with eyes and smile for friendly approachability
-
-  **AI Chat Interface Component:**
-  - ✅ Created `components/insights/ai-chat-interface.tsx` for conversational UX
-  - ✅ Text input field: "Ask me anything about your spending..."
-  - ✅ 3 suggestion question buttons:
-    - "Where could I be saving based on my spending?" 💰
-    - "How am I doing this month compared to last month?" 📊
-    - "What are my biggest expense categories?" 🔍
-  - ✅ Polished placeholder state with sonner toast notification
-  - ✅ Toast message: "🔮 AI chat coming soon! We're teaching Toasty to read your expenses."
-  - ✅ Gradient amber styling matching brand theme
-
-  **Compact Insight Card Component:**
-  - ✅ Created `components/insights/insight-card-compact.tsx` for top insights
-  - ✅ Severity-based visual coding (critical/warning/info/positive)
-  - ✅ Color-coded icons and gradient backgrounds per severity
-  - ✅ Compact layout: icon, badge, title, 1-line explanation, metric, CTA
-  - ✅ Metric display with current value, budget, change percentage
-  - ✅ Trend indicators (up/down arrows with color coding)
-  - ✅ Optional CTA button with amber gradient styling
-
-  **Main Insights Page Refactor:**
-  - ✅ Completely redesigned `components/insights-page-content.tsx`
-  - ✅ **Removed 60-day requirement** - mascot shows immediately
-  - ✅ Removed complex sections: hero card, budget alerts, trend analysis
-  - ✅ New layout: Toast Mascot → AI Chat → Top 3 Insights → Info Footer
-  - ✅ Top 3 insights selected by highest priority score
-  - ✅ Empty state (<10 expenses): "Feed Me Some Expenses! 🍞" with progress bar
-  - ✅ Loading state with content-shaped skeletons
-  - ✅ Error state shows mascot + friendly error message
-
-  **Global Toast Notifications:**
-  - ✅ Installed `sonner` component (shadcn's toast replacement)
-  - ✅ Added `<Toaster />` to `app/layout.tsx` for app-wide notifications
-  - ✅ Integrated with chat interface for "Coming Soon" feedback
-
-  **CSS Animations:**
-  - ✅ Added `@keyframes breathe` animation to `app/globals.css`
-  - ✅ Smooth 1.5s cycle preventing motion sickness
-  - ✅ GPU-accelerated CSS transforms for performance
-
-- **Files Created**:
-  - `components/insights/toast-mascot.tsx` (87 lines)
-  - `components/insights/ai-chat-interface.tsx` (111 lines)
-  - `components/insights/insight-card-compact.tsx` (144 lines)
-  - `components/ui/sonner.tsx` (shadcn component)
-
-- **Files Modified**:
-  - `components/insights-page-content.tsx` (complete rewrite, 293 lines)
-  - `app/globals.css` (+12 lines for breathing animation)
-  - `app/layout.tsx` (+2 lines for Toaster component)
-
-- **Files Kept for Reference**:
-  - `components/insights/hero-insight-card.tsx` (archived, may reuse later)
-  - `components/insights/budget-alerts-section.tsx` (archived)
-  - `components/insights/trend-analysis-section.tsx` (archived)
-
-- **Design Principles Applied**:
-  - **3-Second Rule**: Mascot + chat immediately communicate "ask questions here"
-  - **Hierarchy**: Mascot largest, chat second, insight cards tertiary
-  - **Actionability**: Suggestion questions guide users on what to ask
-  - **Simplicity**: Removed 4 complex sections, replaced with 1 clear conversational interface
-
-- **Key Benefits**:
-  - **Approachability**: Friendly mascot reduces intimidation factor of financial data
-  - **Discoverability**: Suggestion questions teach users what the AI can do
-  - **Reduced Cognitive Load**: Focused on top 3 insights instead of overwhelming detail
-  - **Future-Ready**: Chat interface prepared for real AI integration
-  - **Immediate Access**: No 60-day barrier - mascot welcomes users from day 1
-
-- **Issues Encountered**: None - smooth implementation with no compilation errors
-
-- **Testing Notes**:
-  - ✅ Dev server compiled successfully on http://localhost:3001
-  - ✅ No TypeScript errors
-  - ✅ All animations rendering smoothly
-  - ✅ Toast notifications working correctly
-  - ✅ Responsive design maintained
-
-- **Status**: ✅ **COMPLETE** - Ready for review and testing
-
----
-
-## Net Worth Dashboard Feature (2025-10-26) **✅ COMPLETE**
-**Goal**: Complete household net worth tracking with budget allocation and progress monitoring
-**Completion Date**: 2025-10-26
-
-### Features Implemented
-- [x] **Net Worth Summary Dashboard**
-  - Personal vs household view with PIN authentication
-  - Assets tracking (Cash, Investments, Property, Vehicles, Other)
-  - Liabilities tracking (Mortgage, Student Loans, Credit Cards, Auto Loans, Other)
-  - Real-time net worth calculations (Assets - Liabilities)
-  - Monthly income tracking with paycheck allocation
-
-- [x] **Budget Allocation & Progress Tracking**
-  - 50/30/20 budget rule visualization card
-  - Real-time progress bars for needs/wants spending
-  - Category-based expense mapping (15 categories → needs/wants/other)
-  - Monthly income display with bi-weekly calculation (grossAmount × 2.167)
-  - Visual breakdown: Needs (blue), Wants (amber), Savings (emerald)
-
-- [x] **Bug Fixes & UI Polish**
-  - **Fixed expense calculation bug** - API now correctly includes all household shared expenses
-  - **Fixed UI alignment** - Card bottom borders now align horizontally using flexbox
-  - **Added proper spacing** - Allocation cards and footer sections have breathing room (mb-4)
-
-### Changes Made
-
-**API Route Fix (`app/api/networth/expense-breakdown/route.ts`):**
-- Lines 14-31: Added household user queries to get all household member IDs
-- Lines 38-68: Split query into two parts:
-  1. User's expenses (personal 100% + shared ÷ userCount)
-  2. Other household members' SHARED expenses (÷ userCount)
-- Lines 75-115: Updated calculation logic to sum both parts correctly
-- **Before**: Only counted authenticated user's expenses
-- **After**: Includes all household shared expenses divided by household size
-
-**UI Alignment Fixes:**
-- `components/networth/budget-allocation-card.tsx`:
-  - Line 44: Added `flex flex-col h-full` to CardContent
-  - Line 67: Added `mb-4` for spacing between allocation cards and footer
-  - Line 91: Changed `mt-4` to `mt-auto` for footer alignment
-
-- `components/networth/monthly-progress-tracker.tsx`:
-  - Line 112: Added `flex flex-col h-full` to CardContent
-  - Line 219: Changed `mt-4` to `mt-auto` for category breakdown alignment
-
-### Technical Details
-- **Net Worth API Routes**: `/api/networth/*` (summary, assets, liabilities, income, expense-breakdown, PIN auth)
-- **Category Mapping**: Automatic classification via `EXPENSE_TO_BUDGET_MAPPING` in `lib/networth/category-mapping.ts`
-- **Household-Aware Calculations**: Shared expenses divided by household member count
-- **Security**: PIN-based authentication for personal financial data
-- **Session Management**: Client-side session storage for auth state
-
-### Files Modified
-- `app/api/networth/expense-breakdown/route.ts` - Fixed household expense calculation
-- `components/networth/budget-allocation-card.tsx` - UI alignment + spacing
-- `components/networth/monthly-progress-tracker.tsx` - UI alignment
-
-### Issues Encountered
-None - all fixes implemented smoothly with no TypeScript errors
-
-### Testing Notes
-- ✅ Dev server compiled successfully
-- ✅ Expense calculation now accurate for multi-user households
-- ✅ Card borders align perfectly at bottom
-- ✅ Proper spacing between card sections
-- ✅ No hydration errors or console warnings
-
-### Status
-✅ **COMPLETE** - All features working correctly, ready for production deployment
+**Net Worth Dashboard Feature**: ✅ Complete & Production-Ready
+- See detailed implementation notes in `/docs/CHANGELOG_NET_WORTH.md`
 
 ---
 
@@ -767,12 +301,13 @@ None - all fixes implemented smoothly with no TypeScript errors
 
 ### Phase 1: Session & Authentication Security
 
-- [x] **Phase 1.1: Migrate sessions from localStorage to httpOnly cookies** ⚠️ FOUNDATION COMPLETE
+- [x] **Phase 1.1: Migrate sessions from localStorage to httpOnly cookies** ✅ COMPLETE
   - [x] Create secure session library with httpOnly cookies (`lib/networth/session.ts`)
   - [x] Create server actions for client components (`app/actions/networth-session.ts`)
   - [x] Document migration plan in `SECURITY_MIGRATION_NOTES.md`
-  - [ ] **REMAINING**: Update Net Worth page component to use server-side sessions
-  - [ ] **REMAINING**: Test session persistence across page refreshes
+  - [x] Update Net Worth page component to use server-side sessions
+  - [x] Add dynamic rendering configuration for Next.js 15 async cookies
+  - [x] Test session persistence - verified in production (commit 43f8c19)
 
 - [ ] **Phase 1.2: Implement CSRF protection for all state-changing operations**
   - [ ] Create CSRF token generation and validation system
@@ -816,6 +351,86 @@ None - all fixes implemented smoothly with no TypeScript errors
 ### Related Documents
 - `SECURITY_AUDIT_REPORT_2025.md` - Full security assessment
 - `SECURITY_MIGRATION_NOTES.md` - httpOnly cookie migration guide
+
+---
+
+---
+
+## Notification System Implementation (2025-10-29) **🚧 IN PROGRESS**
+**Goal**: Implement email notification system with budget alerts, settlement reminders, and recurring expense reminders
+**Time Estimate**: 4-6 hours
+
+### Phase 1: Database Schema & Email Setup (1.5 hours)
+- [ ] **Phase 1.1: Add NotificationPreference table**
+  - [ ] Add NotificationPreference model to Prisma schema
+  - [ ] Run migration: `npx prisma migrate dev --name add_notification_preferences`
+  - [ ] Verify schema with Prisma Studio
+
+- [ ] **Phase 1.2: Set up Resend email service**
+  - [ ] Install dependencies: `npm install resend @react-email/components`
+  - [ ] Set up Resend account and get API key
+  - [ ] Add RESEND_API_KEY to .env
+  - [ ] Create `lib/email/resend-client.ts` wrapper
+  - [ ] Create `lib/email/send-notification.ts` helper
+
+### Phase 2: Notification Settings UI (1 hour)
+- [ ] **Build notification settings page**
+  - [ ] Create `components/settings/notification-settings.tsx` component
+  - [ ] Add toggle controls for each notification type
+  - [ ] Add threshold/days configuration inputs
+  - [ ] Integrate into Settings page
+  - [ ] Create API route: `/api/notifications/preferences`
+
+### Phase 3: Trigger Logic (1.5 hours)
+- [ ] **Budget alerts**
+  - [ ] Create `lib/notifications/budget-alerts.ts`
+  - [ ] Check budget thresholds (75%, 90%, 100%) in expense creation
+  - [ ] Trigger email notifications when thresholds crossed
+  - [ ] Integrate into `/api/expenses/route.ts`
+
+- [ ] **Settlement reminders**
+  - [ ] Create `lib/notifications/settlement-reminders.ts`
+  - [ ] Find pending settlements older than X days
+  - [ ] Send reminder emails to users with pending payments
+
+- [ ] **Recurring expense reminders**
+  - [ ] Create `lib/notifications/recurring-reminders.ts`
+  - [ ] Find recurring expenses due in X days
+  - [ ] Send reminder emails before due date
+
+### Phase 4: Email Templates (1 hour)
+- [ ] **Create React Email templates**
+  - [ ] `lib/email/templates/budget-alert.tsx`
+  - [ ] `lib/email/templates/settlement-reminder.tsx`
+  - [ ] `lib/email/templates/recurring-reminder.tsx`
+  - [ ] Add Bready branding (logo, colors)
+  - [ ] Test templates with sample data
+
+### Phase 5: Cron Jobs (30 minutes)
+- [ ] **Daily notification checks**
+  - [ ] Create `/api/cron/daily-notifications/route.ts`
+  - [ ] Configure Vercel Cron (vercel.json)
+  - [ ] Schedule daily at 9 AM user timezone
+  - [ ] Check settlement reminders
+  - [ ] Check recurring expense reminders
+
+### Phase 6: Testing & Polish (30 minutes)
+- [ ] **End-to-end testing**
+  - [ ] Test email deliverability
+  - [ ] Test notification preferences CRUD
+  - [ ] Test each notification type trigger
+  - [ ] Verify no duplicate notifications
+  - [ ] Check email formatting across clients
+
+### Features
+- **Budget Alerts**: 75%, 90%, 100% spending thresholds
+- **Settlement Reminders**: Configurable days (default 7)
+- **Recurring Expense Reminders**: X days before due (default 3)
+- **Individual Controls**: Toggle each notification type separately
+- **Email Delivery**: Via Resend API (push notifications future phase)
+
+### Status
+🚧 **IN PROGRESS** - Starting Phase 1: Database Schema & Email Setup
 
 ---
 

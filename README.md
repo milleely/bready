@@ -323,21 +323,30 @@ Your app will be live with automatic HTTPS, global CDN, and managed database.
 - ✅ Budget tracking with user-specific and household budgets
 - ✅ Settlement calculations
 - ✅ Month filtering for expenses
-- ✅ 15 expense categories with optimized colors
+- ✅ 15 expense categories with semantic color palette
 - ✅ Receipt upload with AI-powered OCR validation
 - ✅ Receipt storage on Vercel Blob
 
-### v1.2 (In Progress)
-- CSV export functionality
-- Monthly trends visualization
-- Recurring expenses
-- Advanced filtering and search
+### ✅ v1.2 (Complete)
+- ✅ V2 Dashboard UI with toast-themed design system
+- ✅ Collapsible sidebar navigation
+- ✅ Keyboard shortcuts and WCAG 2.1 AA accessibility
+- ✅ Net Worth Dashboard with 50/30/20 budget tracking
+- ✅ Assets/liabilities tracking with PIN authentication
+- ✅ Household-aware calculations with httpOnly cookie sessions
+
+### v1.3 (In Progress)
+- 🚧 Security hardening (CSRF protection, security headers, rate limiting)
+- 🚧 Email notification system (budget alerts, settlement reminders)
+- 📋 CSV export functionality
+- 📋 Recurring expenses
+- 📋 Advanced filtering and search
 
 ### v2.0 (Planned)
-- Advanced analytics dashboard
-- Mobile optimization
-- AI spending insights
-- Bank integration
+- Monthly trends visualization and historical charts
+- Mobile app optimization
+- AI spending insights and recommendations
+- Bank integration (Plaid)
 - Multi-currency support
 
 ---
