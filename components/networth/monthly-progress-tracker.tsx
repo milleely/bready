@@ -7,9 +7,7 @@
  * Displays color-coded progress bars and actionable insights when over budget.
  */
 
-import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Target, CheckCircle2, AlertTriangle, AlertCircle } from "lucide-react"
 import type { PaycheckAllocation, ActualSpending } from "@/lib/types/networth"
 import { EXPENSE_TO_BUDGET_MAPPING } from "@/lib/networth/category-mapping"
@@ -113,14 +111,6 @@ export function MonthlyProgressTracker({
     }
   }
 
-  // Find over-budget categories for action alert
-  const overBudgetCategories = allocations.filter((allocation) => {
-    const status = getSpendingStatus(allocation.actualSpent, allocation.monthlyBudget)
-    return status.status === "over"
-  })
-
-  const hasAnySpending = actualSpending && (actualSpending.needsSpent > 0 || actualSpending.wantsSpent > 0)
-
   return (
     <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 shadow-xl">
       <CardContent className="pt-6 flex flex-col h-full">
@@ -210,21 +200,6 @@ export function MonthlyProgressTracker({
             )
           })}
         </div>
-
-        {/* Contextual Action Alert (only if over budget) */}
-        {hasAnySpending && overBudgetCategories.length > 0 && (
-          <div className="mt-4 p-3 rounded-lg bg-red-50 border border-red-200">
-            <p className="text-sm text-red-800 mb-2">
-              <strong>💡 Action:</strong> You're over budget on{" "}
-              {overBudgetCategories.map((cat) => cat.key).join(" and ")}. Consider reviewing your expenses.
-            </p>
-            <Link href="/expenses">
-              <Button size="sm" variant="outline" className="border-red-300 text-red-700 hover:bg-red-100">
-                Review Expenses →
-              </Button>
-            </Link>
-          </div>
-        )}
 
         {/* Category Breakdown */}
         <div className="mt-4 p-4 rounded-lg bg-white border border-[hsl(var(--border-light-crust))]">

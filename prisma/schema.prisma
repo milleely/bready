@@ -178,3 +178,28 @@ model MonthlyExpenseOverride {
 
   @@index([userId])
 }
+
+model NotificationPreference {
+  id                        String   @id @default(cuid())
+  userId                    String   @unique
+
+  // Budget alerts
+  budgetAlertsEnabled       Boolean  @default(true)
+  budgetAlertThresholds     String   @default("75,90,100") // CSV: "75,90,100"
+
+  // Settlement reminders
+  settlementRemindersEnabled Boolean @default(true)
+  settlementReminderDays    Int      @default(7) // Remind after 7 days
+
+  // Recurring expense reminders
+  recurringRemindersEnabled Boolean  @default(true)
+  recurringReminderDays     Int      @default(3) // Remind 3 days before due
+
+  // Delivery preferences
+  emailEnabled              Boolean  @default(true)
+
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  @@index([userId])
+}

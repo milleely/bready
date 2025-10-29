@@ -18,7 +18,6 @@ import {
 import { categorizeBudgetType } from "@/lib/networth/category-mapping"
 import type { NetWorthDashboardData, IncomeSource, IncomeFrequency, Asset, AssetCategory, Liability, LiabilityCategory } from "@/lib/types/networth"
 import { startOfMonth, endOfMonth } from "date-fns"
-import { updateActivity } from "@/lib/networth/activity-tracker"
 
 // GET - Get complete net worth dashboard data
 export async function GET(req: NextRequest) {
@@ -26,9 +25,6 @@ export async function GET(req: NextRequest) {
     // Require authentication and get household ID
     const householdId = await getHouseholdId()
     if (householdId instanceof NextResponse) return householdId
-
-    // Update activity timestamp to prevent inactivity timeout
-    await updateActivity()
 
     const { searchParams } = new URL(req.url)
     const requestedUserId = searchParams.get("userId")

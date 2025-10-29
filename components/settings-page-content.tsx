@@ -1,11 +1,13 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useUser } from "@clerk/nextjs"
 import { UserManagement } from "@/components/user-management"
 import { KeyboardShortcutsCard } from "@/components/keyboard-shortcuts-card"
+import { NotificationSettings } from "@/components/settings/notification-settings"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Bell, Settings as SettingsIcon } from "lucide-react"
+import { Settings as SettingsIcon } from "lucide-react"
 
 interface User {
   id: string
@@ -15,8 +17,12 @@ interface User {
 }
 
 export function SettingsPageContent() {
+  const { user: clerkUser } = useUser()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Find the current user from the household members
+  const currentUser = users.find((u) => u.email === clerkUser?.primaryEmailAddress?.emailAddress)
 
   const fetchUsers = async () => {
     try {
@@ -68,41 +74,19 @@ export function SettingsPageContent() {
       {/* User Management Section */}
       <UserManagement users={users} onRefresh={fetchUsers} />
 
-      {/* Settings Grid - Keyboard Shortcuts & Future Features */}
+      {/* Settings Grid - Keyboard Shortcuts & Notifications */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Keyboard Shortcuts */}
         <KeyboardShortcutsCard />
-
-        {/* Notification Settings - Coming Soon */}
-        <Card className="opacity-60 cursor-not-allowed">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-gray-500">
-              <Bell className="h-5 w-5" />
-              Notification Settings
-              <Badge variant="secondary" className="ml-auto">Coming Soon</Badge>
-            </CardTitle>
-            <CardDescription>
-              Configure email and push notifications for expenses and budgets
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3 text-sm text-gray-400">
-              <div className="flex items-center justify-between">
-                <span>Email notifications</span>
-                <div className="h-5 w-9 bg-gray-200 rounded-full"></div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Budget alerts</span>
-                <div className="h-5 w-9 bg-gray-200 rounded-full"></div>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Settlement reminders</span>
-                <div className="h-5 w-9 bg-gray-200 rounded-full"></div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
+
+      {/* Notification Settings - Full Width */}
+      {currentUser && (
+        <NotificationSettings
+          userId={currentUser.id}
+          userEmail={currentUser.email}
+        />
+      )}
     </div>
   )
 }

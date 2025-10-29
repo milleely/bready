@@ -59,6 +59,14 @@ export async function createSession(userId: string): Promise<NetWorthSession> {
  * Get the current active session (SERVER-SIDE ONLY)
  * Reads from httpOnly cookie
  *
+ * NOTE: This function DOES NOT delete expired cookies to comply with Next.js 15 rules.
+ * Cookies can only be modified in Server Actions or Route Handlers, not during rendering.
+ *
+ * Expired cookies are handled by:
+ * 1. Browser automatically removes them after maxAge (7 days)
+ * 2. Explicit cleanup via clearSession() in Server Actions (logout)
+ * 3. Ignored if expired (this function returns null)
+ *
  * @returns The active session or null if no valid session exists
  */
 export async function getSession(): Promise<NetWorthSession | null> {
@@ -75,20 +83,21 @@ export async function getSession(): Promise<NetWorthSession | null> {
 
     // Check if session has expired (absolute 7-day limit)
     if (now > session.expiresAt) {
-      await clearSession()
+      // Don't delete cookie here - Next.js 15 doesn't allow cookie modification during rendering
+      // Cookie will be cleaned up by browser expiration or explicit logout
       return null
     }
 
     // Check if session is inactive (30 minutes of inactivity)
     if (now - session.lastActivityAt > INACTIVITY_TIMEOUT_MS) {
-      await clearSession()
+      // Don't delete cookie here - Next.js 15 doesn't allow cookie modification during rendering
       return null
     }
 
     return session
   } catch {
-    // Invalid session data, clear it
-    await clearSession()
+    // Invalid session data - don't delete cookie here (Next.js 15 rendering constraint)
+    // User will be prompted to login, which will overwrite the invalid cookie
     return null
   }
 }
