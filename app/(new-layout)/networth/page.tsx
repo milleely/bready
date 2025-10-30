@@ -48,6 +48,7 @@ export default async function NetWorthPage({ searchParams }: PageProps) {
         initialUsers={users}
         authenticated={session !== null}
         userId={session?.userId ?? null}
+        householdId={householdId || undefined}
         month={month}
       />
     )

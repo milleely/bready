@@ -55,6 +55,9 @@ model Expense {
   @@index([category])
   @@index([date])
   @@index([recurringExpenseId])
+  // 🚀 PERFORMANCE: Composite indexes for Net Worth dashboard queries
+  @@index([userId, date, isShared, category]) // User expenses with date range + category
+  @@index([isShared, date, category])          // Shared expenses with date range + category
 }
 
 model Budget {

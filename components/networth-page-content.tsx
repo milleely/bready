@@ -39,10 +39,11 @@ interface NetWorthPageContentProps {
   initialUsers: User[]
   authenticated: boolean
   userId: string | null
+  householdId?: string // Optional householdId for performance optimization
   month?: string // Optional month parameter (format: YYYY-MM)
 }
 
-export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, userId: initialUserId, month }: NetWorthPageContentProps) {
+export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, userId: initialUserId, householdId, month }: NetWorthPageContentProps) {
   // Authentication state (initialized from server-side props)
   const [selectedUserId, setSelectedUserId] = useState<string | null>(initialUserId)
   const [showPinDialog, setShowPinDialog] = useState(false)
@@ -131,8 +132,9 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
   const fetchDashboardData = async (userId: string) => {
     setIsLoading(true)
     try {
-      // Build URL with userId and optional month parameter
+      // 🚀 PERFORMANCE: Build URL with userId, householdId (skips duplicate lookup), and optional month
       const params = new URLSearchParams({ userId })
+      if (householdId) params.set('householdId', householdId)
       if (month) params.set('month', month)
 
       const response = await fetch(`/api/networth/summary?${params.toString()}`)
