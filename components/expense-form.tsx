@@ -502,7 +502,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
             <Checkbox
               id="recurring"
               checked={isRecurring}
-              onCheckedChange={setIsRecurring}
+              onCheckedChange={(checked) => setIsRecurring(checked === true)}
             />
             <Label htmlFor="recurring" className="cursor-pointer text-golden-crust-dark font-medium">
               This is a recurring expense
