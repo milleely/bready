@@ -438,3 +438,39 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
 - [Original UI Analysis Discussion](#)
 - [Vercel Preview URL](https://bready-git-feature-navigation-redesign-michael-lys-projects.vercel.app)
 - [GitHub PR #1](https://github.com/milleely/bready/pull/1)
+
+---
+
+## Bug Fix Review - Dashboard "View All" 404 Error (2025-10-31)
+
+### Issue
+Production bug where clicking "View All" button on the Top Spending Categories card redirected users to `/insights` route, which doesn't exist, resulting in a 404 error.
+
+### Root Cause
+The dashboard component was linking to `/insights` page that was planned but never implemented. The route file `app/(new-layout)/insights/page.tsx` doesn't exist in the codebase.
+
+### Solution
+**File Changed**: `components/dashboard-page-content.tsx:516`
+- Changed: `<Link href="/insights">`
+- To: `<Link href="/expenses">`
+
+### Rationale
+- Top Spending Categories shows expense breakdown by category
+- Users expecting to see more details should be directed to the Expenses page
+- The Expenses page exists and allows filtering/viewing all expenses
+- Maintains logical user flow: Dashboard → Category summary → Full expense list
+
+### Impact
+- **Minimal code change**: 1 line modified
+- **No breaking changes**: Simple route update
+- **Immediate fix**: Resolves 404 error in production
+- **User experience**: Users can now navigate to view detailed expenses as intended
+
+### Testing Needed
+- [x] Verify `/expenses` route exists (confirmed: `app/(new-layout)/expenses/page.tsx`)
+- [ ] Manual test: Click "View All" button and verify redirect to Expenses page
+- [ ] Verify no other components link to non-existent `/insights` route
+
+### Notes
+- The `/insights` page may be implemented in a future phase based on the V2 Dashboard roadmap
+- When `/insights` is implemented, consider whether it should show category-filtered view vs current implementation
