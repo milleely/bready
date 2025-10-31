@@ -97,6 +97,23 @@ export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
     fetchData()
   }, [selectedMonth])
 
+  // Listen for expense changes from other pages
+  useEffect(() => {
+    const handleExpenseChange = () => {
+      fetchData()
+    }
+
+    window.addEventListener('expenseAdded', handleExpenseChange)
+    window.addEventListener('expenseEdited', handleExpenseChange)
+    window.addEventListener('expenseDeleted', handleExpenseChange)
+
+    return () => {
+      window.removeEventListener('expenseAdded', handleExpenseChange)
+      window.removeEventListener('expenseEdited', handleExpenseChange)
+      window.removeEventListener('expenseDeleted', handleExpenseChange)
+    }
+  }, [selectedMonth])
+
   const handleDeleteBudget = async (id: string) => {
     if (!confirm('Are you sure you want to delete this budget?')) return
 

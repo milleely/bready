@@ -83,6 +83,25 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     }
   }, [authenticatedUserId, month])
 
+  // Listen for expense changes from other pages
+  useEffect(() => {
+    if (!authenticatedUserId) return // Only listen when authenticated
+
+    const handleExpenseChange = () => {
+      fetchDashboardData(authenticatedUserId)
+    }
+
+    window.addEventListener('expenseAdded', handleExpenseChange)
+    window.addEventListener('expenseEdited', handleExpenseChange)
+    window.addEventListener('expenseDeleted', handleExpenseChange)
+
+    return () => {
+      window.removeEventListener('expenseAdded', handleExpenseChange)
+      window.removeEventListener('expenseEdited', handleExpenseChange)
+      window.removeEventListener('expenseDeleted', handleExpenseChange)
+    }
+  }, [authenticatedUserId, month])
+
   // Inactivity timeout: Auto-logout after 30 minutes of inactivity (matches server-side timeout)
   useEffect(() => {
     if (!authenticatedUserId) return // Only run when authenticated

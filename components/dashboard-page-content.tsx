@@ -160,14 +160,21 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
     fetchData()
   }, [selectedMonth])
 
-  // Listen for expense added event from sidebar
+  // Listen for expense changes from other pages
   useEffect(() => {
-    const handleExpenseAdded = () => {
+    const handleExpenseChange = () => {
       fetchData()
     }
 
-    window.addEventListener('expenseAdded', handleExpenseAdded)
-    return () => window.removeEventListener('expenseAdded', handleExpenseAdded)
+    window.addEventListener('expenseAdded', handleExpenseChange)
+    window.addEventListener('expenseEdited', handleExpenseChange)
+    window.addEventListener('expenseDeleted', handleExpenseChange)
+
+    return () => {
+      window.removeEventListener('expenseAdded', handleExpenseChange)
+      window.removeEventListener('expenseEdited', handleExpenseChange)
+      window.removeEventListener('expenseDeleted', handleExpenseChange)
+    }
   }, [selectedMonth])
 
   // Fetch users for expense form

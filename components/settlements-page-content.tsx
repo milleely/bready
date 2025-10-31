@@ -86,6 +86,23 @@ export function SettlementsPageContent({ month }: SettlementsPageContentProps) {
     fetchData()
   }, [selectedMonth])
 
+  // Listen for expense changes from other pages
+  useEffect(() => {
+    const handleExpenseChange = () => {
+      fetchData()
+    }
+
+    window.addEventListener('expenseAdded', handleExpenseChange)
+    window.addEventListener('expenseEdited', handleExpenseChange)
+    window.addEventListener('expenseDeleted', handleExpenseChange)
+
+    return () => {
+      window.removeEventListener('expenseAdded', handleExpenseChange)
+      window.removeEventListener('expenseEdited', handleExpenseChange)
+      window.removeEventListener('expenseDeleted', handleExpenseChange)
+    }
+  }, [selectedMonth])
+
   const handleMarkAsPaid = async (settlement: Settlement) => {
     try {
       const response = await fetch("/api/settlements", {

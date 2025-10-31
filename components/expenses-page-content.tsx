@@ -112,20 +112,21 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
   }, [])
 
   // 🚀 PERFORMANCE: Fetch stats only when month changes (stats don't depend on filters)
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const [year, month] = selectedMonth.split('-').map(Number)
-        const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0]
-        const endDate = new Date(year, month, 0).toISOString().split('T')[0]
+  const fetchStats = async () => {
+    try {
+      const [year, month] = selectedMonth.split('-').map(Number)
+      const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0]
+      const endDate = new Date(year, month, 0).toISOString().split('T')[0]
 
-        const statsRes = await fetch(`/api/stats?startDate=${startDate}&endDate=${endDate}`)
-        const statsData = await statsRes.json()
-        setStats(statsData)
-      } catch (error) {
-        console.error('Failed to fetch stats:', error)
-      }
+      const statsRes = await fetch(`/api/stats?startDate=${startDate}&endDate=${endDate}`)
+      const statsData = await statsRes.json()
+      setStats(statsData)
+    } catch (error) {
+      console.error('Failed to fetch stats:', error)
     }
+  }
+
+  useEffect(() => {
     fetchStats()
   }, [selectedMonth])
 
@@ -160,8 +161,9 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
 
   // Listen for expense added event from sidebar
   useEffect(() => {
-    const handleExpenseAdded = () => {
-      fetchData()
+    const handleExpenseAdded = async () => {
+      await fetchData()
+      await fetchStats()
     }
 
     window.addEventListener('expenseAdded', handleExpenseAdded)
@@ -184,6 +186,8 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
 
     if (response.ok) {
       await fetchData()
+      await fetchStats()
+      window.dispatchEvent(new CustomEvent('expenseDeleted'))
     }
   }
 
@@ -199,6 +203,8 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
     if (response.ok) {
       setEditingExpense(undefined)
       await fetchData()
+      await fetchStats()
+      window.dispatchEvent(new CustomEvent('expenseEdited'))
     }
   }
 
@@ -238,6 +244,7 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
       if (response.ok) {
         // Success: refresh real data and remove temp expense
         await fetchData()
+        await fetchStats()
         setOptimisticExpenses(prev => prev.filter(e => e.id !== tempId))
       } else {
         throw new Error('API failed')
