@@ -513,7 +513,7 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-amber-900">Top Spending Categories</CardTitle>
-            <Link href="/insights">
+            <Link href="/expenses">
               <Button
                 size="sm"
                 className="bg-amber-600 hover:bg-amber-700 text-white hover:shadow-lg transition-all"
