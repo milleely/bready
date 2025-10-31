@@ -6,8 +6,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Switch } from "@/components/ui/switch"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { categories } from "@/lib/utils"
-import { Plus, Upload, X, Image as ImageIcon, Eye, FileText, Sparkles } from "lucide-react"
+import { Plus, Upload, X, Image as ImageIcon, Eye, FileText, Sparkles, Repeat, Info } from "lucide-react"
 
 interface User {
   id: string
@@ -24,6 +27,7 @@ interface Expense {
   isShared: boolean
   receiptUrl?: string | null
   userId: string
+  recurringExpenseId?: string | null
 }
 
 interface ExpenseFormProps {
@@ -52,6 +56,12 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [showPreview, setShowPreview] = useState(false)
   const [scanning, setScanning] = useState(false)
+
+  // Recurring expense state
+  const [isRecurring, setIsRecurring] = useState(false)
+  const [frequency, setFrequency] = useState<'weekly' | 'biweekly' | 'monthly'>('monthly')
+  const [dayOfMonth, setDayOfMonth] = useState(15)
+  const [dayOfWeek, setDayOfWeek] = useState(1) // Monday
 
   // Use controlled open state if provided, otherwise use internal state
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
@@ -180,17 +190,29 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
         setUploading(false)
       }
 
-      await onSubmit({
-        amount: parseFloat(formData.amount),
-        category: formData.category,
-        description: formData.description,
-        date: new Date(formData.date),
-        isShared: formData.isShared,
-        receiptUrl: uploadedReceiptUrl,
-        userId: formData.userId,
-      })
+      // Handle recurring expenses differently
+      if (isRecurring && !expense) {
+        // Create recurring expense template
+        const response = await fetch('/api/recurring-expenses', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: parseFloat(formData.amount),
+            category: formData.category,
+            description: formData.description,
+            frequency,
+            dayOfMonth: frequency === 'monthly' ? dayOfMonth : null,
+            dayOfWeek: frequency === 'weekly' || frequency === 'biweekly' ? dayOfWeek : null,
+            isShared: formData.isShared,
+            userId: formData.userId,
+          }),
+        })
 
-      if (!expense) {
+        if (!response.ok) {
+          throw new Error('Failed to create recurring expense')
+        }
+
+        // Reset form
         setFormData({
           amount: '',
           category: 'groceries',
@@ -199,8 +221,36 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           isShared: false,
           userId: users[0]?.id || '',
         })
+        setIsRecurring(false)
         setSelectedFile(null)
         setReceiptUrl(null)
+
+        // Dispatch event so dashboard can refetch recurring expenses
+        window.dispatchEvent(new CustomEvent('recurringExpenseAdded'))
+      } else {
+        // Regular expense or edit mode
+        await onSubmit({
+          amount: parseFloat(formData.amount),
+          category: formData.category,
+          description: formData.description,
+          date: new Date(formData.date),
+          isShared: formData.isShared,
+          receiptUrl: uploadedReceiptUrl,
+          userId: formData.userId,
+        })
+
+        if (!expense) {
+          setFormData({
+            amount: '',
+            category: 'groceries',
+            description: '',
+            date: new Date().toISOString().split('T')[0],
+            isShared: false,
+            userId: users[0]?.id || '',
+          })
+          setSelectedFile(null)
+          setReceiptUrl(null)
+        }
       }
 
       setOpen(false)
@@ -226,6 +276,45 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
         <DialogHeader>
           <DialogTitle>{expense ? 'Edit Expense' : 'Add New Expense'}</DialogTitle>
         </DialogHeader>
+
+        {/* Show alert when editing a recurring expense */}
+        {expense?.recurringExpenseId && (
+          <Alert className="bg-purple-50 border-purple-200 mt-4">
+            <Repeat className="h-4 w-4 text-purple-600" />
+            <AlertDescription className="text-sm">
+              This is a recurring expense.
+              <Button
+                type="button"
+                variant="link"
+                onClick={async () => {
+                  if (!confirm("Stop this expense from recurring? This will only affect this specific expense.")) return
+
+                  try {
+                    const response = await fetch(`/api/expenses/${expense.id}/unmark-recurring`, {
+                      method: 'POST'
+                    })
+
+                    if (!response.ok) {
+                      throw new Error('Failed to unmark recurring')
+                    }
+
+                    alert('Expense unmarked as recurring')
+                    setOpen(false)
+                    // Dispatch event to refresh parent
+                    window.dispatchEvent(new CustomEvent('expenseEdited'))
+                  } catch (error) {
+                    console.error('Failed to unmark:', error)
+                    alert('Failed to unmark recurring expense. Please try again.')
+                  }
+                }}
+                className="h-auto p-0 ml-1 text-purple-700 hover:text-purple-900"
+              >
+                Stop recurring
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-4 mt-2 sm:mt-4 min-w-0 overflow-hidden">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
             <div className="space-y-2">
@@ -408,6 +497,85 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
               This is a shared expense (split among all users)
             </Label>
           </div>
+
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="recurring"
+              checked={isRecurring}
+              onCheckedChange={setIsRecurring}
+            />
+            <Label htmlFor="recurring" className="cursor-pointer text-golden-crust-dark font-medium">
+              This is a recurring expense
+            </Label>
+          </div>
+
+          {/* Progressive disclosure - show recurring options when toggle is ON */}
+          {isRecurring && (
+            <div className="p-4 rounded-lg bg-amber-50/50 border border-amber-200/50 space-y-3">
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-stone-700">Frequency</Label>
+                <RadioGroup value={frequency} onValueChange={(value: any) => setFrequency(value)}>
+                  <div className="flex gap-4">
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="weekly" id="weekly" />
+                      <Label htmlFor="weekly" className="cursor-pointer">Weekly</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="biweekly" id="biweekly" />
+                      <Label htmlFor="biweekly" className="cursor-pointer">Bi-weekly</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="monthly" id="monthly" />
+                      <Label htmlFor="monthly" className="cursor-pointer">Monthly</Label>
+                    </div>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-stone-700">
+                  {frequency === 'monthly' ? 'On the:' : 'On:'}
+                </Label>
+                {frequency === 'monthly' ? (
+                  <Select value={dayOfMonth.toString()} onValueChange={(value) => setDayOfMonth(Number(value))}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
+                        <SelectItem key={day} value={day.toString()}>
+                          {day === 1 ? '1st' : day === 2 ? '2nd' : day === 3 ? '3rd' : `${day}th`}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="last">Last day of month</SelectItem>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Select value={dayOfWeek.toString()} onValueChange={(value) => setDayOfWeek(Number(value))}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Monday</SelectItem>
+                      <SelectItem value="2">Tuesday</SelectItem>
+                      <SelectItem value="3">Wednesday</SelectItem>
+                      <SelectItem value="4">Thursday</SelectItem>
+                      <SelectItem value="5">Friday</SelectItem>
+                      <SelectItem value="6">Saturday</SelectItem>
+                      <SelectItem value="0">Sunday</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              </div>
+
+              <Alert className="bg-stone-50 border-stone-200">
+                <Info className="h-4 w-4" />
+                <AlertDescription className="text-xs text-stone-600">
+                  💡 This will create a recurring template. Future expenses will be automatically generated.
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
 
           <div className="flex gap-2 sm:gap-3 justify-end pt-4">
             <Button

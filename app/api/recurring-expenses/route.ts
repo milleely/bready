@@ -95,6 +95,16 @@ export async function POST(request: NextRequest) {
       const daysUntilNext = (targetDay - currentDay + 7) % 7 || 7
       nextDate = new Date(now)
       nextDate.setDate(now.getDate() + daysUntilNext)
+    } else if (frequency === 'biweekly') {
+      const targetDay = dayOfWeek || 0
+      const currentDay = now.getDay()
+      const daysUntilNext = (targetDay - currentDay + 7) % 7 || 7
+      nextDate = new Date(now)
+      nextDate.setDate(now.getDate() + daysUntilNext)
+      // If next occurrence is less than 7 days away, add 14 days to ensure bi-weekly spacing
+      if (daysUntilNext < 7) {
+        nextDate.setDate(nextDate.getDate() + 14)
+      }
     } else if (frequency === 'yearly') {
       const month = monthOfYear || 1
       const day = dayOfMonth || 1

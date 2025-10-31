@@ -55,6 +55,9 @@ interface Expense {
   receiptUrl?: string | null
   userId: string
   recurringExpenseId?: string | null
+  recurringExpense?: {
+    frequency: string
+  } | null
   user: {
     id: string
     name: string
@@ -126,6 +129,13 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete, optimisticIds = [
       cell: ({ row }) => {
         const expense = row.original
         const isOptimistic = optimisticIds.includes(expense.id)
+        const getFrequencyLabel = (frequency: string) => {
+          if (frequency === 'weekly') return 'Weekly'
+          if (frequency === 'biweekly') return 'Bi-weekly'
+          if (frequency === 'monthly') return 'Monthly'
+          if (frequency === 'yearly') return 'Yearly'
+          return frequency
+        }
         return (
           <div className="flex items-center gap-2">
             {isOptimistic && (
@@ -133,12 +143,13 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete, optimisticIds = [
                 <Loader2 className="h-4 w-4 text-amber-600 animate-spin" />
               </span>
             )}
-            {expense.recurringExpenseId && (
-              <span title="Recurring expense">
-                <Repeat className="h-4 w-4 text-purple-600" />
-              </span>
-            )}
             <span className={isOptimistic ? "opacity-70" : ""}>{expense.description}</span>
+            {expense.recurringExpense && (
+              <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                <Repeat className="h-3 w-3 mr-1" />
+                {getFrequencyLabel(expense.recurringExpense.frequency)}
+              </Badge>
+            )}
           </div>
         )
       },
@@ -409,7 +420,7 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete, optimisticIds = [
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={`border-golden-crust-primary/20 hover:bg-golden-crust-light/20 ${isOptimistic ? 'opacity-70' : ''}`}
+                    className={`border-golden-crust-primary/20 hover:bg-golden-crust-light/20 ${isOptimistic ? 'opacity-70' : ''} ${expense.recurringExpenseId ? 'bg-purple-50/30 hover:bg-purple-50/50' : ''}`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>

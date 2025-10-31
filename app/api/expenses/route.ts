@@ -49,7 +49,10 @@ export async function GET(request: NextRequest) {
 
     const expenses = await prisma.expense.findMany({
       where,
-      include: { user: true },
+      include: {
+        user: true,
+        recurringExpense: true,
+      },
       orderBy: { date: 'desc' },
     })
 

@@ -1,25 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { getHouseholdId } from '@/lib/auth'
 
-// POST /api/recurring-expenses/generate
-export async function POST(request: NextRequest) {
+// This endpoint is called by Vercel Cron daily at midnight UTC
+// to automatically generate recurring expenses that are due
+export async function GET(request: NextRequest) {
   try {
-    // Require authentication and get household ID
-    const householdId = await getHouseholdId()
-    if (householdId instanceof NextResponse) return householdId
+    // Verify this is a Vercel Cron request
+    const authHeader = request.headers.get('authorization')
+    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
 
     const now = new Date()
 
     // Find all active recurring expenses where nextDate is today or earlier
-    // Only process recurring expenses from user's household
     const dueRecurringExpenses = await prisma.recurringExpense.findMany({
       where: {
         isActive: true,
         nextDate: {
           lte: now,
         },
-        user: { householdId },
       },
       include: { user: true },
     })
@@ -71,6 +74,8 @@ export async function POST(request: NextRequest) {
       updatedRecurringExpenses.push(updated)
     }
 
+    console.log(`[Cron] Generated ${createdExpenses.length} recurring expenses`)
+
     return NextResponse.json({
       success: true,
       generated: createdExpenses.length,
@@ -79,11 +84,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     // Secure error logging
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Failed to generate recurring expenses:', error)
-    } else {
-      console.error('API error:', error instanceof Error ? error.message : 'Unknown error')
-    }
+    console.error('[Cron] Failed to generate recurring expenses:', error)
 
     return NextResponse.json(
       { error: 'Failed to generate recurring expenses' },
