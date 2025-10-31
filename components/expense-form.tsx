@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Switch } from "@/components/ui/switch"
+import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { categories } from "@/lib/utils"
@@ -225,8 +225,8 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
         setSelectedFile(null)
         setReceiptUrl(null)
 
-        // Dispatch event so dashboard can refetch recurring expenses
-        window.dispatchEvent(new CustomEvent('recurringExpenseAdded'))
+        // Dispatch event so dashboard can refetch expenses
+        window.dispatchEvent(new CustomEvent('expenseAdded'))
       } else {
         // Regular expense or edit mode
         await onSubmit({
@@ -499,7 +499,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           </div>
 
           <div className="flex items-center space-x-2">
-            <Switch
+            <Checkbox
               id="recurring"
               checked={isRecurring}
               onCheckedChange={setIsRecurring}
@@ -538,10 +538,10 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                 </Label>
                 {frequency === 'monthly' ? (
                   <Select value={dayOfMonth.toString()} onValueChange={(value) => setDayOfMonth(Number(value))}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-[180px] bg-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="max-h-[200px]">
+                    <SelectContent className="max-h-[200px] bg-white border-2 border-golden-crust-primary/40 shadow-lg">
                       {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                         <SelectItem key={day} value={day.toString()}>
                           {day === 1 ? '1st' : day === 2 ? '2nd' : day === 3 ? '3rd' : `${day}th`}
@@ -552,10 +552,10 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                   </Select>
                 ) : (
                   <Select value={dayOfWeek.toString()} onValueChange={(value) => setDayOfWeek(Number(value))}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-[180px] bg-white">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white border-2 border-golden-crust-primary/40 shadow-lg">
                       <SelectItem value="1">Monday</SelectItem>
                       <SelectItem value="2">Tuesday</SelectItem>
                       <SelectItem value="3">Wednesday</SelectItem>
@@ -571,7 +571,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
               <Alert className="bg-stone-50 border-stone-200">
                 <Info className="h-4 w-4" />
                 <AlertDescription className="text-xs text-stone-600">
-                  💡 This will create a recurring template. Future expenses will be automatically generated.
+                  Future expenses will be automatically generated
                 </AlertDescription>
               </Alert>
             </div>

@@ -131,7 +131,24 @@ export async function POST(request: NextRequest) {
       include: { user: true },
     })
 
-    return NextResponse.json(recurringExpense, { status: 201 })
+    // Create the initial expense immediately so user sees it in UI
+    const initialExpense = await prisma.expense.create({
+      data: {
+        amount: validateAmount(amount),
+        category,
+        description,
+        date: nextDate,
+        isShared: isShared || false,
+        userId,
+        recurringExpenseId: recurringExpense.id,
+      },
+      include: { user: true },
+    })
+
+    return NextResponse.json({
+      recurringExpense,
+      expense: initialExpense,
+    }, { status: 201 })
   } catch (error) {
     // Secure error logging
     if (process.env.NODE_ENV === 'development') {
