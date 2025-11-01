@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
     const isShared = searchParams.get('isShared')
     const minAmount = searchParams.get('minAmount')
     const maxAmount = searchParams.get('maxAmount')
+    const isRecurring = searchParams.get('isRecurring')
 
     const where: any = {
       user: { householdId }, // Only return expenses from user's household
@@ -45,6 +46,18 @@ export async function GET(request: NextRequest) {
       where.amount = {}
       if (minAmount) where.amount.gte = parseFloat(minAmount)
       if (maxAmount) where.amount.lte = parseFloat(maxAmount)
+    }
+
+    // Recurring expense filter
+    if (isRecurring !== null && isRecurring !== undefined) {
+      if (isRecurring === 'true') {
+        // Show only recurring expenses (those with a recurringExpenseId)
+        where.recurringExpenseId = { not: null }
+      } else if (isRecurring === 'false') {
+        // Show only one-time expenses (those without a recurringExpenseId)
+        where.recurringExpenseId = null
+      }
+      // If isRecurring is anything else, show all expenses (no filter)
     }
 
     const expenses = await prisma.expense.findMany({

@@ -6,9 +6,10 @@ import { SidebarNav } from "@/components/sidebar/sidebar-nav"
 import { MobileNav } from "@/components/mobile-nav/mobile-nav"
 import { BreadyLogo } from "@/components/bready-logo"
 import { ExpenseForm } from "@/components/expense-form"
+import { RecurringExpenseForm } from "@/components/recurring-expense-form"
 import { MonthSelector } from "@/components/month-selector"
 import { KeyboardShortcutsNavigation } from "@/components/keyboard-shortcuts-dialog"
-import { Menu, X, Plus, ChevronLeft, ChevronRight } from "lucide-react"
+import { Menu, X, Plus, ChevronLeft, ChevronRight, Repeat } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -29,6 +30,7 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
   const [mounted, setMounted] = useState(false)
   const [storedCollapsed, setStoredCollapsed] = useState(false)
   const [expenseFormOpen, setExpenseFormOpen] = useState(false)
+  const [recurringFormOpen, setRecurringFormOpen] = useState(false)
   const [users, setUsers] = useState<User[]>([])
 
   // Load sidebar collapsed state from localStorage after hydration
@@ -120,6 +122,21 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
             >
               <Plus className={cn("h-5 w-5", !sidebarCollapsed && "mr-2")} />
               {!sidebarCollapsed && "Add Expense"}
+            </Button>
+          </div>
+
+          {/* Add Recurring Expense Button */}
+          <div className="px-4 pb-2">
+            <Button
+              onClick={() => setRecurringFormOpen(true)}
+              className={cn(
+                "w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-md",
+                sidebarCollapsed && "px-0"
+              )}
+              title={sidebarCollapsed ? "Add Recurring Expense" : undefined}
+            >
+              <Repeat className={cn("h-5 w-5", !sidebarCollapsed && "mr-2")} />
+              {!sidebarCollapsed && "Add Recurring Expense"}
             </Button>
           </div>
 
@@ -255,13 +272,21 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
               />
             )}
           </div>
-          {/* Add Expense Button */}
-          <Button
-            onClick={() => setExpenseFormOpen(true)}
-            className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-md"
-          >
-            <Plus className="mr-2 h-4 w-4" /> Add Expense
-          </Button>
+          {/* Add Expense Buttons */}
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              onClick={() => setExpenseFormOpen(true)}
+              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-md"
+            >
+              <Plus className="mr-2 h-4 w-4" /> Add Expense
+            </Button>
+            <Button
+              onClick={() => setRecurringFormOpen(true)}
+              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-md"
+            >
+              <Repeat className="mr-2 h-4 w-4" /> Recurring
+            </Button>
+          </div>
         </header>
 
         {/* Page Content */}
@@ -302,6 +327,13 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
           onOpenChange={setExpenseFormOpen}
         />
       )}
+
+      {/* Recurring Expense Form Dialog */}
+      <RecurringExpenseForm
+        users={users}
+        open={recurringFormOpen}
+        onOpenChange={setRecurringFormOpen}
+      />
 
       {/* Keyboard Shortcuts Navigation (? key to Settings) */}
       <KeyboardShortcutsNavigation />

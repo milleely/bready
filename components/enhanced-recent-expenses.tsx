@@ -41,6 +41,7 @@ interface EnhancedRecentExpensesProps {
   users: User[]
   onEdit?: (expense: Expense) => void
   onDelete?: (id: string) => void
+  onDeleteRecurring?: (recurringId: string, fromDate: Date | string) => void
   // Filter props
   selectedUser: string | null
   setSelectedUser: (id: string | null) => void
@@ -48,6 +49,8 @@ interface EnhancedRecentExpensesProps {
   setSelectedCategory: (category: string | null) => void
   selectedType: 'all' | 'shared' | 'personal'
   setSelectedType: (type: 'all' | 'shared' | 'personal') => void
+  selectedRecurring: 'all' | 'recurring' | 'one-time'
+  setSelectedRecurring: (type: 'all' | 'recurring' | 'one-time') => void
   minAmount: number | null
   setMinAmount: (amount: number | null) => void
   maxAmount: number | null
@@ -62,12 +65,15 @@ export function EnhancedRecentExpenses({
   users,
   onEdit,
   onDelete,
+  onDeleteRecurring,
   selectedUser,
   setSelectedUser,
   selectedCategory,
   setSelectedCategory,
   selectedType,
   setSelectedType,
+  selectedRecurring,
+  setSelectedRecurring,
   minAmount,
   setMinAmount,
   maxAmount,
@@ -214,6 +220,29 @@ export function EnhancedRecentExpenses({
                 </Select>
               </div>
 
+              {/* Recurring Filter */}
+              <div className="space-y-2">
+                <Label htmlFor="filter-recurring" className="text-golden-crust-dark font-semibold text-sm">
+                  Recurring
+                </Label>
+                <Select
+                  value={selectedRecurring}
+                  onValueChange={(value) => setSelectedRecurring(value as 'all' | 'recurring' | 'one-time')}
+                >
+                  <SelectTrigger
+                    id="filter-recurring"
+                    className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark h-9"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+                    <SelectItem value="all">All Expenses</SelectItem>
+                    <SelectItem value="recurring">Recurring Only</SelectItem>
+                    <SelectItem value="one-time">One-time Only</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Min Amount Filter */}
               <div className="space-y-2">
                 <Label htmlFor="filter-min" className="text-golden-crust-dark font-semibold text-sm">
@@ -256,6 +285,7 @@ export function EnhancedRecentExpenses({
           expenses={expenses}
           onEdit={onEdit}
           onDelete={onDelete}
+          onDeleteRecurring={onDeleteRecurring}
           optimisticIds={optimisticIds}
         />
       </CardContent>
