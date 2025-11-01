@@ -50,9 +50,6 @@ export async function POST(request: NextRequest) {
       if (recurring.frequency === 'monthly') {
         const day = recurring.dayOfMonth || 1
         nextDate = new Date(nextDate.getFullYear(), nextDate.getMonth() + 1, day)
-      } else if (recurring.frequency === 'weekly') {
-        nextDate = new Date(nextDate)
-        nextDate.setDate(nextDate.getDate() + 7)
       } else if (recurring.frequency === 'yearly') {
         const month = recurring.monthOfYear || 1
         const day = recurring.dayOfMonth || 1

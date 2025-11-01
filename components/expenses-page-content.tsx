@@ -44,6 +44,7 @@ interface Stats {
     total: number
     shared: number
     personal: number
+    recurringCount: number
   }>
   spendingByCategory: Array<{ category: string; amount: number }>
 }
@@ -78,6 +79,7 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
   const [selectedUser, setSelectedUser] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [selectedType, setSelectedType] = useState<'all' | 'shared' | 'personal'>('all')
+  const [selectedRecurring, setSelectedRecurring] = useState<'all' | 'recurring' | 'one-time'>('all')
   const [minAmount, setMinAmount] = useState<number | null>(null)
   const [maxAmount, setMaxAmount] = useState<number | null>(null)
 
@@ -116,7 +118,7 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
     try {
       const [year, month] = selectedMonth.split('-').map(Number)
       const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0]
-      const endDate = new Date(year, month, 0).toISOString().split('T')[0]
+      const endDate = new Date(year, month, 0, 23, 59, 59, 999).toISOString()
 
       const statsRes = await fetch(`/api/stats?startDate=${startDate}&endDate=${endDate}`)
       const statsData = await statsRes.json()
@@ -135,13 +137,14 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
     try {
       const [year, month] = selectedMonth.split('-').map(Number)
       const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0]
-      const endDate = new Date(year, month, 0).toISOString().split('T')[0]
+      const endDate = new Date(year, month, 0, 23, 59, 59, 999).toISOString()
 
       // Build query with filters
       let query = `startDate=${startDate}&endDate=${endDate}`
       if (selectedUser) query += `&userId=${selectedUser}`
       if (selectedCategory) query += `&category=${selectedCategory}`
       if (selectedType !== 'all') query += `&isShared=${selectedType === 'shared'}`
+      if (selectedRecurring !== 'all') query += `&isRecurring=${selectedRecurring === 'recurring'}`
       if (minAmount !== null) query += `&minAmount=${minAmount}`
       if (maxAmount !== null) query += `&maxAmount=${maxAmount}`
 
@@ -157,7 +160,7 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
 
   useEffect(() => {
     fetchData()
-  }, [selectedMonth, selectedUser, selectedCategory, selectedType, minAmount, maxAmount])
+  }, [selectedMonth, selectedUser, selectedCategory, selectedType, selectedRecurring, minAmount, maxAmount])
 
   // Listen for expense added event from sidebar
   useEffect(() => {
@@ -168,7 +171,7 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
 
     window.addEventListener('expenseAdded', handleExpenseAdded)
     return () => window.removeEventListener('expenseAdded', handleExpenseAdded)
-  }, [selectedMonth, selectedUser, selectedCategory, selectedType, minAmount, maxAmount])
+  }, [selectedMonth, selectedUser, selectedCategory, selectedType, selectedRecurring, minAmount, maxAmount])
 
   // Persist analytics open state to localStorage
   useEffect(() => {
@@ -188,6 +191,25 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
       await fetchData()
       await fetchStats()
       window.dispatchEvent(new CustomEvent('expenseDeleted'))
+    }
+  }
+
+  const handleDeleteRecurringSeries = async (recurringId: string, fromDate: Date | string) => {
+    if (!confirm('Delete all future occurrences of this recurring expense?\n\nNote: Recurring expenses cannot be edited. To change this expense, delete it and create a new one.\n\n(Past expenses will be kept as history)')) return
+
+    // Pass the expense date as query parameter to use as cutoff
+    const dateParam = new Date(fromDate).toISOString()
+    const response = await fetch(`/api/recurring-expenses/${recurringId}?fromDate=${dateParam}`, {
+      method: 'DELETE',
+    })
+
+    if (response.ok) {
+      await fetchData()
+      await fetchStats()
+      window.dispatchEvent(new CustomEvent('expenseDeleted'))
+    } else {
+      const error = await response.json()
+      alert(`Failed to delete recurring series: ${error.error || 'Unknown error'}`)
     }
   }
 
@@ -261,6 +283,7 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
     setSelectedUser(null)
     setSelectedCategory(null)
     setSelectedType('all')
+    setSelectedRecurring('all')
     setMinAmount(null)
     setMaxAmount(null)
   }
@@ -270,6 +293,7 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
     if (selectedUser) count++
     if (selectedCategory) count++
     if (selectedType !== 'all') count++
+    if (selectedRecurring !== 'all') count++
     if (minAmount !== null) count++
     if (maxAmount !== null) count++
     return count
@@ -358,12 +382,17 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
           if (id.startsWith('temp-')) return
           handleDeleteExpense(id)
         }}
+        onDeleteRecurring={(recurringId, fromDate) => {
+          handleDeleteRecurringSeries(recurringId, fromDate)
+        }}
         selectedUser={selectedUser}
         setSelectedUser={setSelectedUser}
         selectedCategory={selectedCategory}
         setSelectedCategory={setSelectedCategory}
         selectedType={selectedType}
         setSelectedType={setSelectedType}
+        selectedRecurring={selectedRecurring}
+        setSelectedRecurring={setSelectedRecurring}
         minAmount={minAmount}
         setMinAmount={setMinAmount}
         maxAmount={maxAmount}

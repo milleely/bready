@@ -55,6 +55,9 @@ interface Expense {
   receiptUrl?: string | null
   userId: string
   recurringExpenseId?: string | null
+  recurringExpense?: {
+    frequency: string
+  } | null
   user: {
     id: string
     name: string
@@ -67,16 +70,32 @@ interface ExpenseDataTableProps {
   expenses: Expense[]
   onEdit?: (expense: Expense) => void
   onDelete?: (id: string) => void
+  onDeleteRecurring?: (recurringId: string, fromDate: Date | string) => void
   optimisticIds?: string[]
 }
 
-export function ExpenseDataTable({ expenses, onEdit, onDelete, optimisticIds = [] }: ExpenseDataTableProps) {
+export function ExpenseDataTable({ expenses, onEdit, onDelete, onDeleteRecurring, optimisticIds = [] }: ExpenseDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const [lightboxOpen, setLightboxOpen] = React.useState(false)
   const [selectedReceiptUrl, setSelectedReceiptUrl] = React.useState<string | null>(null)
+
+  // Track which recurringExpenseIds we've already shown (only show badge on first occurrence)
+  const firstRecurringOccurrences = React.useMemo(() => {
+    const seen = new Set<string>()
+    const firstOccurrences = new Set<string>()
+
+    expenses.forEach(expense => {
+      if (expense.recurringExpenseId && !seen.has(expense.recurringExpenseId)) {
+        seen.add(expense.recurringExpenseId)
+        firstOccurrences.add(expense.id)
+      }
+    })
+
+    return firstOccurrences
+  }, [expenses])
 
   const getCategoryLabel = (value: string) => {
     return categories.find(c => c.value === value)?.label || value
@@ -126,6 +145,11 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete, optimisticIds = [
       cell: ({ row }) => {
         const expense = row.original
         const isOptimistic = optimisticIds.includes(expense.id)
+        const getFrequencyLabel = (frequency: string) => {
+          if (frequency === 'monthly') return 'Monthly'
+          if (frequency === 'yearly') return 'Yearly'
+          return frequency
+        }
         return (
           <div className="flex items-center gap-2">
             {isOptimistic && (
@@ -133,12 +157,13 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete, optimisticIds = [
                 <Loader2 className="h-4 w-4 text-amber-600 animate-spin" />
               </span>
             )}
-            {expense.recurringExpenseId && (
-              <span title="Recurring expense">
-                <Repeat className="h-4 w-4 text-purple-600" />
-              </span>
-            )}
             <span className={isOptimistic ? "opacity-70" : ""}>{expense.description}</span>
+            {expense.recurringExpense && firstRecurringOccurrences.has(expense.id) && (
+              <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                <Repeat className="h-3 w-3 mr-1" />
+                {getFrequencyLabel(expense.recurringExpense.frequency)}
+              </Badge>
+            )}
           </div>
         )
       },
@@ -296,7 +321,7 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete, optimisticIds = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              {onEdit && (
+              {onEdit && !expense.recurringExpenseId && (
                 <DropdownMenuItem onClick={() => onEdit(expense)}>
                   <Pencil className="mr-2 h-4 w-4" />
                   Edit expense
@@ -310,6 +335,18 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete, optimisticIds = [
                   <Trash2 className="mr-2 h-4 w-4" />
                   Delete expense
                 </DropdownMenuItem>
+              )}
+              {expense.recurringExpenseId && onDeleteRecurring && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => onDeleteRecurring(expense.recurringExpenseId!, expense.date)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Repeat className="mr-2 h-4 w-4" />
+                    Delete recurring series
+                  </DropdownMenuItem>
+                </>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -405,11 +442,12 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete, optimisticIds = [
               table.getRowModel().rows.map((row) => {
                 const expense = row.original
                 const isOptimistic = optimisticIds.includes(expense.id)
+                const isFirstRecurring = expense.recurringExpenseId && firstRecurringOccurrences.has(expense.id)
                 return (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={`border-golden-crust-primary/20 hover:bg-golden-crust-light/20 ${isOptimistic ? 'opacity-70' : ''}`}
+                    className={`border-golden-crust-primary/20 hover:bg-golden-crust-light/20 ${isOptimistic ? 'opacity-70' : ''} ${isFirstRecurring ? 'bg-purple-50/30 hover:bg-purple-50/50' : ''}`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>

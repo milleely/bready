@@ -6,8 +6,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Checkbox } from "@/components/ui/checkbox"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { categories } from "@/lib/utils"
-import { Plus, Upload, X, Image as ImageIcon, Eye, FileText, Sparkles } from "lucide-react"
+import { Plus, Upload, X, Image as ImageIcon, Eye, FileText, Sparkles, Repeat } from "lucide-react"
 
 interface User {
   id: string
@@ -24,6 +27,7 @@ interface Expense {
   isShared: boolean
   receiptUrl?: string | null
   userId: string
+  recurringExpenseId?: string | null
 }
 
 interface ExpenseFormProps {
@@ -68,6 +72,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
         userId: expense.userId,
       })
       setReceiptUrl(expense.receiptUrl || null)
+
       // Auto-open dialog when editing
       setOpen(true)
     }
@@ -180,6 +185,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
         setUploading(false)
       }
 
+      // Submit expense
       await onSubmit({
         amount: parseFloat(formData.amount),
         category: formData.category,
@@ -224,8 +230,56 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{expense ? 'Edit Expense' : 'Add New Expense'}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2 text-2xl text-golden-crust-dark">
+            {expense ? (
+              <>Edit Expense</>
+            ) : (
+              <>
+                <Plus className="h-6 w-6 text-amber-600" />
+                Add New Expense
+              </>
+            )}
+          </DialogTitle>
         </DialogHeader>
+
+        {/* Show alert when editing a recurring expense */}
+        {expense?.recurringExpenseId && (
+          <Alert className="bg-purple-50 border-purple-200 mt-4">
+            <Repeat className="h-4 w-4 text-purple-600" />
+            <AlertDescription className="text-sm">
+              This is a recurring expense.
+              <Button
+                type="button"
+                variant="link"
+                onClick={async () => {
+                  if (!confirm("Stop this expense from recurring? This will only affect this specific expense.")) return
+
+                  try {
+                    const response = await fetch(`/api/expenses/${expense.id}/unmark-recurring`, {
+                      method: 'POST'
+                    })
+
+                    if (!response.ok) {
+                      throw new Error('Failed to unmark recurring')
+                    }
+
+                    alert('Expense unmarked as recurring')
+                    setOpen(false)
+                    // Dispatch event to refresh parent
+                    window.dispatchEvent(new CustomEvent('expenseEdited'))
+                  } catch (error) {
+                    console.error('Failed to unmark:', error)
+                    alert('Failed to unmark recurring expense. Please try again.')
+                  }
+                }}
+                className="h-auto p-0 ml-1 text-purple-700 hover:text-purple-900"
+              >
+                Stop recurring
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-4 mt-2 sm:mt-4 min-w-0 overflow-hidden">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
             <div className="space-y-2">
@@ -397,12 +451,10 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           </div>
 
           <div className="flex items-center space-x-2">
-            <input
+            <Checkbox
               id="shared"
-              type="checkbox"
               checked={formData.isShared}
-              onChange={(e) => setFormData({ ...formData, isShared: e.target.checked })}
-              className="rounded border-golden-crust-medium"
+              onCheckedChange={(checked) => setFormData({ ...formData, isShared: checked === true })}
             />
             <Label htmlFor="shared" className="cursor-pointer text-golden-crust-dark">
               This is a shared expense (split among all users)

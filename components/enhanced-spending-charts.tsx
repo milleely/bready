@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { TrendingUp } from "lucide-react"
+import { TrendingUp, Repeat } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Pie, PieChart, Label } from "recharts"
 
 import {
@@ -22,7 +22,7 @@ import { categories, formatCurrency } from "@/lib/utils"
 
 interface SpendingChartsProps {
   spendingByCategory: Array<{ category: string; amount: number }>
-  spendingPerPerson: Array<{ name: string; total: number; shared: number; personal: number; color: string }>
+  spendingPerPerson: Array<{ name: string; total: number; shared: number; personal: number; color: string; recurringCount: number }>
 }
 
 export const EnhancedSpendingCharts = React.memo(function EnhancedSpendingCharts({ spendingByCategory, spendingPerPerson }: SpendingChartsProps) {
@@ -149,9 +149,9 @@ export const EnhancedSpendingCharts = React.memo(function EnhancedSpendingCharts
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-golden-crust-primary/30">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-sm bg-amber-600" />
+              <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-golden-crust-primary/30">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-sm bg-amber-600 flex-shrink-0" />
                   <div>
                     <p className="text-xs font-semibold text-golden-crust-dark/70">Personal</p>
                     <p className="text-sm font-bold text-golden-crust-dark">
@@ -159,12 +159,21 @@ export const EnhancedSpendingCharts = React.memo(function EnhancedSpendingCharts
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-sm bg-amber-400 toast-texture-subtle" />
+                <div className="flex items-center gap-1.5">
+                  <div className="w-3 h-3 rounded-sm bg-amber-400 toast-texture-subtle flex-shrink-0" />
                   <div>
                     <p className="text-xs font-semibold text-golden-crust-dark/70">Shared</p>
                     <p className="text-sm font-bold text-golden-crust-dark">
                       {formatCurrency(person.shared)}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Repeat className="w-3 h-3 text-purple-600 flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-semibold text-golden-crust-dark/70">Recurring</p>
+                    <p className="text-sm font-bold text-golden-crust-dark">
+                      {person.recurringCount}
                     </p>
                   </div>
                 </div>

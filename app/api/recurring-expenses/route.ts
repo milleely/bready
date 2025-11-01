@@ -83,18 +83,18 @@ export async function POST(request: NextRequest) {
     let nextDate = new Date()
 
     if (frequency === 'monthly') {
-      const day = dayOfMonth || 1
+      // Handle -1 as "last day of month"
+      const day = dayOfMonth === -1
+        ? new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+        : (dayOfMonth || 1)
       nextDate = new Date(now.getFullYear(), now.getMonth(), day)
       // If the date has passed this month, move to next month
       if (nextDate <= now) {
-        nextDate = new Date(now.getFullYear(), now.getMonth() + 1, day)
+        const nextMonthDay = dayOfMonth === -1
+          ? new Date(now.getFullYear(), now.getMonth() + 2, 0).getDate()
+          : day
+        nextDate = new Date(now.getFullYear(), now.getMonth() + 1, nextMonthDay)
       }
-    } else if (frequency === 'weekly') {
-      const targetDay = dayOfWeek || 0
-      const currentDay = now.getDay()
-      const daysUntilNext = (targetDay - currentDay + 7) % 7 || 7
-      nextDate = new Date(now)
-      nextDate.setDate(now.getDate() + daysUntilNext)
     } else if (frequency === 'yearly') {
       const month = monthOfYear || 1
       const day = dayOfMonth || 1
@@ -121,7 +121,64 @@ export async function POST(request: NextRequest) {
       include: { user: true },
     })
 
-    return NextResponse.json(recurringExpense, { status: 201 })
+    // Generate 2 months of expenses immediately (current + next 1 month)
+    const expenses = []
+    const generateMonthsAhead = 2
+
+    for (let monthOffset = 0; monthOffset < generateMonthsAhead; monthOffset++) {
+      if (frequency === 'monthly') {
+        const targetMonth = new Date(now.getFullYear(), now.getMonth() + monthOffset)
+        // Handle -1 as "last day of month" for the target month
+        let day: number
+        if (dayOfMonth === -1) {
+          day = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0).getDate()
+        } else {
+          // Cap day at last valid day of month to prevent overflow (e.g., Jan 31 → Feb 28)
+          const lastDayOfMonth = new Date(targetMonth.getFullYear(), targetMonth.getMonth() + 1, 0).getDate()
+          day = Math.min(dayOfMonth || 1, lastDayOfMonth)
+        }
+        const expenseDate = new Date(targetMonth.getFullYear(), targetMonth.getMonth(), day)
+
+        const expense = await prisma.expense.create({
+          data: {
+            amount: validateAmount(amount),
+            category,
+            description,
+            date: expenseDate,
+            isShared: isShared || false,
+            userId,
+            recurringExpenseId: recurringExpense.id,
+          },
+          include: { user: true },
+        })
+        expenses.push(expense)
+      } else if (frequency === 'yearly') {
+        // For yearly, only create current year (not future years in 3-month window)
+        if (monthOffset > 0) continue
+        const month = monthOfYear || 1
+        const day = dayOfMonth || 1
+        const expenseDate = new Date(now.getFullYear(), month - 1, day)
+
+        const expense = await prisma.expense.create({
+          data: {
+            amount: validateAmount(amount),
+            category,
+            description,
+            date: expenseDate,
+            isShared: isShared || false,
+            userId,
+            recurringExpenseId: recurringExpense.id,
+          },
+          include: { user: true },
+        })
+        expenses.push(expense)
+      }
+    }
+
+    return NextResponse.json({
+      recurringExpense,
+      expenses,
+    }, { status: 201 })
   } catch (error) {
     // Secure error logging
     if (process.env.NODE_ENV === 'development') {
