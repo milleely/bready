@@ -82,21 +82,6 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete, onDeleteRecurring
   const [lightboxOpen, setLightboxOpen] = React.useState(false)
   const [selectedReceiptUrl, setSelectedReceiptUrl] = React.useState<string | null>(null)
 
-  // Track which recurringExpenseIds we've already shown (only show badge on first occurrence)
-  const firstRecurringOccurrences = React.useMemo(() => {
-    const seen = new Set<string>()
-    const firstOccurrences = new Set<string>()
-
-    expenses.forEach(expense => {
-      if (expense.recurringExpenseId && !seen.has(expense.recurringExpenseId)) {
-        seen.add(expense.recurringExpenseId)
-        firstOccurrences.add(expense.id)
-      }
-    })
-
-    return firstOccurrences
-  }, [expenses])
-
   const getCategoryLabel = (value: string) => {
     return categories.find(c => c.value === value)?.label || value
   }
@@ -158,7 +143,7 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete, onDeleteRecurring
               </span>
             )}
             <span className={isOptimistic ? "opacity-70" : ""}>{expense.description}</span>
-            {expense.recurringExpense && firstRecurringOccurrences.has(expense.id) && (
+            {expense.recurringExpense && (
               <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
                 <Repeat className="h-3 w-3 mr-1" />
                 {getFrequencyLabel(expense.recurringExpense.frequency)}
@@ -442,12 +427,12 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete, onDeleteRecurring
               table.getRowModel().rows.map((row) => {
                 const expense = row.original
                 const isOptimistic = optimisticIds.includes(expense.id)
-                const isFirstRecurring = expense.recurringExpenseId && firstRecurringOccurrences.has(expense.id)
+                const isRecurring = !!expense.recurringExpenseId
                 return (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={`border-golden-crust-primary/20 hover:bg-golden-crust-light/20 ${isOptimistic ? 'opacity-70' : ''} ${isFirstRecurring ? 'bg-purple-50/30 hover:bg-purple-50/50' : ''}`}
+                    className={`border-golden-crust-primary/20 hover:bg-golden-crust-light/20 ${isOptimistic ? 'opacity-70' : ''} ${isRecurring ? 'bg-purple-50/30 hover:bg-purple-50/50' : ''}`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>

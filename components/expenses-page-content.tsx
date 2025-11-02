@@ -118,7 +118,7 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
     try {
       const [year, month] = selectedMonth.split('-').map(Number)
       const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0]
-      const endDate = new Date(year, month, 0, 23, 59, 59, 999).toISOString()
+      const endDate = new Date(year, month, 0).toISOString().split('T')[0]
 
       const statsRes = await fetch(`/api/stats?startDate=${startDate}&endDate=${endDate}`)
       const statsData = await statsRes.json()
@@ -137,7 +137,7 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
     try {
       const [year, month] = selectedMonth.split('-').map(Number)
       const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0]
-      const endDate = new Date(year, month, 0, 23, 59, 59, 999).toISOString()
+      const endDate = new Date(year, month, 0).toISOString().split('T')[0]
 
       // Build query with filters
       let query = `startDate=${startDate}&endDate=${endDate}`
