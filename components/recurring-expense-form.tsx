@@ -92,8 +92,8 @@ export function RecurringExpenseForm({ users, open, onOpenChange }: RecurringExp
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl text-golden-crust-dark">
-            <Repeat className="h-6 w-6 text-amber-600" />
+          <DialogTitle className="flex items-center gap-2 text-xl text-golden-crust-dark">
+            <Repeat className="h-5 w-5 text-amber-600" />
             Add Recurring Expense
           </DialogTitle>
         </DialogHeader>
@@ -222,7 +222,7 @@ export function RecurringExpenseForm({ users, open, onOpenChange }: RecurringExp
             <Alert className="bg-amber-50 border-amber-200">
               <Info className="h-4 w-4 text-amber-600" />
               <AlertDescription className="text-xs text-amber-700 font-medium">
-                Recurring expenses will be auto generated each month with 1 month in advanced until cancelled.
+                Recurring expenses will be auto generated each month with 1 month in advanced until cancelled. To edit a recurring expense, delete it and re-create it.
               </AlertDescription>
             </Alert>
           </div>

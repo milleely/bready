@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { Settings, Scale, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -34,6 +34,8 @@ interface MobileMoreMenuProps {
 
 export function MobileMoreMenu({ isOpen, onClose }: MobileMoreMenuProps) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const month = searchParams.get('month')
 
   if (!isOpen) return null
 
@@ -82,7 +84,7 @@ export function MobileMoreMenu({ isOpen, onClose }: MobileMoreMenuProps) {
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={month ? `${item.href}?month=${month}` : item.href}
                 onClick={onClose}
                 className={cn(
                   "flex items-center gap-4 px-4 py-4 rounded-xl transition-all",

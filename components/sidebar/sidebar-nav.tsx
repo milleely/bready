@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { LayoutDashboard, Receipt, Target, Wallet, Settings, Scale } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -58,6 +58,8 @@ interface SidebarNavProps {
 
 export function SidebarNav({ className, collapsed = false }: SidebarNavProps) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const month = searchParams.get('month')
 
   return (
     <nav className={cn("space-y-2", className)}>
@@ -68,7 +70,7 @@ export function SidebarNav({ className, collapsed = false }: SidebarNavProps) {
         return (
           <Link
             key={item.href}
-            href={item.href}
+            href={month ? `${item.href}?month=${month}` : item.href}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all hover:bg-amber-100/50",
               isActive

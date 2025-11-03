@@ -44,18 +44,6 @@ function MonthSelectorClient({ children }: { children: React.ReactNode }) {
     router.push(`${pathname}?${params.toString()}`)
   }
 
-  // Auto-advance to current month if URL month is stale (past month)
-  useEffect(() => {
-    const urlMonth = searchParams.get('month')
-    const currentMonth = getCurrentMonth()
-
-    // If URL has a month AND it's before the current month, auto-advance
-    if (urlMonth && urlMonth < currentMonth) {
-      handleMonthChange(currentMonth)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Run only on mount to avoid infinite loops
-
   return (
     <SidebarLayout
       selectedMonth={selectedMonth}

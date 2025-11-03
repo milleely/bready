@@ -45,7 +45,13 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
     amount: expense?.amount?.toString() || '',
     category: expense?.category || 'groceries',
     description: expense?.description || '',
-    date: expense?.date ? new Date(expense.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    date: expense?.date ? new Date(expense.date).toISOString().split('T')[0] : (() => {
+      const now = new Date()
+      const year = now.getFullYear()
+      const month = String(now.getMonth() + 1).padStart(2, '0')
+      const day = String(now.getDate()).padStart(2, '0')
+      return `${year}-${month}-${day}`
+    })(),
     isShared: expense?.isShared || false,
     userId: expense?.userId || users[0]?.id || '',
   })
@@ -201,7 +207,13 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           amount: '',
           category: 'groceries',
           description: '',
-          date: new Date().toISOString().split('T')[0],
+          date: (() => {
+            const now = new Date()
+            const year = now.getFullYear()
+            const month = String(now.getMonth() + 1).padStart(2, '0')
+            const day = String(now.getDate()).padStart(2, '0')
+            return `${year}-${month}-${day}`
+          })(),
           isShared: false,
           userId: users[0]?.id || '',
         })
@@ -230,12 +242,12 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-2xl text-golden-crust-dark">
+          <DialogTitle className="flex items-center gap-2 text-xl text-golden-crust-dark">
             {expense ? (
               <>Edit Expense</>
             ) : (
               <>
-                <Plus className="h-6 w-6 text-amber-600" />
+                <Plus className="h-5 w-5 text-amber-600" />
                 Add New Expense
               </>
             )}
