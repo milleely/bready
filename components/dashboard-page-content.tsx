@@ -197,6 +197,7 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
 
   // 🚀 PERFORMANCE: Memoized budget health calculation to prevent redundant loops
   const budgetHealth = useMemo(() => {
+    if (!stats.spendingByCategory) return { onTrack: 0, warning: 0, over: 0 }
     if (budgets.length === 0) return { onTrack: 0, warning: 0, over: 0 }
 
     let onTrack = 0
@@ -221,7 +222,7 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
 
   // 🚀 PERFORMANCE: Memoized top categories to prevent redundant sorting
   const topCategories = useMemo(() =>
-    stats.spendingByCategory
+    (stats.spendingByCategory || [])
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 3),
     [stats.spendingByCategory]
