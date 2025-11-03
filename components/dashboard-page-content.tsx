@@ -218,6 +218,15 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
 
     return { onTrack, warning, over }
   }, [budgets, expenses, stats.spendingByCategory])
+
+  // 🚀 PERFORMANCE: Memoized top categories to prevent redundant sorting
+  const topCategories = useMemo(() =>
+    stats.spendingByCategory
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, 3),
+    [stats.spendingByCategory]
+  )
+
   const totalBudgets = budgets.length
 
   // Calculate overall budget health indicator
@@ -303,14 +312,6 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
       </div>
     )
   }
-
-  // 🚀 PERFORMANCE: Memoized top categories to prevent redundant sorting
-  const topCategories = useMemo(() =>
-    stats.spendingByCategory
-      .sort((a, b) => b.amount - a.amount)
-      .slice(0, 3),
-    [stats.spendingByCategory]
-  )
 
   return (
     <div className="space-y-6">
