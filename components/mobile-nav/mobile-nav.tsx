@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { usePathname, useSearchParams } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { LayoutDashboard, Receipt, Target, Wallet, MoreHorizontal } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { MobileMoreMenu } from "./mobile-more-menu"
@@ -36,10 +36,12 @@ const navItems: NavItem[] = [
   },
 ]
 
-export function MobileNav() {
+interface MobileNavProps {
+  month?: string | null
+}
+
+export function MobileNav({ month }: MobileNavProps = {}) {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const month = searchParams.get('month')
   const [isVisible, setIsVisible] = useState(true)
   const [lastScrollY, setLastScrollY] = useState(0)
   const [moreMenuOpen, setMoreMenuOpen] = useState(false)
@@ -133,6 +135,7 @@ export function MobileNav() {
       <MobileMoreMenu
         isOpen={moreMenuOpen}
         onClose={() => setMoreMenuOpen(false)}
+        month={month}
       />
     </>
   )

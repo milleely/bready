@@ -152,7 +152,7 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
 
           {/* Navigation */}
           <div className="flex-1 overflow-y-auto p-4">
-            <SidebarNav collapsed={sidebarCollapsed} />
+            <SidebarNav collapsed={sidebarCollapsed} month={selectedMonth} />
           </div>
 
           {/* Bottom Section */}
@@ -220,7 +220,7 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
 
               {/* Navigation */}
               <div className="flex-1 overflow-y-auto p-4">
-                <SidebarNav />
+                <SidebarNav month={selectedMonth} />
               </div>
 
               {/* Bottom Section */}
@@ -296,7 +296,7 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <MobileNav />
+      <MobileNav month={selectedMonth} />
 
       {/* Expense Form Dialog */}
       {expenseFormOpen && (
