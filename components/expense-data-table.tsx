@@ -74,7 +74,7 @@ interface ExpenseDataTableProps {
   optimisticIds?: string[]
 }
 
-export function ExpenseDataTable({ expenses, onEdit, onDelete, onDeleteRecurring, optimisticIds = [] }: ExpenseDataTableProps) {
+function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurring, optimisticIds = [] }: ExpenseDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
@@ -494,3 +494,6 @@ export function ExpenseDataTable({ expenses, onEdit, onDelete, onDeleteRecurring
     </div>
   )
 }
+
+// 🚀 PERFORMANCE: Memoized to prevent unnecessary re-renders when parent state changes
+export const ExpenseDataTable = React.memo(ExpenseDataTableComponent)

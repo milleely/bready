@@ -115,6 +115,9 @@ model Settlement {
   @@index([toUserId])
   @@index([month])
   @@index([date])
+  // 🚀 PERFORMANCE: Composite indexes for month + user queries
+  @@index([month, fromUserId])
+  @@index([month, toUserId])
 }
 
 // ============================================================================
