@@ -14,7 +14,7 @@ interface SpendingSparklineProps {
   className?: string
 }
 
-export function SpendingSparkline({ expenses, days = 30, className }: SpendingSparklineProps) {
+export default function SpendingSparkline({ expenses, days = 30, className }: SpendingSparklineProps) {
   // Get date range (last N days)
   const today = new Date()
   const startDate = new Date(today)

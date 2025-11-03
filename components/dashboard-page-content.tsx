@@ -18,7 +18,7 @@ import {
 import { formatCurrency, categories } from "@/lib/utils"
 import Link from "next/link"
 // 🚀 PERFORMANCE: Lazy load chart component to reduce initial bundle size
-const SpendingSparkline = lazy(() => import("@/components/spending-sparkline").then(m => ({ default: m.SpendingSparkline })))
+const SpendingSparkline = lazy(() => import("@/components/spending-sparkline"))
 import { BreadyLogo } from "@/components/bready-logo"
 import { ExpenseForm } from "@/components/expense-form"
 
