@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useState, useMemo, lazy } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -17,7 +17,8 @@ import {
 } from "lucide-react"
 import { formatCurrency, categories } from "@/lib/utils"
 import Link from "next/link"
-import { SpendingSparkline } from "@/components/spending-sparkline"
+// 🚀 PERFORMANCE: Lazy load chart component to reduce initial bundle size
+const SpendingSparkline = lazy(() => import("@/components/spending-sparkline").then(m => ({ default: m.SpendingSparkline })))
 import { BreadyLogo } from "@/components/bready-logo"
 import { ExpenseForm } from "@/components/expense-form"
 
@@ -194,8 +195,8 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
     fetchUsers()
   }, [])
 
-  // Calculate budget health
-  const getBudgetHealth = () => {
+  // 🚀 PERFORMANCE: Memoized budget health calculation to prevent redundant loops
+  const budgetHealth = useMemo(() => {
     if (budgets.length === 0) return { onTrack: 0, warning: 0, over: 0 }
 
     let onTrack = 0
@@ -216,9 +217,7 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
     })
 
     return { onTrack, warning, over }
-  }
-
-  const budgetHealth = getBudgetHealth()
+  }, [budgets, expenses, stats.spendingByCategory])
   const totalBudgets = budgets.length
 
   // Calculate overall budget health indicator
@@ -305,9 +304,13 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
     )
   }
 
-  const topCategories = stats.spendingByCategory
-    .sort((a, b) => b.amount - a.amount)
-    .slice(0, 3)
+  // 🚀 PERFORMANCE: Memoized top categories to prevent redundant sorting
+  const topCategories = useMemo(() =>
+    stats.spendingByCategory
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, 3),
+    [stats.spendingByCategory]
+  )
 
   return (
     <div className="space-y-6">
@@ -389,7 +392,9 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
 
               {/* 30-Day Sparkline - Enhanced & Enlarged */}
               <div className="w-full md:w-72 h-44 bg-white/10 rounded-lg overflow-hidden border border-white/20 shadow-[0_0_16px_rgba(255,255,255,0.2),0_2px_8px_rgba(0,0,0,0.1)]">
-                <SpendingSparkline expenses={expenses} days={30} />
+                <Suspense fallback={<div className="h-44 animate-pulse bg-amber-100/30 rounded-lg" />}>
+                  <SpendingSparkline expenses={expenses} days={30} />
+                </Suspense>
               </div>
               <p className="text-xs text-amber-100 font-medium">30-day trend</p>
             </div>

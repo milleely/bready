@@ -13,7 +13,13 @@ export async function GET() {
       where: { householdId },
       orderBy: { name: 'asc' },
     })
-    return NextResponse.json(users)
+
+    // 🚀 PERFORMANCE: Cache user data for 60s (semi-static, only changes on CRUD)
+    return NextResponse.json(users, {
+      headers: {
+        'Cache-Control': 'private, max-age=60, stale-while-revalidate=30',
+      },
+    })
   } catch (error) {
     // Secure error logging
     if (process.env.NODE_ENV === 'development') {
