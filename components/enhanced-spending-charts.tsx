@@ -149,7 +149,7 @@ export const EnhancedSpendingCharts = React.memo(function EnhancedSpendingCharts
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-golden-crust-primary/30">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3 pt-3 border-t border-golden-crust-primary/30">
                 <div className="flex items-center gap-1.5">
                   <div className="w-3 h-3 rounded-sm bg-amber-600 flex-shrink-0" />
                   <div>
@@ -168,7 +168,7 @@ export const EnhancedSpendingCharts = React.memo(function EnhancedSpendingCharts
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 col-span-2 md:col-span-1">
                   <Repeat className="w-3 h-3 text-purple-600 flex-shrink-0" />
                   <div>
                     <p className="text-xs font-semibold text-golden-crust-dark/70">Recurring</p>
