@@ -162,6 +162,13 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Defensive validation: Ensure userId is set
+    if (!formData.userId) {
+      alert('Please wait for users to load, then try again. If the problem persists, refresh the page.')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -202,6 +209,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
         userId: formData.userId,
       })
 
+      // Only reset form and close dialog on SUCCESS
       if (!expense) {
         setFormData({
           amount: '',
@@ -224,7 +232,10 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
       setOpen(false)
     } catch (error) {
       console.error('Failed to submit expense:', error)
-      alert('Failed to submit expense. Please try again.')
+      // Show user-friendly error message
+      const errorMessage = error instanceof Error ? error.message : 'Failed to submit expense. Please try again.'
+      alert(errorMessage)
+      // Don't close the form on error - let user retry
     } finally {
       setLoading(false)
       setUploading(false)
@@ -253,6 +264,15 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
             )}
           </DialogTitle>
         </DialogHeader>
+
+        {/* Show warning if no users are loaded yet */}
+        {users.length === 0 && (
+          <Alert className="bg-amber-50 border-amber-200 mt-4">
+            <AlertDescription className="text-sm text-amber-900">
+              ⚠️ Loading your household users... Please wait a moment before submitting.
+            </AlertDescription>
+          </Alert>
+        )}
 
         {/* Show alert when editing a recurring expense */}
         {expense?.recurringExpenseId && (
@@ -484,10 +504,10 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
             </Button>
             <Button
               type="submit"
-              disabled={loading || uploading}
+              disabled={loading || uploading || users.length === 0}
               className="toast-gradient-golden hover:toast-gradient-dark text-white font-semibold shadow-lg"
             >
-              {uploading ? 'Uploading...' : loading ? 'Saving...' : expense ? 'Update' : 'Add Expense'}
+              {users.length === 0 ? 'Loading users...' : uploading ? 'Uploading...' : loading ? 'Saving...' : expense ? 'Update' : 'Add Expense'}
             </Button>
           </div>
         </form>

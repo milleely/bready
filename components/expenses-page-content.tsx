@@ -236,8 +236,7 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
     const user = users.find(u => u.id === expense.userId)
 
     if (!user) {
-      alert('User not found')
-      return
+      throw new Error('User not found. Please refresh the page and try again.')
     }
 
     // Create optimistic expense
@@ -269,13 +268,22 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
         await fetchStats()
         setOptimisticExpenses(prev => prev.filter(e => e.id !== tempId))
       } else {
-        throw new Error('API failed')
+        // Parse error response from API
+        const errorData = await response.json()
+        const errorMessage = errorData.error || `Server error (${response.status})`
+
+        // Rollback optimistic update
+        setOptimisticExpenses(prev => prev.filter(e => e.id !== tempId))
+
+        // Throw error with descriptive message for expense-form to display
+        throw new Error(errorMessage)
       }
     } catch (error) {
-      // Rollback: remove optimistic expense and show error
+      // Rollback: remove optimistic expense
       setOptimisticExpenses(prev => prev.filter(e => e.id !== tempId))
-      console.error('Failed to add expense:', error)
-      alert('Failed to add expense. Please try again.')
+
+      // Re-throw error so expense-form can display it
+      throw error
     }
   }
 
