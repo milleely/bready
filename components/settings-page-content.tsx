@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import { UserManagement } from "@/components/user-management"
 import { KeyboardShortcutsCard } from "@/components/keyboard-shortcuts-card"
-import { NotificationSettings } from "@/components/settings/notification-settings"
+import { NotificationSettingsPreview } from "@/components/settings/notification-settings-preview"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Settings as SettingsIcon } from "lucide-react"
@@ -78,15 +78,14 @@ export function SettingsPageContent() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Keyboard Shortcuts */}
         <KeyboardShortcutsCard />
-      </div>
 
-      {/* Notification Settings - Full Width */}
-      {currentUser && (
-        <NotificationSettings
-          userId={currentUser.id}
-          userEmail={currentUser.email}
-        />
-      )}
+        {/* Notification Settings */}
+        {currentUser && (
+          <NotificationSettingsPreview
+            userEmail={currentUser.email}
+          />
+        )}
+      </div>
     </div>
   )
 }
