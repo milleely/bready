@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { getHouseholdId } from '@/lib/auth'
 import { validateAmount } from '@/lib/utils'
+import { checkBudgetThreshold } from '@/lib/notifications/budget-alerts'
 
 export async function GET(request: NextRequest) {
   try {
@@ -120,6 +121,12 @@ export async function POST(request: NextRequest) {
       },
       include: { user: true },
     })
+
+    // 🔔 Trigger budget alert check (non-blocking, fire-and-forget)
+    checkBudgetThreshold(expense).catch(err => {
+      console.error('[API] Budget alert failed:', err)
+    })
+
     return NextResponse.json(expense, { status: 201 })
   } catch (error) {
     // Secure error logging

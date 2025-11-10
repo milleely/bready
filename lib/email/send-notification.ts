@@ -6,6 +6,7 @@
 
 import { resend, BREADY_FROM_EMAIL, BREADY_DEV_EMAIL } from "./resend-client"
 import type { ReactElement } from "react"
+import { render } from "@react-email/render"
 
 export interface SendNotificationParams {
   to: string
@@ -33,11 +34,14 @@ export async function sendNotification(
     const fromEmail =
       process.env.NODE_ENV === "production" ? BREADY_FROM_EMAIL : BREADY_DEV_EMAIL
 
+    // Render React component to HTML string
+    const html = await render(params.react)
+
     const { data, error } = await resend.emails.send({
       from: fromEmail,
       to: params.to,
       subject: params.subject,
-      react: params.react,
+      html,
     })
 
     if (error) {
