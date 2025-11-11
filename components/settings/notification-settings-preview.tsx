@@ -50,7 +50,6 @@ export function NotificationSettingsPreview({ userEmail }: NotificationSettingsP
             <div className="flex-1">
               <p className="font-semibold text-amber-900">Coming Soon</p>
               <p className="text-sm text-amber-800 mt-1">
-                Email notifications will be available after domain verification.
                 This is a preview of the notification settings interface.
               </p>
             </div>
