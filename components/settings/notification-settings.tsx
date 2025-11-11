@@ -391,7 +391,7 @@ export function NotificationSettings({ userId, userEmail }: NotificationSettings
             <Checkbox
               id="email-enabled"
               checked={emailEnabled}
-              onCheckedChange={setEmailEnabled}
+              onCheckedChange={(checked) => setEmailEnabled(checked === true)}
               className="h-5 w-5 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
             />
             <div className="flex-1">
