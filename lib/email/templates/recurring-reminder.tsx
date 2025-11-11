@@ -87,7 +87,7 @@ export default function RecurringReminderEmail({
             {/* Expense Details Card */}
             <Section style={expenseCard}>
               <div style={expenseHeader}>
-                <Text style={expenseName}>{expenseName}</Text>
+                <Text style={expenseNameStyle}>{expenseName}</Text>
                 {category && (
                   <span style={categoryBadge}>{category}</span>
                 )}
@@ -244,7 +244,7 @@ const expenseHeader = {
   gap: '8px',
 }
 
-const expenseName = {
+const expenseNameStyle = {
   color: '#1c1917',
   fontSize: '20px',
   fontWeight: 'bold',
