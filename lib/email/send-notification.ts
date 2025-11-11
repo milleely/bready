@@ -4,7 +4,7 @@
  * Centralized email sending logic with error handling and logging.
  */
 
-import { resend, BREADY_FROM_EMAIL, BREADY_DEV_EMAIL } from "./resend-client"
+import { getResendClient, BREADY_FROM_EMAIL, BREADY_DEV_EMAIL } from "./resend-client"
 import type { ReactElement } from "react"
 import { render } from "@react-email/render"
 
@@ -36,6 +36,9 @@ export async function sendNotification(
 
     // Render React component to HTML string
     const html = await render(params.react)
+
+    // Get Resend client instance (lazy initialization)
+    const resend = getResendClient()
 
     const { data, error } = await resend.emails.send({
       from: fromEmail,

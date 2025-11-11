@@ -7,11 +7,18 @@
 
 import { Resend } from "resend"
 
-if (!process.env.RESEND_API_KEY) {
-  throw new Error("Missing required environment variable: RESEND_API_KEY")
-}
+// Lazy initialization - client is created only when first needed (at runtime)
+let resendInstance: Resend | null = null
 
-export const resend = new Resend(process.env.RESEND_API_KEY)
+export function getResendClient(): Resend {
+  if (!resendInstance) {
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error("Missing required environment variable: RESEND_API_KEY")
+    }
+    resendInstance = new Resend(process.env.RESEND_API_KEY)
+  }
+  return resendInstance
+}
 
 /**
  * Default "from" email address for all Bready notifications
