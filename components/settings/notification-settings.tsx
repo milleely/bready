@@ -10,10 +10,12 @@
 import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Loader2, Bell, Mail } from "lucide-react"
+import { Badge } from "@/components/ui/badge"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Loader2, Bell, Mail, ChevronDown } from "lucide-react"
 import { toast } from "sonner"
 
 interface NotificationPreference {
@@ -22,9 +24,9 @@ interface NotificationPreference {
   budgetAlertsEnabled: boolean
   budgetAlertThresholds: string
   settlementRemindersEnabled: boolean
-  settlementReminderDays: number
+  settlementReminderDays: string
   recurringRemindersEnabled: boolean
-  recurringReminderDays: number
+  recurringReminderDays: string
   emailEnabled: boolean
 }
 
@@ -39,12 +41,9 @@ export function NotificationSettings({ userId, userEmail }: NotificationSettings
   const [isSaving, setIsSaving] = useState(false)
 
   // Local state for form inputs
-  const [budgetAlertsEnabled, setBudgetAlertsEnabled] = useState(true)
-  const [budgetThresholds, setBudgetThresholds] = useState("75,90,100")
-  const [settlementRemindersEnabled, setSettlementRemindersEnabled] = useState(true)
-  const [settlementDays, setSettlementDays] = useState(7)
-  const [recurringRemindersEnabled, setRecurringRemindersEnabled] = useState(true)
-  const [recurringDays, setRecurringDays] = useState(3)
+  const [selectedThresholds, setSelectedThresholds] = useState<number[]>([75, 90, 100])
+  const [selectedSettlementDays, setSelectedSettlementDays] = useState<string[]>(["first", "last"])
+  const [selectedRecurringDays, setSelectedRecurringDays] = useState<string[]>(["1", "3", "7"])
   const [emailEnabled, setEmailEnabled] = useState(true)
 
   // Fetch user preferences on mount
@@ -62,12 +61,24 @@ export function NotificationSettings({ userId, userEmail }: NotificationSettings
 
       if (data) {
         setPreferences(data)
-        setBudgetAlertsEnabled(data.budgetAlertsEnabled)
-        setBudgetThresholds(data.budgetAlertThresholds)
-        setSettlementRemindersEnabled(data.settlementRemindersEnabled)
-        setSettlementDays(data.settlementReminderDays)
-        setRecurringRemindersEnabled(data.recurringRemindersEnabled)
-        setRecurringDays(data.recurringReminderDays)
+        // Parse comma-separated string to number array
+        const thresholds = data.budgetAlertThresholds
+          .split(',')
+          .map(t => parseInt(t.trim()))
+          .filter(t => !isNaN(t))
+        setSelectedThresholds(thresholds)
+        // Parse comma-separated string to day array
+        const settlementDays = data.settlementReminderDays
+          .split(',')
+          .map(d => d.trim())
+          .filter(d => d === 'first' || d === 'last')
+        setSelectedSettlementDays(settlementDays)
+        // Parse comma-separated string to recurring days array
+        const recurringDays = data.recurringReminderDays
+          .split(',')
+          .map(d => d.trim())
+          .filter(d => ['1', '3', '7'].includes(d))
+        setSelectedRecurringDays(recurringDays)
         setEmailEnabled(data.emailEnabled)
       }
     } catch (error) {
@@ -86,12 +97,12 @@ export function NotificationSettings({ userId, userEmail }: NotificationSettings
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId,
-          budgetAlertsEnabled,
-          budgetAlertThresholds: budgetThresholds,
-          settlementRemindersEnabled,
-          settlementReminderDays: settlementDays,
-          recurringRemindersEnabled,
-          recurringReminderDays: recurringDays,
+          budgetAlertsEnabled: true,
+          budgetAlertThresholds: selectedThresholds.join(','),
+          settlementRemindersEnabled: true,
+          settlementReminderDays: selectedSettlementDays.join(','),
+          recurringRemindersEnabled: true,
+          recurringReminderDays: selectedRecurringDays.join(','),
           emailEnabled,
         }),
       })
@@ -110,15 +121,39 @@ export function NotificationSettings({ userId, userEmail }: NotificationSettings
     }
   }
 
+  const handleThresholdToggle = (threshold: number, checked: boolean | string) => {
+    if (checked) {
+      setSelectedThresholds(prev => [...prev, threshold].sort((a, b) => a - b))
+    } else {
+      setSelectedThresholds(prev => prev.filter(t => t !== threshold))
+    }
+  }
+
+  const handleSettlementDayToggle = (day: string, checked: boolean | string) => {
+    if (checked) {
+      setSelectedSettlementDays(prev => [...prev, day])
+    } else {
+      setSelectedSettlementDays(prev => prev.filter(d => d !== day))
+    }
+  }
+
+  const handleRecurringDayToggle = (day: string, checked: boolean | string) => {
+    if (checked) {
+      setSelectedRecurringDays(prev => [...prev, day].sort((a, b) => parseInt(a) - parseInt(b)))
+    } else {
+      setSelectedRecurringDays(prev => prev.filter(d => d !== day))
+    }
+  }
+
   if (isLoading) {
     return (
-      <Card>
+      <Card className="bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-sm">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bell className="h-5 w-5" />
             Notification Settings
           </CardTitle>
-          <CardDescription>Manage how you receive updates about your finances</CardDescription>
+          <CardDescription className="mt-1.5">Manage how you receive updates about your finances</CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
@@ -128,13 +163,13 @@ export function NotificationSettings({ userId, userEmail }: NotificationSettings
   }
 
   return (
-    <Card>
+    <Card className="bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-sm">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bell className="h-5 w-5" />
           Notification Settings
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="mt-1.5">
           Manage how you receive updates about your finances
           {userEmail && (
             <span className="block mt-1 text-stone-600">
@@ -147,133 +182,226 @@ export function NotificationSettings({ userId, userEmail }: NotificationSettings
       <CardContent className="space-y-6">
         {/* Budget Alerts */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="budget-alerts" className="text-base font-medium">
-                Budget Alerts
-              </Label>
-              <p className="text-sm text-stone-600">
-                Get notified when you reach spending thresholds
-              </p>
-            </div>
-            <Switch
-              id="budget-alerts"
-              checked={budgetAlertsEnabled}
-              onCheckedChange={setBudgetAlertsEnabled}
-            />
+          <div>
+            <Label className="text-base font-medium">
+              Budget Alerts
+            </Label>
+            <p className="text-sm text-stone-600">
+              Get notified when you reach spending thresholds
+            </p>
           </div>
-          {budgetAlertsEnabled && (
-            <div className="ml-4 space-y-2">
-              <Label htmlFor="budget-thresholds" className="text-sm text-stone-700">
-                Alert Thresholds (%)
-              </Label>
-              <Input
-                id="budget-thresholds"
-                type="text"
-                value={budgetThresholds}
-                onChange={(e) => setBudgetThresholds(e.target.value)}
-                placeholder="75,90,100"
-                className="max-w-xs"
-              />
-              <p className="text-xs text-stone-500">
-                Comma-separated percentages (e.g., "75,90,100")
-              </p>
+          <div className="space-y-2">
+            <Label className="text-sm text-stone-700 block">
+              Alert Thresholds (%)
+            </Label>
+            <div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="max-w-xs w-full justify-between bg-white hover:bg-stone-50"
+                  >
+                    {selectedThresholds.length === 0 ? (
+                      <span className="text-stone-500">Select thresholds...</span>
+                    ) : (
+                      <div className="flex gap-1 flex-wrap">
+                        {selectedThresholds.map(threshold => (
+                          <Badge
+                            key={threshold}
+                            className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100"
+                          >
+                            {threshold}%
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-60 p-3 bg-white" align="start">
+                  <div className="space-y-2">
+                    {[75, 90, 100].map(threshold => (
+                      <div key={threshold} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`threshold-${threshold}`}
+                          checked={selectedThresholds.includes(threshold)}
+                          onCheckedChange={(checked) => handleThresholdToggle(threshold, checked)}
+                          className="data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
+                        />
+                        <Label
+                          htmlFor={`threshold-${threshold}`}
+                          className="text-sm cursor-pointer flex-1"
+                        >
+                          {threshold}%
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
-          )}
+            <p className="text-xs text-stone-500">
+              Select one or more thresholds to receive alerts
+            </p>
+          </div>
         </div>
 
         {/* Settlement Reminders */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="settlement-reminders" className="text-base font-medium">
-                Settlement Reminders
-              </Label>
-              <p className="text-sm text-stone-600">
-                Remind you about pending payments
-              </p>
-            </div>
-            <Switch
-              id="settlement-reminders"
-              checked={settlementRemindersEnabled}
-              onCheckedChange={setSettlementRemindersEnabled}
-            />
+          <div>
+            <Label className="text-base font-medium">
+              Settlement Reminders
+            </Label>
+            <p className="text-sm text-stone-600">
+              Remind you about pending payments
+            </p>
           </div>
-          {settlementRemindersEnabled && (
-            <div className="ml-4 space-y-2">
-              <Label htmlFor="settlement-days" className="text-sm text-stone-700">
-                Remind after (days)
-              </Label>
-              <Input
-                id="settlement-days"
-                type="number"
-                min={1}
-                max={30}
-                value={settlementDays}
-                onChange={(e) => setSettlementDays(parseInt(e.target.value) || 7)}
-                className="max-w-xs"
-              />
-              <p className="text-xs text-stone-500">
-                Send reminder after this many days of inactivity
-              </p>
+          <div className="space-y-2">
+            <Label className="text-sm text-stone-700 block">
+              Remind on
+            </Label>
+            <div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="max-w-xs w-full justify-between bg-white hover:bg-stone-50"
+                  >
+                    {selectedSettlementDays.length === 0 ? (
+                      <span className="text-stone-500">Select days...</span>
+                    ) : (
+                      <div className="flex gap-1 flex-wrap">
+                        {selectedSettlementDays.map(day => (
+                          <Badge
+                            key={day}
+                            className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100"
+                          >
+                            {day === 'first' ? 'First day' : 'Last day'}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-72 p-3 bg-white" align="start">
+                  <div className="space-y-2">
+                    {[
+                      { value: 'first', label: 'First day of each month' },
+                      { value: 'last', label: 'Last day of each month' }
+                    ].map(option => (
+                      <div key={option.value} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`settlement-${option.value}`}
+                          checked={selectedSettlementDays.includes(option.value)}
+                          onCheckedChange={(checked) => handleSettlementDayToggle(option.value, checked)}
+                          className="data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
+                        />
+                        <Label
+                          htmlFor={`settlement-${option.value}`}
+                          className="text-sm cursor-pointer flex-1"
+                        >
+                          {option.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
-          )}
+            <p className="text-xs text-stone-500">
+              Send reminders on specific days each month
+            </p>
+          </div>
         </div>
 
         {/* Recurring Expense Reminders */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="recurring-reminders" className="text-base font-medium">
-                Recurring Expense Reminders
-              </Label>
-              <p className="text-sm text-stone-600">
-                Get notified before recurring expenses are due
-              </p>
-            </div>
-            <Switch
-              id="recurring-reminders"
-              checked={recurringRemindersEnabled}
-              onCheckedChange={setRecurringRemindersEnabled}
-            />
+          <div>
+            <Label className="text-base font-medium">
+              Recurring Expense Reminders
+            </Label>
+            <p className="text-sm text-stone-600">
+              Get notified before recurring expenses are due
+            </p>
           </div>
-          {recurringRemindersEnabled && (
-            <div className="ml-4 space-y-2">
-              <Label htmlFor="recurring-days" className="text-sm text-stone-700">
-                Remind before (days)
-              </Label>
-              <Input
-                id="recurring-days"
-                type="number"
-                min={1}
-                max={30}
-                value={recurringDays}
-                onChange={(e) => setRecurringDays(parseInt(e.target.value) || 3)}
-                className="max-w-xs"
-              />
-              <p className="text-xs text-stone-500">
-                Send reminder this many days before due date
-              </p>
+          <div className="space-y-2">
+            <Label className="text-sm text-stone-700 block">
+              Remind before (days)
+            </Label>
+            <div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="max-w-xs w-full justify-between bg-white hover:bg-stone-50"
+                  >
+                    {selectedRecurringDays.length === 0 ? (
+                      <span className="text-stone-500">Select days...</span>
+                    ) : (
+                      <div className="flex gap-1 flex-wrap">
+                        {selectedRecurringDays.map(day => (
+                          <Badge
+                            key={day}
+                            className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100"
+                          >
+                            {day} {day === '1' ? 'day' : 'days'}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-60 p-3 bg-white" align="start">
+                  <div className="space-y-2">
+                    {[
+                      { value: '1', label: '1 day' },
+                      { value: '3', label: '3 days' },
+                      { value: '7', label: '7 days' }
+                    ].map(option => (
+                      <div key={option.value} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`recurring-${option.value}`}
+                          checked={selectedRecurringDays.includes(option.value)}
+                          onCheckedChange={(checked) => handleRecurringDayToggle(option.value, checked)}
+                          className="data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
+                        />
+                        <Label
+                          htmlFor={`recurring-${option.value}`}
+                          className="text-sm cursor-pointer flex-1"
+                        >
+                          {option.label}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
-          )}
+            <p className="text-xs text-stone-500">
+              Send reminder this many days before due date
+            </p>
+          </div>
         </div>
 
         {/* Email Delivery */}
         <div className="space-y-3 pt-4 border-t">
-          <div className="flex items-center justify-between">
-            <div>
-              <Label htmlFor="email-enabled" className="text-base font-medium">
+          <div className="flex items-center gap-3">
+            <Checkbox
+              id="email-enabled"
+              checked={emailEnabled}
+              onCheckedChange={setEmailEnabled}
+              className="h-5 w-5 data-[state=checked]:bg-amber-600 data-[state=checked]:border-amber-600"
+            />
+            <div className="flex-1">
+              <Label htmlFor="email-enabled" className="text-base font-medium cursor-pointer">
                 Email Notifications
               </Label>
               <p className="text-sm text-stone-600">
                 Receive notifications via email
               </p>
             </div>
-            <Switch
-              id="email-enabled"
-              checked={emailEnabled}
-              onCheckedChange={setEmailEnabled}
-            />
           </div>
         </div>
 

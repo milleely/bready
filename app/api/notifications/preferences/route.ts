@@ -19,18 +19,20 @@ function validatePreferences(data: any): boolean {
     }
   }
 
-  // Validate settlement reminder days
+  // Validate settlement reminder days (CSV: "first", "last", "first,last", or empty)
   if (data.settlementReminderDays !== undefined) {
-    const days = parseInt(data.settlementReminderDays)
-    if (isNaN(days) || days < 1 || days > 30) {
+    const days = data.settlementReminderDays.split(",").map((d: string) => d.trim())
+    const validDays = ["first", "last", ""]
+    if (!days.every((d: string) => validDays.includes(d))) {
       return false
     }
   }
 
-  // Validate recurring reminder days
+  // Validate recurring reminder days (CSV: "1", "3", "7", or combinations)
   if (data.recurringReminderDays !== undefined) {
-    const days = parseInt(data.recurringReminderDays)
-    if (isNaN(days) || days < 1 || days > 30) {
+    const days = data.recurringReminderDays.split(",").map((d: string) => d.trim())
+    const validDays = ["1", "3", "7", ""]
+    if (!days.every((d: string) => validDays.includes(d))) {
       return false
     }
   }
@@ -132,13 +134,9 @@ export async function PUT(req: NextRequest) {
         budgetAlertsEnabled: data.budgetAlertsEnabled ?? undefined,
         budgetAlertThresholds: data.budgetAlertThresholds ?? undefined,
         settlementRemindersEnabled: data.settlementRemindersEnabled ?? undefined,
-        settlementReminderDays: data.settlementReminderDays
-          ? parseInt(data.settlementReminderDays)
-          : undefined,
+        settlementReminderDays: data.settlementReminderDays ?? undefined,
         recurringRemindersEnabled: data.recurringRemindersEnabled ?? undefined,
-        recurringReminderDays: data.recurringReminderDays
-          ? parseInt(data.recurringReminderDays)
-          : undefined,
+        recurringReminderDays: data.recurringReminderDays ?? undefined,
         emailEnabled: data.emailEnabled ?? undefined,
       },
       create: {
@@ -146,13 +144,9 @@ export async function PUT(req: NextRequest) {
         budgetAlertsEnabled: data.budgetAlertsEnabled ?? true,
         budgetAlertThresholds: data.budgetAlertThresholds ?? "75,90,100",
         settlementRemindersEnabled: data.settlementRemindersEnabled ?? true,
-        settlementReminderDays: data.settlementReminderDays
-          ? parseInt(data.settlementReminderDays)
-          : 7,
+        settlementReminderDays: data.settlementReminderDays ?? "first,last",
         recurringRemindersEnabled: data.recurringRemindersEnabled ?? true,
-        recurringReminderDays: data.recurringReminderDays
-          ? parseInt(data.recurringReminderDays)
-          : 3,
+        recurringReminderDays: data.recurringReminderDays ?? "1,3,7",
         emailEnabled: data.emailEnabled ?? true,
       },
     })
