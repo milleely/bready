@@ -16,22 +16,60 @@ export async function GET(request: NextRequest) {
 
     const now = new Date()
     const isFirstDayOfMonth = now.getDate() === 1
-    const createdExpenses = []
+    let createdCount = 0
 
     // On first day of month, generate the 2nd month ahead for all recurring expenses
     if (isFirstDayOfMonth) {
       console.log('[Cron] First day of month - sliding 2-month window forward')
 
+      // Calculate the target month (2 months ahead)
+      const twoMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 2)
+      const targetMonthStart = new Date(twoMonthsAhead.getFullYear(), twoMonthsAhead.getMonth(), 1)
+      const targetMonthEnd = new Date(twoMonthsAhead.getFullYear(), twoMonthsAhead.getMonth() + 1, 0)
+
+      // Also calculate 3-month window for yearly expenses
+      const threeMonthsEnd = new Date(now.getFullYear(), now.getMonth() + 4, 0)
+
+      // BATCH QUERY 1: Fetch all active recurring expenses
       const activeRecurringExpenses = await prisma.recurringExpense.findMany({
         where: { isActive: true },
-        include: { user: true },
       })
 
-      // For each active recurring expense, generate the 2nd month ahead
-      for (const recurring of activeRecurringExpenses) {
-        // Calculate date 2 months from now
-        const twoMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 2)
+      if (activeRecurringExpenses.length === 0) {
+        console.log('[Cron] No active recurring expenses found')
+        return NextResponse.json({ success: true, generated: 0, expenses: [] })
+      }
 
+      // BATCH QUERY 2: Fetch ALL existing expenses for these recurring IDs in the target date range
+      const recurringIds = activeRecurringExpenses.map(r => r.id)
+      const existingExpenses = await prisma.expense.findMany({
+        where: {
+          recurringExpenseId: { in: recurringIds },
+          date: { gte: targetMonthStart, lte: threeMonthsEnd },
+        },
+        select: { recurringExpenseId: true, date: true },
+      })
+
+      // Build a Set for O(1) duplicate checking: "recurringId-YYYY-MM"
+      const existingKeys = new Set(
+        existingExpenses.map(e => {
+          const month = `${e.date.getFullYear()}-${String(e.date.getMonth() + 1).padStart(2, '0')}`
+          return `${e.recurringExpenseId}-${month}`
+        })
+      )
+
+      // Prepare batch of expenses to create
+      const expensesToCreate: {
+        amount: number
+        category: string
+        description: string
+        date: Date
+        isShared: boolean
+        userId: string
+        recurringExpenseId: string
+      }[] = []
+
+      for (const recurring of activeRecurringExpenses) {
         if (recurring.frequency === 'monthly') {
           // Handle -1 as "last day of month" for the target month
           let day: number
@@ -43,35 +81,20 @@ export async function GET(request: NextRequest) {
             day = Math.min(recurring.dayOfMonth || 1, lastDayOfMonth)
           }
           const expenseDate = new Date(twoMonthsAhead.getFullYear(), twoMonthsAhead.getMonth(), day)
+          const monthKey = `${expenseDate.getFullYear()}-${String(expenseDate.getMonth() + 1).padStart(2, '0')}`
+          const dedupKey = `${recurring.id}-${monthKey}`
 
-          // Check if expense already exists for this month (deduplication)
-          const monthStart = new Date(expenseDate.getFullYear(), expenseDate.getMonth(), 1)
-          const monthEnd = new Date(expenseDate.getFullYear(), expenseDate.getMonth() + 1, 0)
-
-          const existing = await prisma.expense.findFirst({
-            where: {
+          // Check for duplicates using Set (O(1) instead of DB query)
+          if (!existingKeys.has(dedupKey)) {
+            expensesToCreate.push({
+              amount: recurring.amount,
+              category: recurring.category,
+              description: recurring.description,
+              date: expenseDate,
+              isShared: recurring.isShared,
+              userId: recurring.userId,
               recurringExpenseId: recurring.id,
-              date: {
-                gte: monthStart,
-                lte: monthEnd,
-              },
-            },
-          })
-
-          if (!existing) {
-            const expense = await prisma.expense.create({
-              data: {
-                amount: recurring.amount,
-                category: recurring.category,
-                description: recurring.description,
-                date: expenseDate,
-                isShared: recurring.isShared,
-                userId: recurring.userId,
-                recurringExpenseId: recurring.id,
-              },
-              include: { user: true },
             })
-            createdExpenses.push(expense)
           }
         } else if (recurring.frequency === 'yearly') {
           // For yearly, only create if within 3-month window
@@ -79,51 +102,43 @@ export async function GET(request: NextRequest) {
           const day = recurring.dayOfMonth || 1
           const yearlyDate = new Date(now.getFullYear(), month - 1, day)
 
-          // Check if this yearly expense falls within the 3rd month ahead
-          const threeMonthsEnd = new Date(now.getFullYear(), now.getMonth() + 4, 0)
+          // Skip if not in the 3-month window
           if (yearlyDate < now || yearlyDate > threeMonthsEnd) {
-            continue // Skip if not in the 3-month window
+            continue
           }
 
-          // Check if expense already exists for this month (deduplication)
-          const monthStart = new Date(yearlyDate.getFullYear(), yearlyDate.getMonth(), 1)
-          const monthEnd = new Date(yearlyDate.getFullYear(), yearlyDate.getMonth() + 1, 0)
+          const monthKey = `${yearlyDate.getFullYear()}-${String(yearlyDate.getMonth() + 1).padStart(2, '0')}`
+          const dedupKey = `${recurring.id}-${monthKey}`
 
-          const existing = await prisma.expense.findFirst({
-            where: {
+          // Check for duplicates using Set (O(1) instead of DB query)
+          if (!existingKeys.has(dedupKey)) {
+            expensesToCreate.push({
+              amount: recurring.amount,
+              category: recurring.category,
+              description: recurring.description,
+              date: yearlyDate,
+              isShared: recurring.isShared,
+              userId: recurring.userId,
               recurringExpenseId: recurring.id,
-              date: {
-                gte: monthStart,
-                lte: monthEnd,
-              },
-            },
-          })
-
-          if (!existing) {
-            const expense = await prisma.expense.create({
-              data: {
-                amount: recurring.amount,
-                category: recurring.category,
-                description: recurring.description,
-                date: yearlyDate,
-                isShared: recurring.isShared,
-                userId: recurring.userId,
-                recurringExpenseId: recurring.id,
-              },
-              include: { user: true },
             })
-            createdExpenses.push(expense)
           }
         }
       }
+
+      // BATCH QUERY 3: Create all expenses in one operation
+      if (expensesToCreate.length > 0) {
+        const result = await prisma.expense.createMany({
+          data: expensesToCreate,
+        })
+        createdCount = result.count
+      }
     }
 
-    console.log(`[Cron] Generated ${createdExpenses.length} recurring expenses for 2nd month ahead`)
+    console.log(`[Cron] Generated ${createdCount} recurring expenses for 2nd month ahead`)
 
     return NextResponse.json({
       success: true,
-      generated: createdExpenses.length,
-      expenses: createdExpenses,
+      generated: createdCount,
     })
   } catch (error) {
     // Secure error logging

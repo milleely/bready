@@ -76,6 +76,7 @@ model Budget {
   @@index([month])
   @@index([userId])
   @@index([householdId])
+  @@index([householdId, category, month])  // Composite index for budget threshold lookups
 }
 
 model RecurringExpense {

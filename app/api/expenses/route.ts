@@ -20,6 +20,12 @@ export async function GET(request: NextRequest) {
     const maxAmount = searchParams.get('maxAmount')
     const isRecurring = searchParams.get('isRecurring')
 
+    // 🚀 PERFORMANCE: Optional pagination params (backwards-compatible)
+    const pageParam = searchParams.get('page')
+    const limitParam = searchParams.get('limit')
+    const page = pageParam ? Math.max(1, parseInt(pageParam)) : null
+    const limit = limitParam ? Math.min(100, Math.max(1, parseInt(limitParam))) : null // Max 100 per page
+
     const where: any = {
       user: { householdId }, // Only return expenses from user's household
     }
@@ -61,6 +67,37 @@ export async function GET(request: NextRequest) {
       // If isRecurring is anything else, show all expenses (no filter)
     }
 
+    // When pagination is requested, return paginated response with metadata
+    if (page && limit) {
+      const skip = (page - 1) * limit
+
+      // Run count and data queries in parallel for efficiency
+      const [expenses, total] = await Promise.all([
+        prisma.expense.findMany({
+          where,
+          include: {
+            user: true,
+            recurringExpense: true,
+          },
+          orderBy: { date: 'desc' },
+          skip,
+          take: limit,
+        }),
+        prisma.expense.count({ where }),
+      ])
+
+      return NextResponse.json({
+        expenses,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      })
+    }
+
+    // Default: Return all expenses (backwards-compatible)
     const expenses = await prisma.expense.findMany({
       where,
       include: {

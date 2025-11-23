@@ -25,17 +25,48 @@ import type { Expense } from "@prisma/client"
  */
 export async function checkBudgetThreshold(expense: Expense): Promise<void> {
   try {
-    // Step 1: Get user information (name, email)
-    const user = await prisma.user.findUnique({
-      where: { id: expense.userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        householdId: true,
-      },
-    })
+    // Extract month from expense date (format: "YYYY-MM") - needed for multiple queries
+    const expenseDate = new Date(expense.date)
+    const month = `${expenseDate.getFullYear()}-${String(expenseDate.getMonth() + 1).padStart(2, '0')}`
 
+    // 🚀 PERFORMANCE: Run independent queries in parallel
+    // User + Preferences + Previous Expenses all only need expense.userId
+    const [user, preferences, previousExpenses] = await Promise.all([
+      // Query 1: Get user information (name, email, householdId)
+      prisma.user.findUnique({
+        where: { id: expense.userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          householdId: true,
+        },
+      }),
+      // Query 2: Get notification preferences
+      prisma.notificationPreference.findUnique({
+        where: { userId: expense.userId },
+      }),
+      // Query 3: Calculate spending BEFORE this expense (previous spending)
+      prisma.expense.findMany({
+        where: {
+          userId: expense.userId,
+          category: expense.category,
+          date: {
+            gte: new Date(`${month}-01`),
+            lt: new Date(expenseDate.getFullYear(), expenseDate.getMonth() + 1, 1),
+          },
+          id: {
+            not: expense.id, // Exclude the current expense
+          },
+        },
+        select: {
+          amount: true,
+          isShared: true,
+        },
+      }),
+    ])
+
+    // Early exit checks (after parallel queries complete)
     if (!user) {
       console.log('[Budget Alert] User not found:', expense.userId)
       return
@@ -46,18 +77,13 @@ export async function checkBudgetThreshold(expense: Expense): Promise<void> {
       return
     }
 
-    // Step 2: Get notification preferences
-    const preferences = await prisma.notificationPreference.findUnique({
-      where: { userId: user.id },
-    })
-
     // Check if alerts are enabled
     if (!preferences?.budgetAlertsEnabled || !preferences?.emailEnabled) {
       console.log('[Budget Alert] Notifications disabled for user:', user.name)
       return
     }
 
-    // Step 3: Parse threshold preferences (CSV string → number array)
+    // Parse threshold preferences (CSV string → number array)
     const thresholds = preferences.budgetAlertThresholds
       .split(',')
       .map(t => parseInt(t.trim()))
@@ -69,11 +95,7 @@ export async function checkBudgetThreshold(expense: Expense): Promise<void> {
       return
     }
 
-    // Step 4: Extract month from expense date (format: "YYYY-MM")
-    const expenseDate = new Date(expense.date)
-    const month = `${expenseDate.getFullYear()}-${String(expenseDate.getMonth() + 1).padStart(2, '0')}`
-
-    // Step 5: Find relevant budget(s) for this category + month
+    // Query 4: Find relevant budget(s) - needs householdId from user query
     // Priority: Personal budget (userId set) → Household budget (userId = null)
     const budgets = await prisma.budget.findMany({
       where: {
@@ -99,25 +121,6 @@ export async function checkBudgetThreshold(expense: Expense): Promise<void> {
     const budget = budgets[0]
     const budgetLimit = budget.amount
     const budgetName = expense.category
-
-    // Step 6: Calculate spending BEFORE this expense (previous spending)
-    const previousExpenses = await prisma.expense.findMany({
-      where: {
-        userId: expense.userId,
-        category: expense.category,
-        date: {
-          gte: new Date(`${month}-01`),
-          lt: new Date(expenseDate.getFullYear(), expenseDate.getMonth() + 1, 1), // First day of next month
-        },
-        id: {
-          not: expense.id, // Exclude the current expense
-        },
-      },
-      select: {
-        amount: true,
-        isShared: true,
-      },
-    })
 
     const previousSpent = previousExpenses.reduce((sum, exp) => sum + exp.amount, 0)
     const previousPercent = (previousSpent / budgetLimit) * 100

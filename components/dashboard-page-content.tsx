@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useState, useMemo, lazy } from "react"
+import { Suspense, useEffect, useState, useMemo, lazy, useRef, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -162,10 +162,21 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
     fetchData()
   }, [selectedMonth])
 
+  // 🚀 PERFORMANCE: Debounced event handler to prevent multiple rapid fetches
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const debouncedFetchData = useCallback(() => {
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current)
+    }
+    debounceTimeoutRef.current = setTimeout(() => {
+      fetchData()
+    }, 150) // 150ms debounce - fast enough to feel instant, prevents duplicate calls
+  }, [selectedMonth])
+
   // Listen for expense changes from other pages
   useEffect(() => {
     const handleExpenseChange = () => {
-      fetchData()
+      debouncedFetchData()
     }
 
     window.addEventListener('expenseAdded', handleExpenseChange)
@@ -176,8 +187,12 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
       window.removeEventListener('expenseAdded', handleExpenseChange)
       window.removeEventListener('expenseEdited', handleExpenseChange)
       window.removeEventListener('expenseDeleted', handleExpenseChange)
+      // Clear timeout on cleanup
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current)
+      }
     }
-  }, [selectedMonth])
+  }, [debouncedFetchData])
 
   // Fetch users for expense form
   useEffect(() => {
