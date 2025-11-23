@@ -3,7 +3,7 @@
  * POST /api/networth/income
  *
  * Manage income sources for a user with month-based tracking.
- * Implements carry-forward: if no data for requested month, shows data from previous month.
+ * Each month is independent - no automatic carry-forward.
  */
 
 import { NextRequest, NextResponse } from "next/server"
@@ -18,31 +18,7 @@ function getCurrentMonth(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
 }
 
-// Helper: Get previous month in YYYY-MM format
-function getPreviousMonth(month: string): string {
-  const [year, monthNum] = month.split("-").map(Number)
-  const prevMonth = monthNum === 1 ? 12 : monthNum - 1
-  const prevYear = monthNum === 1 ? year - 1 : year
-  return `${prevYear}-${String(prevMonth).padStart(2, "0")}`
-}
-
-// Helper: Find most recent month with data, going back up to 12 months
-async function findMostRecentMonthWithIncome(
-  userId: string,
-  startMonth: string
-): Promise<string | null> {
-  let checkMonth = startMonth
-  for (let i = 0; i < 12; i++) {
-    checkMonth = getPreviousMonth(checkMonth)
-    const count = await prisma.incomeSource.count({
-      where: { userId, month: checkMonth },
-    })
-    if (count > 0) return checkMonth
-  }
-  return null
-}
-
-// GET - List all income sources for a user for a specific month (with carry-forward)
+// GET - List all income sources for a user for a specific month
 export async function GET(req: NextRequest) {
   try {
     // Require authentication and get household ID
@@ -83,27 +59,11 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    // Try to find income sources for the requested month
-    let incomeSources = await prisma.incomeSource.findMany({
+    // Fetch income sources for the requested month only (no carry-forward)
+    const incomeSources = await prisma.incomeSource.findMany({
       where: { userId: requestedUserId, month: requestedMonth },
       orderBy: { createdAt: "desc" },
     })
-
-    // Carry-forward: If no data for requested month, get from most recent previous month
-    let sourceMonth = requestedMonth
-    if (incomeSources.length === 0) {
-      const previousMonth = await findMostRecentMonthWithIncome(
-        requestedUserId,
-        requestedMonth
-      )
-      if (previousMonth) {
-        incomeSources = await prisma.incomeSource.findMany({
-          where: { userId: requestedUserId, month: previousMonth },
-          orderBy: { createdAt: "desc" },
-        })
-        sourceMonth = previousMonth
-      }
-    }
 
     // Cast Prisma string types to TypeScript union types
     const typedIncomeSources: IncomeSource[] = incomeSources.map(income => ({
@@ -114,8 +74,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       incomeSources: typedIncomeSources,
       month: requestedMonth,
-      sourceMonth,
-      isInherited: sourceMonth !== requestedMonth,
     })
   } catch (error) {
     console.error("Error fetching income sources:", error)

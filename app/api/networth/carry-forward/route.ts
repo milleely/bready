@@ -1,12 +1,11 @@
 /**
  * POST /api/networth/carry-forward
  *
- * Bulk copy all net worth records from source month to target month.
- * Used for:
- * 1. Automatic copy-all when first editing inherited data
- * 2. Manual "Copy to Next Month" button
+ * Copy all net worth records from source month to target month.
+ * REPLACES all existing data in target month (deletes first, then copies).
  *
- * Skips duplicates based on [userId, month, name] unique constraint.
+ * Used for "Copy to Next Month" button - allows users to manually
+ * populate a new month with previous month's data.
  */
 
 import { NextRequest, NextResponse } from "next/server"
@@ -80,88 +79,85 @@ export async function POST(req: NextRequest) {
       income: 0,
     }
 
-    // Copy assets if requested
+    // Copy assets if requested (DELETE existing first, then copy)
     if (dataTypes.includes("assets")) {
+      // Delete all existing assets in target month
+      await prisma.asset.deleteMany({
+        where: { userId, month: targetMonth },
+      })
+
+      // Copy all assets from source month
       const sourceAssets = await prisma.asset.findMany({
         where: { userId, month: sourceMonth },
       })
 
       for (const asset of sourceAssets) {
-        // Check if already exists in target month
-        const existing = await prisma.asset.findFirst({
-          where: { userId, month: targetMonth, name: asset.name },
+        await prisma.asset.create({
+          data: {
+            userId,
+            month: targetMonth,
+            category: asset.category,
+            name: asset.name,
+            value: asset.value,
+            notes: asset.notes,
+          },
         })
-
-        if (!existing) {
-          await prisma.asset.create({
-            data: {
-              userId,
-              month: targetMonth,
-              category: asset.category,
-              name: asset.name,
-              value: asset.value,
-              notes: asset.notes,
-            },
-          })
-          copiedCounts.assets++
-        }
+        copiedCounts.assets++
       }
     }
 
-    // Copy liabilities if requested
+    // Copy liabilities if requested (DELETE existing first, then copy)
     if (dataTypes.includes("liabilities")) {
+      // Delete all existing liabilities in target month
+      await prisma.liability.deleteMany({
+        where: { userId, month: targetMonth },
+      })
+
+      // Copy all liabilities from source month
       const sourceLiabilities = await prisma.liability.findMany({
         where: { userId, month: sourceMonth },
       })
 
       for (const liability of sourceLiabilities) {
-        // Check if already exists in target month
-        const existing = await prisma.liability.findFirst({
-          where: { userId, month: targetMonth, name: liability.name },
+        await prisma.liability.create({
+          data: {
+            userId,
+            month: targetMonth,
+            category: liability.category,
+            name: liability.name,
+            balance: liability.balance,
+            interestRate: liability.interestRate,
+            minimumPayment: liability.minimumPayment,
+            notes: liability.notes,
+          },
         })
-
-        if (!existing) {
-          await prisma.liability.create({
-            data: {
-              userId,
-              month: targetMonth,
-              category: liability.category,
-              name: liability.name,
-              balance: liability.balance,
-              interestRate: liability.interestRate,
-              minimumPayment: liability.minimumPayment,
-              notes: liability.notes,
-            },
-          })
-          copiedCounts.liabilities++
-        }
+        copiedCounts.liabilities++
       }
     }
 
-    // Copy income sources if requested
+    // Copy income sources if requested (DELETE existing first, then copy)
     if (dataTypes.includes("income")) {
+      // Delete all existing income sources in target month
+      await prisma.incomeSource.deleteMany({
+        where: { userId, month: targetMonth },
+      })
+
+      // Copy all income sources from source month
       const sourceIncome = await prisma.incomeSource.findMany({
         where: { userId, month: sourceMonth },
       })
 
       for (const income of sourceIncome) {
-        // Check if already exists in target month
-        const existing = await prisma.incomeSource.findFirst({
-          where: { userId, month: targetMonth, name: income.name },
+        await prisma.incomeSource.create({
+          data: {
+            userId,
+            month: targetMonth,
+            name: income.name,
+            amount: income.amount,
+            frequency: income.frequency,
+          },
         })
-
-        if (!existing) {
-          await prisma.incomeSource.create({
-            data: {
-              userId,
-              month: targetMonth,
-              name: income.name,
-              amount: income.amount,
-              frequency: income.frequency,
-            },
-          })
-          copiedCounts.income++
-        }
+        copiedCounts.income++
       }
     }
 
@@ -171,9 +167,7 @@ export async function POST(req: NextRequest) {
       success: true,
       copiedCounts,
       totalCopied,
-      message: totalCopied > 0
-        ? `Copied ${totalCopied} records from ${sourceMonth} to ${targetMonth}`
-        : `No new records to copy (all already exist in ${targetMonth})`,
+      message: `Replaced ${targetMonth} with ${totalCopied} records from ${sourceMonth}`,
     })
   } catch (error) {
     console.error("Error in carry-forward:", error)

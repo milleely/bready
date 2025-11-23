@@ -634,50 +634,54 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
 
 ---
 
-## Net Worth Month-Based Tracking Bug Fix (2025-11-23) **✅ COMPLETE**
+## Net Worth Month Isolation Refactor (2025-11-23) **✅ COMPLETE**
 
-### Issue
-When editing ONE inherited item in the Net Worth page, all OTHER items would disappear.
+### Change Summary
+Simplified Net Worth month-based tracking to use **complete month isolation** instead of automatic carry-forward.
 
-### Root Cause
-1. When editing inherited data, only the edited item was copied to the new month
-2. The carry-forward logic checks `if (data.length === 0)` before inheriting
-3. Since the month now had 1 record, it stopped inheriting the rest
-4. Result: Only the edited item appeared, all others vanished
+### New Behavior
+| Scenario | Behavior |
+|----------|----------|
+| Enter data in November | Stays in November only |
+| View December | **Empty state** - no data shown |
+| "Copy to Next Month" | **Replaces** December with November's data |
+| Edit data in any month | Only affects that specific month |
 
-### Solution
-**Files Created:**
-- `app/api/networth/carry-forward/route.ts` - Bulk copy API endpoint
+### Key Principle
+Each month is completely isolated. No automatic inheritance. Manual copy only.
 
-**Files Modified:**
-- `components/networth-page-content.tsx` - Updated CRUD handlers + added "Copy to Next Month" button
+### Files Simplified (removed ~150 lines of carry-forward code)
+- `app/api/networth/assets/route.ts` - Removed carry-forward logic
+- `app/api/networth/liabilities/route.ts` - Removed carry-forward logic
+- `app/api/networth/income/route.ts` - Removed carry-forward logic
+- `app/api/networth/summary/route.ts` - Removed carry-forward logic
+
+### Files Modified
+- `app/api/networth/carry-forward/route.ts` - Now uses **REPLACE mode** (deletes target month data before copying)
+- `components/networth-page-content.tsx` - Simplified CRUD handlers, removed `isEditingInherited` logic
 
 ### Implementation Details
 
-1. **Carry-Forward API** (`/api/networth/carry-forward`)
-   - POST endpoint that copies ALL records from source month to target month
-   - Accepts: `{ userId, sourceMonth, targetMonth, dataTypes: ["assets", "liabilities", "income"] }`
-   - Skips duplicates based on `[userId, month, name]` unique constraint
-   - Returns count of records copied per type
+1. **Simplified API Routes**
+   - GET returns only current month's data (empty array if none)
+   - No more `sourceMonth`, `isInherited` fields
+   - Each month is a clean slate
 
-2. **Updated CRUD Handlers**
-   - Before creating a new record when editing inherited data, the handlers now call carry-forward API first
-   - This ensures ALL records get copied to the new month, not just the edited one
-   - Pattern: `if (isEditingInherited) { await carryForwardData(...) }`
+2. **Replace Mode for Copy**
+   - "Copy to Next Month" now DELETES all existing data in target month
+   - Then copies fresh from source month
+   - User gets a clear warning about replacement
 
-3. **"Copy to Next Month" Button**
-   - Added amber-themed button in Net Worth header (visible on sm+ screens)
-   - On click: Shows confirmation dialog listing what will be copied
-   - Copies all income, assets, and liabilities to the next month
-   - Shows toast with count of records copied
-   - Idempotent: Re-running won't create duplicates
+3. **Simplified CRUD Handlers**
+   - Edit = PUT to current record
+   - Create = POST to current month
+   - No more inheritance detection or auto-copy
 
 ### Testing Checklist
-- [x] Edit inherited asset → ALL assets copied (not just edited one)
-- [x] Edit inherited liability → ALL liabilities copied
-- [x] Edit inherited income → ALL income copied
-- [x] Click "Copy to Next Month" → All data copied to next month
-- [x] Duplicate handling → No errors on re-copy
+- [x] View empty month → Shows empty state (no inherited data)
+- [x] Copy to Next Month → Replaces target month data
+- [x] Edit in current month → Only affects current month
+- [x] Edit in different months → Completely independent
 - [x] Build succeeds
 
 ---

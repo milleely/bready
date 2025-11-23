@@ -252,7 +252,7 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
   }
 
-  // Helper: Copy all records from source month to target month
+  // Helper: Copy all records from source month to target month (replaces existing)
   const carryForwardData = async (
     sourceMonth: string,
     targetMonth: string,
@@ -274,7 +274,7 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     return response.json()
   }
 
-  // Income CRUD
+  // Income CRUD - each month is independent, no inheritance
   const handleAddIncome = () => setIncomeDialog({ open: true, income: null })
   const handleEditIncome = (income: IncomeSource) => setIncomeDialog({ open: true, income })
   const handleSaveIncome = async (data: {
@@ -284,20 +284,11 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
   }) => {
     const currentMonth = month || getCurrentMonth()
     const isEditing = incomeDialog.income !== null
-    // Check if editing inherited data (record from a different month)
-    const isEditingInherited = isEditing && incomeDialog.income!.month !== currentMonth
 
-    // If editing inherited data, copy ALL income records first, then update the specific one
-    if (isEditingInherited) {
-      await carryForwardData(incomeDialog.income!.month, currentMonth, ["income"])
-    }
-
-    // If editing inherited data, create new record for current month (POST)
-    // Otherwise, update existing record (PUT) or create new (POST)
-    const url = isEditing && !isEditingInherited
+    const url = isEditing
       ? `/api/networth/income/${incomeDialog.income!.id}`
       : "/api/networth/income"
-    const method = isEditing && !isEditingInherited ? "PUT" : "POST"
+    const method = isEditing ? "PUT" : "POST"
 
     const response = await fetch(url, {
       method,
@@ -323,7 +314,7 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     await fetchDashboardData(authenticatedUserId!)
   }
 
-  // Asset CRUD
+  // Asset CRUD - each month is independent, no inheritance
   const handleAddAsset = () => setAssetDialog({ open: true, asset: null })
   const handleEditAsset = (asset: Asset) => setAssetDialog({ open: true, asset })
   const handleSaveAsset = async (data: {
@@ -334,20 +325,11 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
   }) => {
     const currentMonth = month || getCurrentMonth()
     const isEditing = assetDialog.asset !== null
-    // Check if editing inherited data (record from a different month)
-    const isEditingInherited = isEditing && assetDialog.asset!.month !== currentMonth
 
-    // If editing inherited data, copy ALL asset records first, then update the specific one
-    if (isEditingInherited) {
-      await carryForwardData(assetDialog.asset!.month, currentMonth, ["assets"])
-    }
-
-    // If editing inherited data, create new record for current month (POST)
-    // Otherwise, update existing record (PUT) or create new (POST)
-    const url = isEditing && !isEditingInherited
+    const url = isEditing
       ? `/api/networth/assets/${assetDialog.asset!.id}`
       : "/api/networth/assets"
-    const method = isEditing && !isEditingInherited ? "PUT" : "POST"
+    const method = isEditing ? "PUT" : "POST"
 
     const response = await fetch(url, {
       method,
@@ -373,7 +355,7 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     await fetchDashboardData(authenticatedUserId!)
   }
 
-  // Liability CRUD
+  // Liability CRUD - each month is independent, no inheritance
   const handleAddLiability = () => setLiabilityDialog({ open: true, liability: null })
   const handleEditLiability = (liability: Liability) =>
     setLiabilityDialog({ open: true, liability })
@@ -387,20 +369,11 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
   }) => {
     const currentMonth = month || getCurrentMonth()
     const isEditing = liabilityDialog.liability !== null
-    // Check if editing inherited data (record from a different month)
-    const isEditingInherited = isEditing && liabilityDialog.liability!.month !== currentMonth
 
-    // If editing inherited data, copy ALL liability records first, then update the specific one
-    if (isEditingInherited) {
-      await carryForwardData(liabilityDialog.liability!.month, currentMonth, ["liabilities"])
-    }
-
-    // If editing inherited data, create new record for current month (POST)
-    // Otherwise, update existing record (PUT) or create new (POST)
-    const url = isEditing && !isEditingInherited
+    const url = isEditing
       ? `/api/networth/liabilities/${liabilityDialog.liability!.id}`
       : "/api/networth/liabilities"
-    const method = isEditing && !isEditingInherited ? "PUT" : "POST"
+    const method = isEditing ? "PUT" : "POST"
 
     const response = await fetch(url, {
       method,
@@ -453,18 +426,18 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     return date.toLocaleDateString("en-US", { month: "long", year: "numeric" })
   }
 
-  // Handle Copy to Next Month
+  // Handle Copy to Next Month (replaces existing data)
   const handleCopyToNextMonth = async () => {
     const currentMonth = month || getCurrentMonth()
     const nextMonth = getNextMonth(currentMonth)
 
     const confirmed = confirm(
-      `Copy all current Net Worth data to ${formatMonthDisplay(nextMonth)}?\n\n` +
-      `This will copy:\n` +
+      `Copy all Net Worth data to ${formatMonthDisplay(nextMonth)}?\n\n` +
+      `This will REPLACE all existing data in ${formatMonthDisplay(nextMonth)} with:\n` +
       `• All income sources\n` +
       `• All assets\n` +
       `• All liabilities\n\n` +
-      `Existing data in ${formatMonthDisplay(nextMonth)} will not be overwritten.`
+      `⚠️ Any existing data in ${formatMonthDisplay(nextMonth)} will be deleted.`
     )
 
     if (!confirmed) return
@@ -472,16 +445,12 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     try {
       const result = await carryForwardData(currentMonth, nextMonth, ["assets", "liabilities", "income"])
 
-      if (result.totalCopied > 0) {
-        toast.success(
-          `Copied to ${formatMonthDisplay(nextMonth)}: ` +
-          `${result.copiedCounts.income} income, ` +
-          `${result.copiedCounts.assets} assets, ` +
-          `${result.copiedCounts.liabilities} liabilities`
-        )
-      } else {
-        toast.info(`All data already exists in ${formatMonthDisplay(nextMonth)}`)
-      }
+      toast.success(
+        `Copied to ${formatMonthDisplay(nextMonth)}: ` +
+        `${result.copiedCounts.income} income, ` +
+        `${result.copiedCounts.assets} assets, ` +
+        `${result.copiedCounts.liabilities} liabilities`
+      )
     } catch (error) {
       console.error("Failed to copy data:", error)
       toast.error("Failed to copy data to next month")

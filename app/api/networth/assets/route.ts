@@ -3,7 +3,7 @@
  * POST /api/networth/assets
  *
  * Manage assets for a user with month-based tracking.
- * Implements carry-forward: if no data for requested month, shows data from previous month.
+ * Each month is independent - no automatic carry-forward.
  */
 
 import { NextRequest, NextResponse } from "next/server"
@@ -18,31 +18,7 @@ function getCurrentMonth(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
 }
 
-// Helper: Get previous month in YYYY-MM format
-function getPreviousMonth(month: string): string {
-  const [year, monthNum] = month.split("-").map(Number)
-  const prevMonth = monthNum === 1 ? 12 : monthNum - 1
-  const prevYear = monthNum === 1 ? year - 1 : year
-  return `${prevYear}-${String(prevMonth).padStart(2, "0")}`
-}
-
-// Helper: Find most recent month with data, going back up to 12 months
-async function findMostRecentMonthWithAssets(
-  userId: string,
-  startMonth: string
-): Promise<string | null> {
-  let checkMonth = startMonth
-  for (let i = 0; i < 12; i++) {
-    checkMonth = getPreviousMonth(checkMonth)
-    const count = await prisma.asset.count({
-      where: { userId, month: checkMonth },
-    })
-    if (count > 0) return checkMonth
-  }
-  return null
-}
-
-// GET - List all assets for a user for a specific month (with carry-forward)
+// GET - List all assets for a user for a specific month
 export async function GET(req: NextRequest) {
   try {
     // Require authentication and get household ID
@@ -83,27 +59,11 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    // Try to find assets for the requested month
-    let assets = await prisma.asset.findMany({
+    // Fetch assets for the requested month only (no carry-forward)
+    const assets = await prisma.asset.findMany({
       where: { userId: requestedUserId, month: requestedMonth },
       orderBy: [{ category: "asc" }, { createdAt: "desc" }],
     })
-
-    // Carry-forward: If no data for requested month, get from most recent previous month
-    let sourceMonth = requestedMonth
-    if (assets.length === 0) {
-      const previousMonth = await findMostRecentMonthWithAssets(
-        requestedUserId,
-        requestedMonth
-      )
-      if (previousMonth) {
-        assets = await prisma.asset.findMany({
-          where: { userId: requestedUserId, month: previousMonth },
-          orderBy: [{ category: "asc" }, { createdAt: "desc" }],
-        })
-        sourceMonth = previousMonth
-      }
-    }
 
     // Cast Prisma string types to TypeScript union types
     const typedAssets: Asset[] = assets.map(asset => ({
@@ -114,8 +74,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       assets: typedAssets,
       month: requestedMonth,
-      sourceMonth, // Indicates where data came from (for UI to show "inherited" status)
-      isInherited: sourceMonth !== requestedMonth,
     })
   } catch (error) {
     console.error("Error fetching assets:", error)

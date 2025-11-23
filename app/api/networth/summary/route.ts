@@ -2,7 +2,7 @@
  * GET /api/networth/summary?userId=xxx&month=YYYY-MM
  *
  * Calculate and return complete net worth summary for a user.
- * Supports month-based tracking with carry-forward for assets, liabilities, and income.
+ * Each month is independent - no automatic carry-forward.
  */
 
 import { NextRequest, NextResponse } from "next/server"
@@ -24,47 +24,6 @@ import { startOfMonth, endOfMonth } from "date-fns"
 function getCurrentMonth(): string {
   const now = new Date()
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
-}
-
-// Helper: Get previous month in YYYY-MM format
-function getPreviousMonth(month: string): string {
-  const [year, monthNum] = month.split("-").map(Number)
-  const prevMonth = monthNum === 1 ? 12 : monthNum - 1
-  const prevYear = monthNum === 1 ? year - 1 : year
-  return `${prevYear}-${String(prevMonth).padStart(2, "0")}`
-}
-
-// Helper: Find most recent month with assets data
-async function findMostRecentMonthWithAssets(userId: string, startMonth: string): Promise<string | null> {
-  let checkMonth = startMonth
-  for (let i = 0; i < 12; i++) {
-    checkMonth = getPreviousMonth(checkMonth)
-    const count = await prisma.asset.count({ where: { userId, month: checkMonth } })
-    if (count > 0) return checkMonth
-  }
-  return null
-}
-
-// Helper: Find most recent month with liabilities data
-async function findMostRecentMonthWithLiabilities(userId: string, startMonth: string): Promise<string | null> {
-  let checkMonth = startMonth
-  for (let i = 0; i < 12; i++) {
-    checkMonth = getPreviousMonth(checkMonth)
-    const count = await prisma.liability.count({ where: { userId, month: checkMonth } })
-    if (count > 0) return checkMonth
-  }
-  return null
-}
-
-// Helper: Find most recent month with income data
-async function findMostRecentMonthWithIncome(userId: string, startMonth: string): Promise<string | null> {
-  let checkMonth = startMonth
-  for (let i = 0; i < 12; i++) {
-    checkMonth = getPreviousMonth(checkMonth)
-    const count = await prisma.incomeSource.count({ where: { userId, month: checkMonth } })
-    if (count > 0) return checkMonth
-  }
-  return null
 }
 
 // GET - Get complete net worth dashboard data
@@ -121,17 +80,17 @@ export async function GET(req: NextRequest) {
     const monthStart = startOfMonth(targetDate)
     const monthEnd = endOfMonth(targetDate)
 
-    // 🚀 PERFORMANCE: Fetch ALL data in parallel (8 queries → ~300-400ms instead of 1200ms sequential)
+    // 🚀 PERFORMANCE: Fetch ALL data in parallel
     const [
-      incomeSourcesRaw,
-      assetsRaw,
-      liabilitiesRaw,
+      incomeSources,
+      assets,
+      liabilities,
       expenseOverride,
       householdUsers,
       userExpenses,
       otherSharedExpenses,
     ] = await Promise.all([
-      // Core financial data - filtered by month
+      // Core financial data - filtered by month (no carry-forward)
       prisma.incomeSource.findMany({
         where: { userId, month: requestedMonth },
         orderBy: { createdAt: "desc" },
@@ -163,7 +122,7 @@ export async function GET(req: NextRequest) {
         select: {
           amount: true,
           isShared: true,
-          category: true, // Include category for breakdown
+          category: true,
         },
       }),
 
@@ -181,44 +140,6 @@ export async function GET(req: NextRequest) {
       }),
     ])
 
-    // Carry-forward logic: If no data for requested month, get from previous month
-    let incomeSources = incomeSourcesRaw
-    let assets = assetsRaw
-    let liabilities = liabilitiesRaw
-
-    // Carry-forward income sources
-    if (incomeSources.length === 0) {
-      const prevMonth = await findMostRecentMonthWithIncome(userId, requestedMonth)
-      if (prevMonth) {
-        incomeSources = await prisma.incomeSource.findMany({
-          where: { userId, month: prevMonth },
-          orderBy: { createdAt: "desc" },
-        })
-      }
-    }
-
-    // Carry-forward assets
-    if (assets.length === 0) {
-      const prevMonth = await findMostRecentMonthWithAssets(userId, requestedMonth)
-      if (prevMonth) {
-        assets = await prisma.asset.findMany({
-          where: { userId, month: prevMonth },
-          orderBy: [{ category: "asc" }, { createdAt: "desc" }],
-        })
-      }
-    }
-
-    // Carry-forward liabilities
-    if (liabilities.length === 0) {
-      const prevMonth = await findMostRecentMonthWithLiabilities(userId, requestedMonth)
-      if (prevMonth) {
-        liabilities = await prisma.liability.findMany({
-          where: { userId, month: prevMonth },
-          orderBy: [{ category: "asc" }, { createdAt: "desc" }],
-        })
-      }
-    }
-
     // Cast Prisma string types to TypeScript union types for type safety
     const typedIncomeSources: IncomeSource[] = incomeSources.map(income => ({
       ...income,
@@ -235,7 +156,7 @@ export async function GET(req: NextRequest) {
       category: liability.category as LiabilityCategory,
     }))
 
-    // 🚀 PERFORMANCE: Calculate monthly expenses AND breakdown in single pass (no duplicate queries)
+    // Calculate monthly expenses and breakdown
     const userCount = Math.max(householdUsers.length, 1)
     let monthlyExpenses = 0
     let actualSpending = undefined
@@ -244,7 +165,7 @@ export async function GET(req: NextRequest) {
       // Use manual override for total (skip calculation)
       monthlyExpenses = expenseOverride.amount
     } else {
-      // Calculate both total AND breakdown from the SAME expense data (already fetched in parallel)
+      // Calculate both total AND breakdown from the expense data
       let totalExpenses = 0
       let needsSpent = 0
       let wantsSpent = 0
@@ -295,7 +216,7 @@ export async function GET(req: NextRequest) {
 
       monthlyExpenses = Math.round(totalExpenses * 100) / 100
 
-      // Build actualSpending object (already calculated above)
+      // Build actualSpending object
       actualSpending = {
         needsSpent: Math.round(needsSpent * 100) / 100,
         wantsSpent: Math.round(wantsSpent * 100) / 100,
