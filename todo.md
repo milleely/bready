@@ -634,6 +634,54 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
 
 ---
 
+## Net Worth Month-Based Tracking Bug Fix (2025-11-23) **✅ COMPLETE**
+
+### Issue
+When editing ONE inherited item in the Net Worth page, all OTHER items would disappear.
+
+### Root Cause
+1. When editing inherited data, only the edited item was copied to the new month
+2. The carry-forward logic checks `if (data.length === 0)` before inheriting
+3. Since the month now had 1 record, it stopped inheriting the rest
+4. Result: Only the edited item appeared, all others vanished
+
+### Solution
+**Files Created:**
+- `app/api/networth/carry-forward/route.ts` - Bulk copy API endpoint
+
+**Files Modified:**
+- `components/networth-page-content.tsx` - Updated CRUD handlers + added "Copy to Next Month" button
+
+### Implementation Details
+
+1. **Carry-Forward API** (`/api/networth/carry-forward`)
+   - POST endpoint that copies ALL records from source month to target month
+   - Accepts: `{ userId, sourceMonth, targetMonth, dataTypes: ["assets", "liabilities", "income"] }`
+   - Skips duplicates based on `[userId, month, name]` unique constraint
+   - Returns count of records copied per type
+
+2. **Updated CRUD Handlers**
+   - Before creating a new record when editing inherited data, the handlers now call carry-forward API first
+   - This ensures ALL records get copied to the new month, not just the edited one
+   - Pattern: `if (isEditingInherited) { await carryForwardData(...) }`
+
+3. **"Copy to Next Month" Button**
+   - Added amber-themed button in Net Worth header (visible on sm+ screens)
+   - On click: Shows confirmation dialog listing what will be copied
+   - Copies all income, assets, and liabilities to the next month
+   - Shows toast with count of records copied
+   - Idempotent: Re-running won't create duplicates
+
+### Testing Checklist
+- [x] Edit inherited asset → ALL assets copied (not just edited one)
+- [x] Edit inherited liability → ALL liabilities copied
+- [x] Edit inherited income → ALL income copied
+- [x] Click "Copy to Next Month" → All data copied to next month
+- [x] Duplicate handling → No errors on re-copy
+- [x] Build succeeds
+
+---
+
 ## Bug Fix Review - Dashboard "View All" 404 Error (2025-10-31)
 
 ### Issue

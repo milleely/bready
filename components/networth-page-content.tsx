@@ -22,7 +22,7 @@ import { MonthlyProgressTracker } from "@/components/networth/monthly-progress-t
 import { IncomeFormDialog } from "@/components/networth/income-form-dialog"
 import { AssetFormDialog } from "@/components/networth/asset-form-dialog"
 import { LiabilityFormDialog } from "@/components/networth/liability-form-dialog"
-import { Loader2 } from "lucide-react"
+import { Loader2, Copy } from "lucide-react"
 import { toast } from "sonner"
 import { createSessionAction, logoutAction } from "@/app/actions/networth-session"
 import type {
@@ -252,6 +252,28 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
   }
 
+  // Helper: Copy all records from source month to target month
+  const carryForwardData = async (
+    sourceMonth: string,
+    targetMonth: string,
+    dataTypes: ("assets" | "liabilities" | "income")[]
+  ) => {
+    const response = await fetch("/api/networth/carry-forward", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: authenticatedUserId,
+        sourceMonth,
+        targetMonth,
+        dataTypes,
+      }),
+    })
+    if (!response.ok) {
+      console.error("Failed to carry forward data")
+    }
+    return response.json()
+  }
+
   // Income CRUD
   const handleAddIncome = () => setIncomeDialog({ open: true, income: null })
   const handleEditIncome = (income: IncomeSource) => setIncomeDialog({ open: true, income })
@@ -264,6 +286,11 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     const isEditing = incomeDialog.income !== null
     // Check if editing inherited data (record from a different month)
     const isEditingInherited = isEditing && incomeDialog.income!.month !== currentMonth
+
+    // If editing inherited data, copy ALL income records first, then update the specific one
+    if (isEditingInherited) {
+      await carryForwardData(incomeDialog.income!.month, currentMonth, ["income"])
+    }
 
     // If editing inherited data, create new record for current month (POST)
     // Otherwise, update existing record (PUT) or create new (POST)
@@ -309,6 +336,11 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     const isEditing = assetDialog.asset !== null
     // Check if editing inherited data (record from a different month)
     const isEditingInherited = isEditing && assetDialog.asset!.month !== currentMonth
+
+    // If editing inherited data, copy ALL asset records first, then update the specific one
+    if (isEditingInherited) {
+      await carryForwardData(assetDialog.asset!.month, currentMonth, ["assets"])
+    }
 
     // If editing inherited data, create new record for current month (POST)
     // Otherwise, update existing record (PUT) or create new (POST)
@@ -358,6 +390,11 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     // Check if editing inherited data (record from a different month)
     const isEditingInherited = isEditing && liabilityDialog.liability!.month !== currentMonth
 
+    // If editing inherited data, copy ALL liability records first, then update the specific one
+    if (isEditingInherited) {
+      await carryForwardData(liabilityDialog.liability!.month, currentMonth, ["liabilities"])
+    }
+
     // If editing inherited data, create new record for current month (POST)
     // Otherwise, update existing record (PUT) or create new (POST)
     const url = isEditing && !isEditingInherited
@@ -399,6 +436,56 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
 
     if (!response.ok) throw new Error("Failed to update expense override")
     await fetchDashboardData(authenticatedUserId!)
+  }
+
+  // Copy to Next Month - Helper to calculate next month
+  const getNextMonth = (currentMonth: string) => {
+    const [year, monthNum] = currentMonth.split("-").map(Number)
+    const nextMonthNum = monthNum === 12 ? 1 : monthNum + 1
+    const nextYear = monthNum === 12 ? year + 1 : year
+    return `${nextYear}-${String(nextMonthNum).padStart(2, "0")}`
+  }
+
+  // Format month for display (e.g., "2025-12" -> "December 2025")
+  const formatMonthDisplay = (monthStr: string) => {
+    const [year, monthNum] = monthStr.split("-").map(Number)
+    const date = new Date(year, monthNum - 1)
+    return date.toLocaleDateString("en-US", { month: "long", year: "numeric" })
+  }
+
+  // Handle Copy to Next Month
+  const handleCopyToNextMonth = async () => {
+    const currentMonth = month || getCurrentMonth()
+    const nextMonth = getNextMonth(currentMonth)
+
+    const confirmed = confirm(
+      `Copy all current Net Worth data to ${formatMonthDisplay(nextMonth)}?\n\n` +
+      `This will copy:\n` +
+      `• All income sources\n` +
+      `• All assets\n` +
+      `• All liabilities\n\n` +
+      `Existing data in ${formatMonthDisplay(nextMonth)} will not be overwritten.`
+    )
+
+    if (!confirmed) return
+
+    try {
+      const result = await carryForwardData(currentMonth, nextMonth, ["assets", "liabilities", "income"])
+
+      if (result.totalCopied > 0) {
+        toast.success(
+          `Copied to ${formatMonthDisplay(nextMonth)}: ` +
+          `${result.copiedCounts.income} income, ` +
+          `${result.copiedCounts.assets} assets, ` +
+          `${result.copiedCounts.liabilities} liabilities`
+        )
+      } else {
+        toast.info(`All data already exists in ${formatMonthDisplay(nextMonth)}`)
+      }
+    } catch (error) {
+      console.error("Failed to copy data:", error)
+      toast.error("Failed to copy data to next month")
+    }
   }
 
   // ============= Render =============
@@ -453,12 +540,22 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
           </h1>
           <p className="hidden md:block text-sm text-stone-600 mt-1">Track your financial health in one place</p>
         </div>
-        <button
-          onClick={handleLogout}
-          className="px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors"
-        >
-          Switch User
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleCopyToNextMonth}
+            className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
+            title="Copy all data to next month"
+          >
+            <Copy className="h-4 w-4" />
+            <span className="hidden md:inline">Copy to Next Month</span>
+          </button>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors"
+          >
+            Switch User
+          </button>
+        </div>
       </div>
 
       {isLoading ? (
