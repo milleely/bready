@@ -246,6 +246,12 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
 
   // ============= CRUD Handlers =============
 
+  // Helper: Get current month in YYYY-MM format
+  const getCurrentMonth = () => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+  }
+
   // Income CRUD
   const handleAddIncome = () => setIncomeDialog({ open: true, income: null })
   const handleEditIncome = (income: IncomeSource) => setIncomeDialog({ open: true, income })
@@ -262,7 +268,11 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: authenticatedUserId, ...data }),
+      body: JSON.stringify({
+        userId: authenticatedUserId,
+        month: month || getCurrentMonth(), // Include month for month-based tracking
+        ...data,
+      }),
     })
 
     if (!response.ok) throw new Error("Failed to save income source")
@@ -296,7 +306,11 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: authenticatedUserId, ...data }),
+      body: JSON.stringify({
+        userId: authenticatedUserId,
+        month: month || getCurrentMonth(), // Include month for month-based tracking
+        ...data,
+      }),
     })
 
     if (!response.ok) throw new Error("Failed to save asset")
@@ -333,7 +347,11 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: authenticatedUserId, ...data }),
+      body: JSON.stringify({
+        userId: authenticatedUserId,
+        month: month || getCurrentMonth(), // Include month for month-based tracking
+        ...data,
+      }),
     })
 
     if (!response.ok) throw new Error("Failed to save liability")

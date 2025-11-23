@@ -37,6 +37,7 @@ export type LiabilityCategory =
 export interface IncomeSource {
   id: string
   userId: string
+  month: string             // Format: "YYYY-MM" - tracks which month this data belongs to
   name: string              // "Primary Salary", "Freelance", etc.
   amount: number            // Amount per period
   frequency: IncomeFrequency
@@ -50,6 +51,7 @@ export interface IncomeSource {
 export interface Asset {
   id: string
   userId: string
+  month: string             // Format: "YYYY-MM" - tracks which month this data belongs to
   category: AssetCategory
   name: string              // "Chase Checking", "401(k)", etc.
   value: number             // Current value
@@ -64,6 +66,7 @@ export interface Asset {
 export interface Liability {
   id: string
   userId: string
+  month: string             // Format: "YYYY-MM" - tracks which month this data belongs to
   category: LiabilityCategory
   name: string              // "Chase Freedom", "Student Loan", etc.
   balance: number           // Current balance owed

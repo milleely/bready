@@ -137,18 +137,22 @@ model UserPin {
 model IncomeSource {
   id        String   @id @default(cuid())
   userId    String
+  month     String   @default("2025-11") // Format: "YYYY-MM" - tracks which month this data belongs to
   name      String   // "Primary Salary", "Freelance", "Rental Income", etc.
   amount    Float    // Amount per period
   frequency String   // "biweekly", "monthly", "annual"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([userId, month, name]) // Prevent duplicate entries for same source in same month
   @@index([userId])
+  @@index([month])
 }
 
 model Asset {
   id        String   @id @default(cuid())
   userId    String
+  month     String   @default("2025-11") // Format: "YYYY-MM" - tracks which month this data belongs to
   category  String   // "cash", "investments", "property", "vehicles", "other"
   name      String   // "Chase Checking", "401(k)", "Primary Home", etc.
   value     Float    // Current value
@@ -156,13 +160,16 @@ model Asset {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([userId, month, name]) // Prevent duplicate entries for same asset in same month
   @@index([userId])
+  @@index([month])
   @@index([category])
 }
 
 model Liability {
   id             String   @id @default(cuid())
   userId         String
+  month          String   @default("2025-11") // Format: "YYYY-MM" - tracks which month this data belongs to
   category       String   // "credit_card", "student_loan", "mortgage", "auto_loan", "personal_loan", "other"
   name           String   // "Chase Freedom", "Navient Student Loan", etc.
   balance        Float    // Current balance owed
@@ -172,7 +179,9 @@ model Liability {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  @@unique([userId, month, name]) // Prevent duplicate entries for same liability in same month
   @@index([userId])
+  @@index([month])
   @@index([category])
 }
 

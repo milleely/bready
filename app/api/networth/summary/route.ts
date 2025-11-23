@@ -1,7 +1,8 @@
 /**
- * GET /api/networth/summary?userId=xxx
+ * GET /api/networth/summary?userId=xxx&month=YYYY-MM
  *
- * Calculate and return complete net worth summary for a user
+ * Calculate and return complete net worth summary for a user.
+ * Supports month-based tracking with carry-forward for assets, liabilities, and income.
  */
 
 import { NextRequest, NextResponse } from "next/server"
@@ -18,6 +19,53 @@ import {
 import { categorizeBudgetType } from "@/lib/networth/category-mapping"
 import type { NetWorthDashboardData, IncomeSource, IncomeFrequency, Asset, AssetCategory, Liability, LiabilityCategory } from "@/lib/types/networth"
 import { startOfMonth, endOfMonth } from "date-fns"
+
+// Helper: Get current month in YYYY-MM format
+function getCurrentMonth(): string {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+}
+
+// Helper: Get previous month in YYYY-MM format
+function getPreviousMonth(month: string): string {
+  const [year, monthNum] = month.split("-").map(Number)
+  const prevMonth = monthNum === 1 ? 12 : monthNum - 1
+  const prevYear = monthNum === 1 ? year - 1 : year
+  return `${prevYear}-${String(prevMonth).padStart(2, "0")}`
+}
+
+// Helper: Find most recent month with assets data
+async function findMostRecentMonthWithAssets(userId: string, startMonth: string): Promise<string | null> {
+  let checkMonth = startMonth
+  for (let i = 0; i < 12; i++) {
+    checkMonth = getPreviousMonth(checkMonth)
+    const count = await prisma.asset.count({ where: { userId, month: checkMonth } })
+    if (count > 0) return checkMonth
+  }
+  return null
+}
+
+// Helper: Find most recent month with liabilities data
+async function findMostRecentMonthWithLiabilities(userId: string, startMonth: string): Promise<string | null> {
+  let checkMonth = startMonth
+  for (let i = 0; i < 12; i++) {
+    checkMonth = getPreviousMonth(checkMonth)
+    const count = await prisma.liability.count({ where: { userId, month: checkMonth } })
+    if (count > 0) return checkMonth
+  }
+  return null
+}
+
+// Helper: Find most recent month with income data
+async function findMostRecentMonthWithIncome(userId: string, startMonth: string): Promise<string | null> {
+  let checkMonth = startMonth
+  for (let i = 0; i < 12; i++) {
+    checkMonth = getPreviousMonth(checkMonth)
+    const count = await prisma.incomeSource.count({ where: { userId, month: checkMonth } })
+    if (count > 0) return checkMonth
+  }
+  return null
+}
 
 // GET - Get complete net worth dashboard data
 export async function GET(req: NextRequest) {
@@ -63,39 +111,37 @@ export async function GET(req: NextRequest) {
 
     // Parse optional month parameter (format: YYYY-MM) or default to current month
     const monthParam = searchParams.get("month")
-    let targetDate: Date
-    if (monthParam && /^\d{4}-\d{2}$/.test(monthParam)) {
-      const [year, month] = monthParam.split('-').map(Number)
-      targetDate = new Date(year, month - 1) // month is 0-indexed in Date constructor
-    } else {
-      targetDate = new Date() // Current month
-    }
+    const requestedMonth = monthParam && /^\d{4}-\d{2}$/.test(monthParam)
+      ? monthParam
+      : getCurrentMonth()
 
     // Calculate month boundaries for expense queries
+    const [year, monthNum] = requestedMonth.split('-').map(Number)
+    const targetDate = new Date(year, monthNum - 1)
     const monthStart = startOfMonth(targetDate)
     const monthEnd = endOfMonth(targetDate)
 
     // 🚀 PERFORMANCE: Fetch ALL data in parallel (8 queries → ~300-400ms instead of 1200ms sequential)
     const [
-      incomeSources,
-      assets,
-      liabilities,
+      incomeSourcesRaw,
+      assetsRaw,
+      liabilitiesRaw,
       expenseOverride,
       householdUsers,
       userExpenses,
       otherSharedExpenses,
     ] = await Promise.all([
-      // Core financial data
+      // Core financial data - filtered by month
       prisma.incomeSource.findMany({
-        where: { userId },
+        where: { userId, month: requestedMonth },
         orderBy: { createdAt: "desc" },
       }),
       prisma.asset.findMany({
-        where: { userId },
+        where: { userId, month: requestedMonth },
         orderBy: [{ category: "asc" }, { createdAt: "desc" }],
       }),
       prisma.liability.findMany({
-        where: { userId },
+        where: { userId, month: requestedMonth },
         orderBy: [{ category: "asc" }, { createdAt: "desc" }],
       }),
       prisma.monthlyExpenseOverride.findUnique({
@@ -134,6 +180,44 @@ export async function GET(req: NextRequest) {
         },
       }),
     ])
+
+    // Carry-forward logic: If no data for requested month, get from previous month
+    let incomeSources = incomeSourcesRaw
+    let assets = assetsRaw
+    let liabilities = liabilitiesRaw
+
+    // Carry-forward income sources
+    if (incomeSources.length === 0) {
+      const prevMonth = await findMostRecentMonthWithIncome(userId, requestedMonth)
+      if (prevMonth) {
+        incomeSources = await prisma.incomeSource.findMany({
+          where: { userId, month: prevMonth },
+          orderBy: { createdAt: "desc" },
+        })
+      }
+    }
+
+    // Carry-forward assets
+    if (assets.length === 0) {
+      const prevMonth = await findMostRecentMonthWithAssets(userId, requestedMonth)
+      if (prevMonth) {
+        assets = await prisma.asset.findMany({
+          where: { userId, month: prevMonth },
+          orderBy: [{ category: "asc" }, { createdAt: "desc" }],
+        })
+      }
+    }
+
+    // Carry-forward liabilities
+    if (liabilities.length === 0) {
+      const prevMonth = await findMostRecentMonthWithLiabilities(userId, requestedMonth)
+      if (prevMonth) {
+        liabilities = await prisma.liability.findMany({
+          where: { userId, month: prevMonth },
+          orderBy: [{ category: "asc" }, { createdAt: "desc" }],
+        })
+      }
+    }
 
     // Cast Prisma string types to TypeScript union types for type safety
     const typedIncomeSources: IncomeSource[] = incomeSources.map(income => ({
