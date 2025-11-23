@@ -260,17 +260,24 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     amount: number
     frequency: IncomeFrequency
   }) => {
-    const url = incomeDialog.income
-      ? `/api/networth/income/${incomeDialog.income.id}`
+    const currentMonth = month || getCurrentMonth()
+    const isEditing = incomeDialog.income !== null
+    // Check if editing inherited data (record from a different month)
+    const isEditingInherited = isEditing && incomeDialog.income!.month !== currentMonth
+
+    // If editing inherited data, create new record for current month (POST)
+    // Otherwise, update existing record (PUT) or create new (POST)
+    const url = isEditing && !isEditingInherited
+      ? `/api/networth/income/${incomeDialog.income!.id}`
       : "/api/networth/income"
-    const method = incomeDialog.income ? "PUT" : "POST"
+    const method = isEditing && !isEditingInherited ? "PUT" : "POST"
 
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userId: authenticatedUserId,
-        month: month || getCurrentMonth(), // Include month for month-based tracking
+        month: currentMonth,
         ...data,
       }),
     })
@@ -298,17 +305,24 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     value: number
     notes?: string
   }) => {
-    const url = assetDialog.asset
-      ? `/api/networth/assets/${assetDialog.asset.id}`
+    const currentMonth = month || getCurrentMonth()
+    const isEditing = assetDialog.asset !== null
+    // Check if editing inherited data (record from a different month)
+    const isEditingInherited = isEditing && assetDialog.asset!.month !== currentMonth
+
+    // If editing inherited data, create new record for current month (POST)
+    // Otherwise, update existing record (PUT) or create new (POST)
+    const url = isEditing && !isEditingInherited
+      ? `/api/networth/assets/${assetDialog.asset!.id}`
       : "/api/networth/assets"
-    const method = assetDialog.asset ? "PUT" : "POST"
+    const method = isEditing && !isEditingInherited ? "PUT" : "POST"
 
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userId: authenticatedUserId,
-        month: month || getCurrentMonth(), // Include month for month-based tracking
+        month: currentMonth,
         ...data,
       }),
     })
@@ -339,17 +353,24 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     minimumPayment?: number
     notes?: string
   }) => {
-    const url = liabilityDialog.liability
-      ? `/api/networth/liabilities/${liabilityDialog.liability.id}`
+    const currentMonth = month || getCurrentMonth()
+    const isEditing = liabilityDialog.liability !== null
+    // Check if editing inherited data (record from a different month)
+    const isEditingInherited = isEditing && liabilityDialog.liability!.month !== currentMonth
+
+    // If editing inherited data, create new record for current month (POST)
+    // Otherwise, update existing record (PUT) or create new (POST)
+    const url = isEditing && !isEditingInherited
+      ? `/api/networth/liabilities/${liabilityDialog.liability!.id}`
       : "/api/networth/liabilities"
-    const method = liabilityDialog.liability ? "PUT" : "POST"
+    const method = isEditing && !isEditingInherited ? "PUT" : "POST"
 
     const response = await fetch(url, {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         userId: authenticatedUserId,
-        month: month || getCurrentMonth(), // Include month for month-based tracking
+        month: currentMonth,
         ...data,
       }),
     })
