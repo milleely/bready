@@ -13,7 +13,7 @@ export const categories = [
   { value: 'transportation', label: 'Transportation', color: '#5a5a5a', icon: '🚗' }, // Asphalt Gray - Roads/vehicles/fuel (8.9:1 contrast)
   { value: 'entertainment', label: 'Entertainment', color: '#f39c12', icon: '🎬' }, // Spotlight Gold - Shows/fun/excitement (4.0:1 contrast)
   { value: 'healthcare', label: 'Healthcare', color: '#16a085', icon: '💊' }, // Medical Teal - Clinical/wellness/trust (3.5:1 contrast)
-  { value: 'household', label: 'Household Items', color: '#92400e', icon: '🏠' }, // Hearth Brown - Home/warmth (RETAINED - 9.9:1 contrast)
+  { value: 'rent', label: 'Rent', color: '#92400e', icon: '🏠' }, // Hearth Brown - Housing/rent payments (9.9:1 contrast)
   { value: 'personal-care', label: 'Personal Care', color: '#e91e63', icon: '✨' }, // Beauty Pink - Self-care/cosmetics (4.5:1 contrast)
   { value: 'shopping', label: 'Shopping', color: '#ff6f3c', icon: '👕' }, // Retail Orange - Bright stores/sales (3.4:1 contrast)
   { value: 'pets', label: 'Pets', color: '#b45309', icon: '🐾' }, // Caramel - Loyalty/warmth (RETAINED - 7.2:1 contrast)
