@@ -13,7 +13,7 @@ export const EXPENSE_TO_BUDGET_MAPPING = {
     'utilities',
     'healthcare',
     'transportation',
-    'household',
+    'rent',
     'home-maintenance'
   ],
   wants: [
