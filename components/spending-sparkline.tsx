@@ -10,24 +10,39 @@ import { formatCurrency } from "@/lib/utils"
 
 interface SpendingSparklineProps {
   expenses: Array<{ date: string; amount: number }>
-  days?: number
+  month?: string  // Format: "YYYY-MM" - shows all days of this month
+  days?: number   // Fallback: rolling N-day window from today
   className?: string
 }
 
-export default function SpendingSparkline({ expenses, days = 30, className }: SpendingSparklineProps) {
-  // Get date range (last N days)
-  const today = new Date()
-  const startDate = new Date(today)
-  startDate.setDate(today.getDate() - days)
+export default function SpendingSparkline({ expenses, month, days = 30, className }: SpendingSparklineProps) {
+  // Calculate date range based on month prop or fallback to rolling window
+  const getDateRange = () => {
+    if (month) {
+      // Use selected month - show all days from 1st to last day
+      const [year, monthNum] = month.split('-').map(Number)
+      const startDate = new Date(year, monthNum - 1, 1)
+      const lastDay = new Date(year, monthNum, 0).getDate() // Last day of month
+      return { startDate, numDays: lastDay }
+    }
+    // Fallback to rolling N-day window from today
+    const today = new Date()
+    const startDate = new Date(today)
+    startDate.setDate(today.getDate() - days)
+    return { startDate, numDays: days }
+  }
+
+  const { startDate, numDays } = getDateRange()
 
   // Create daily spending map
   const dailySpending = new Map<string, number>()
 
   // Initialize all days with 0
-  for (let i = 0; i < days; i++) {
+  for (let i = 0; i < numDays; i++) {
     const date = new Date(startDate)
     date.setDate(startDate.getDate() + i)
-    const dateStr = date.toISOString().split('T')[0]
+    // Format as YYYY-MM-DD in local timezone (avoid UTC shift from toISOString)
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
     dailySpending.set(dateStr, 0)
   }
 
@@ -76,7 +91,9 @@ export default function SpendingSparkline({ expenses, days = 30, className }: Sp
           content={({ active, payload }) => {
             if (!active || !payload?.length) return null
             const data = payload[0].payload
-            const date = new Date(data.date)
+            // Parse date string as local time (avoid UTC interpretation)
+            const [year, month, day] = data.date.split('-').map(Number)
+            const date = new Date(year, month - 1, day)
             const formattedDate = date.toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric'

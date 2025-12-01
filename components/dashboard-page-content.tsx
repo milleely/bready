@@ -109,15 +109,16 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
     return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
   }
 
-  const getPreviousMonth = () => {
-    const today = new Date()
-    const prevMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+  // Calculate previous month relative to selected month (not today)
+  const getPreviousMonthOf = (monthStr: string) => {
+    const [year, month] = monthStr.split('-').map(Number)
+    const prevMonth = new Date(year, month - 2, 1) // month-1 for 0-indexed, then -1 for previous
     return `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, '0')}`
   }
 
   const fetchData = async () => {
     try {
-      const prevMonth = getPreviousMonth()
+      const prevMonth = getPreviousMonthOf(selectedMonth)
 
       const [year, month] = selectedMonth.split('-').map(Number)
       const startDate = new Date(year, month - 1, 1).toISOString().split('T')[0]
@@ -407,13 +408,13 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
                 </div>
               </div>
 
-              {/* 30-Day Sparkline - Enhanced & Enlarged */}
+              {/* Monthly Sparkline - Enhanced & Enlarged */}
               <div className="w-full md:w-72 h-44 bg-white/10 rounded-lg overflow-hidden border border-white/20 shadow-[0_0_16px_rgba(255,255,255,0.2),0_2px_8px_rgba(0,0,0,0.1)]">
                 <Suspense fallback={<div className="h-44 animate-pulse bg-amber-100/30 rounded-lg" />}>
-                  <SpendingSparkline expenses={expenses} days={30} />
+                  <SpendingSparkline expenses={expenses} month={selectedMonth} />
                 </Suspense>
               </div>
-              <p className="text-xs text-amber-100 font-medium">30-day trend</p>
+              <p className="text-xs text-amber-100 font-medium">Daily spending</p>
             </div>
           </div>
         </CardContent>
