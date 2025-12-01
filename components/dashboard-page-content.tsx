@@ -268,6 +268,7 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
     : 0
 
   const isSpendingUp = spendingChange > 0
+  const hasPreviousMonthData = previousMonthTotal > 0
 
   // Calculate personal expenses
   const personalExpenses = stats.totalSpent - stats.sharedExpenses
@@ -349,17 +350,23 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
 
               {/* Trend Indicator */}
               <div className="flex items-center gap-2 mb-4">
-                {isSpendingUp ? (
-                  <TrendingUp className="h-5 w-5" />
+                {hasPreviousMonthData ? (
+                  <>
+                    {isSpendingUp ? (
+                      <TrendingUp className="h-5 w-5" />
+                    ) : (
+                      <TrendingDown className="h-5 w-5" />
+                    )}
+                    <span className="text-lg font-semibold">
+                      {isSpendingUp ? '+' : ''}{formatCurrency(Math.abs(spendingChange))}
+                    </span>
+                    <span className="text-sm text-amber-100/90 whitespace-nowrap">
+                      ({isSpendingUp ? '+' : ''}{spendingChangePercent}% vs last mo)
+                    </span>
+                  </>
                 ) : (
-                  <TrendingDown className="h-5 w-5" />
+                  <span className="text-sm text-amber-100/90">No data from last month</span>
                 )}
-                <span className="text-lg font-semibold">
-                  {isSpendingUp ? '+' : ''}{formatCurrency(Math.abs(spendingChange))}
-                </span>
-                <span className="text-sm text-amber-100/90 whitespace-nowrap">
-                  ({isSpendingUp ? '+' : ''}{spendingChangePercent}% vs last mo)
-                </span>
               </div>
 
               {/* Nested Breakdown */}
