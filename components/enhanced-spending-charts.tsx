@@ -92,7 +92,12 @@ export const EnhancedSpendingCharts = React.memo(function EnhancedSpendingCharts
                   <ChartTooltipContent
                     hideLabel
                     className="bg-amber-50 border-2 border-golden-crust-primary text-golden-crust-dark font-semibold shadow-lg"
-                    formatter={(value) => formatCurrency(Number(value))}
+                    formatter={(value, name) => (
+                      <>
+                        <span className="font-semibold">{name}</span>
+                        <span>{formatCurrency(Number(value))}</span>
+                      </>
+                    )}
                   />
                 }
               />
