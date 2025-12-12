@@ -17,12 +17,21 @@ import type { NetWorthSummary } from "@/lib/types/networth"
 
 interface NetWorthHeroProps {
   summary: NetWorthSummary
+  previousSummary?: NetWorthSummary | null
   onEditExpenses?: () => void
 }
 
-export function NetWorthHero({ summary, onEditExpenses }: NetWorthHeroProps) {
+export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWorthHeroProps) {
   const isPositiveSavings = summary.monthlySavingsRate >= 0
   const savingsRateColor = isPositiveSavings ? "text-emerald-600" : "text-red-600"
+
+  // Trend calculations for Net Worth
+  const hasPreviousData = previousSummary !== null && previousSummary !== undefined
+  const netWorthChange = hasPreviousData ? summary.netWorth - previousSummary.netWorth : 0
+  const netWorthChangePercent = hasPreviousData && previousSummary.netWorth !== 0
+    ? ((netWorthChange / Math.abs(previousSummary.netWorth)) * 100).toFixed(1)
+    : "0"
+  const isNetWorthUp = netWorthChange >= 0
 
   return (
     <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 shadow-xl">
@@ -39,7 +48,33 @@ export function NetWorthHero({ summary, onEditExpenses }: NetWorthHeroProps) {
                 maximumFractionDigits: 2,
               })}
             </h2>
-            <p className="text-sm text-stone-600">Total Net Worth</p>
+            {/* Total Net Worth label + trend indicator on same line */}
+            <div className="flex items-center gap-3">
+              <p className="text-sm text-stone-600">Total Net Worth</p>
+              <div className="flex items-center gap-2">
+                {hasPreviousData ? (
+                  <>
+                    {isNetWorthUp ? (
+                      <TrendingUp className="h-4 w-4 text-emerald-600" />
+                    ) : (
+                      <TrendingDown className="h-4 w-4 text-red-600" />
+                    )}
+                    <span className={`text-sm font-medium ${isNetWorthUp ? "text-emerald-600" : "text-red-600"}`}>
+                      {isNetWorthUp ? "+" : "-"}$
+                      {Math.abs(netWorthChange).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </span>
+                    <span className="text-xs text-stone-500">
+                      ({isNetWorthUp ? "+" : ""}{netWorthChangePercent}% vs last month)
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-xs text-stone-500">No data from last month</span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 

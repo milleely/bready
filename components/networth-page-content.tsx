@@ -52,6 +52,7 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
 
   // Dashboard data state
   const [dashboardData, setDashboardData] = useState<NetWorthDashboardData | null>(null)
+  const [previousSummary, setPreviousSummary] = useState<NetWorthDashboardData["summary"] | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   // Form dialog state
@@ -152,17 +153,38 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     setIsLoading(true)
     try {
       // 🚀 PERFORMANCE: Build URL with userId, householdId (skips duplicate lookup), and optional month
+      const currentMonth = month || getCurrentMonth()
+      const prevMonth = getPreviousMonth(currentMonth)
+
       const params = new URLSearchParams({ userId })
       if (householdId) params.set('householdId', householdId)
-      if (month) params.set('month', month)
 
-      const response = await fetch(`/api/networth/summary?${params.toString()}`)
-      if (!response.ok) throw new Error("Failed to fetch data")
-      const data: NetWorthDashboardData = await response.json()
+      // Fetch both months in parallel for trend comparison
+      const [currentRes, prevRes] = await Promise.all([
+        fetch(`/api/networth/summary?${params.toString()}&month=${currentMonth}`),
+        fetch(`/api/networth/summary?${params.toString()}&month=${prevMonth}`),
+      ])
+
+      if (!currentRes.ok) throw new Error("Failed to fetch data")
+      const data: NetWorthDashboardData = await currentRes.json()
       setDashboardData(data)
+
+      // Previous month may be empty - that's okay
+      if (prevRes.ok) {
+        const prevData: NetWorthDashboardData = await prevRes.json()
+        // Only set if there's actual data (non-zero net worth indicates data exists)
+        if (prevData.summary.totalAssets > 0 || prevData.summary.totalLiabilities > 0) {
+          setPreviousSummary(prevData.summary)
+        } else {
+          setPreviousSummary(null)
+        }
+      } else {
+        setPreviousSummary(null)
+      }
     } catch (error) {
       toast.error("Failed to load net worth data")
       console.error(error)
+      setPreviousSummary(null)
     } finally {
       setIsLoading(false)
     }
@@ -242,6 +264,7 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     setAuthenticatedUserId(null)
     setSelectedUserId(null)
     setDashboardData(null)
+    setPreviousSummary(null)
   }
 
   // ============= CRUD Handlers =============
@@ -250,6 +273,14 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
   const getCurrentMonth = () => {
     const now = new Date()
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+  }
+
+  // Helper: Get previous month in YYYY-MM format
+  const getPreviousMonth = (monthStr: string) => {
+    const [year, monthNum] = monthStr.split("-").map(Number)
+    const prevMonthNum = monthNum === 1 ? 12 : monthNum - 1
+    const prevYear = monthNum === 1 ? year - 1 : year
+    return `${prevYear}-${String(prevMonthNum).padStart(2, "0")}`
   }
 
   // Helper: Copy all records from source month to target month (replaces existing)
@@ -536,6 +567,7 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
           {/* Net Worth Summary */}
           <NetWorthHero
             summary={dashboardData.summary}
+            previousSummary={previousSummary}
             onEditExpenses={() => setExpenseOverrideDialog(true)}
           />
 
