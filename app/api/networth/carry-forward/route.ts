@@ -142,9 +142,13 @@ export async function POST(req: NextRequest) {
         where: { userId, month: targetMonth },
       })
 
-      // Copy all income sources from source month
+      // Copy recurring income sources from source month (exclude one-time)
       const sourceIncome = await prisma.incomeSource.findMany({
-        where: { userId, month: sourceMonth },
+        where: {
+          userId,
+          month: sourceMonth,
+          frequency: { not: "one_time" },  // Don't copy one-time income
+        },
       })
 
       for (const income of sourceIncome) {

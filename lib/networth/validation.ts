@@ -29,7 +29,7 @@ export const incomeSourceSchema = z.object({
     .number()
     .positive("Amount must be positive")
     .max(10000000, "Amount seems unrealistically high"),
-  frequency: z.enum(["biweekly", "monthly", "annual"], {
+  frequency: z.enum(["biweekly", "monthly", "annual", "one_time"], {
     required_error: "Please select a frequency",
   }),
 })
