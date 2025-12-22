@@ -722,6 +722,27 @@ The dashboard component was linking to `/insights` page that was planned but nev
 
 ---
 
+## One-Time Income Frequency Feature (2025-12-22) **✅ COMPLETE**
+**Goal**: Add a "One-time" frequency option for income sources to support one-off amounts like gifts, bonuses, or windfalls
+
+### Files Modified
+- [x] `lib/types/networth.ts` - Added "one_time" to IncomeFrequency type union
+- [x] `lib/networth/categories.ts` - Added "One-time" option to INCOME_FREQUENCIES array with description
+- [x] `lib/networth/calculations.ts` - Added case for one_time in normalizeIncomeToMonthly (returns full amount)
+
+### Implementation Notes
+- One-time income contributes its full amount to the current month (no annualization)
+- Unlike "annual" which divides by 12, one-time stays as-is for that month's total
+- Works perfectly with month isolation - one-time income only appears in the month it was added
+
+### Review
+**Changes Made**: 3 simple edits totaling ~8 lines of code
+- Type: Added `| "one_time"` to union type
+- UI: Added new frequency option with label "One-time" and description "Single occurrence (gift, bonus, windfall)"
+- Calculation: Added switch case that returns the full amount (same as monthly behavior)
+
+---
+
 ## Performance Optimizations (2025-11-23) **✅ COMPLETE**
 
 ### Overview

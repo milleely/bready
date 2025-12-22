@@ -29,6 +29,9 @@ export function normalizeIncomeToMonthly(amount: number, frequency: string): num
       return amount
     case "annual":
       return amount / 12
+    case "one_time":
+      // One-time income contributes full amount to current month only
+      return amount
     default:
       return amount
   }

@@ -8,7 +8,7 @@
 /**
  * Income frequency types
  */
-export type IncomeFrequency = "biweekly" | "monthly" | "annual"
+export type IncomeFrequency = "biweekly" | "monthly" | "annual" | "one_time"
 
 /**
  * Asset category types

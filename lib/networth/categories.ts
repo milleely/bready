@@ -118,6 +118,11 @@ export const INCOME_FREQUENCIES: Array<{
     label: "Annual",
     description: "Once per year (bonus, tax refund, etc.)",
   },
+  {
+    value: "one_time",
+    label: "One-time",
+    description: "Single occurrence (gift, bonus, windfall)",
+  },
 ]
 
 /**
