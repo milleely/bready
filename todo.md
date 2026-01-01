@@ -201,6 +201,15 @@ Comprehensive UX improvements to make the V2 dashboard more intuitive, actionabl
 **Time Estimate**: 5-8 hours
 
 ### Mobile Experience
+- [x] **Mobile Calendar Selector** ✅ COMPLETE (2026-01-01)
+  - [x] Created `components/mobile-month-bar.tsx` - Sticky navigation bar with 48px touch targets
+  - [x] Created `components/mobile-month-picker-sheet.tsx` - Bottom sheet with 3x4 month grid
+  - [x] Installed shadcn/ui Drawer component (vaul) for native-feeling bottom sheet
+  - [x] Integrated into mobile header between logo and CTA buttons
+  - [x] Updated desktop month selector to 40px touch targets (from 28px)
+  - [x] Full ARIA labels and role="navigation" for accessibility
+  - [x] Amber/stone gradient design matching Bready palette
+
 - [ ] **Swipe navigation** (mobile only)
   - [ ] Horizontal swipes between pages (Dashboard ← → Expenses ← → Budgets ← → Insights)
   - [ ] Smooth page transitions

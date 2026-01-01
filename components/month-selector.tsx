@@ -75,10 +75,10 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
           <Button
             variant="ghost"
             size="icon"
-            className="h-7 w-7 hover:bg-amber-100"
+            className="h-10 w-10 hover:bg-amber-100"
             aria-label="Open calendar"
           >
-            <CalendarIcon className="h-4 w-4 text-amber-700 cursor-pointer" />
+            <CalendarIcon className="h-5 w-5 text-amber-700 cursor-pointer" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-80 p-4 bg-white border-2 border-amber-200" align="center">
@@ -161,11 +161,11 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
       <Button
         variant="ghost"
         size="icon"
-        className="h-7 w-7 hover:bg-amber-100"
+        className="h-10 w-10 hover:bg-amber-100"
         onClick={goToPrevMonth}
         aria-label="Previous month"
       >
-        <ChevronLeft className="h-4 w-4 text-amber-700" />
+        <ChevronLeft className="h-5 w-5 text-amber-700" />
       </Button>
 
       <div className="w-[140px] text-center">
@@ -177,11 +177,11 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
       <Button
         variant="ghost"
         size="icon"
-        className="h-7 w-7 hover:bg-amber-100"
+        className="h-10 w-10 hover:bg-amber-100"
         onClick={goToNextMonth}
         aria-label="Next month"
       >
-        <ChevronRight className="h-4 w-4 text-amber-700" />
+        <ChevronRight className="h-5 w-5 text-amber-700" />
       </Button>
     </div>
   )

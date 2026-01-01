@@ -8,6 +8,7 @@ import { BreadyLogo } from "@/components/bready-logo"
 import { ExpenseForm } from "@/components/expense-form"
 import { RecurringExpenseForm } from "@/components/recurring-expense-form"
 import { MonthSelector } from "@/components/month-selector"
+import { MobileMonthBar } from "@/components/mobile-month-bar"
 import { KeyboardShortcutsNavigation } from "@/components/keyboard-shortcuts-dialog"
 import { Menu, X, Plus, ChevronLeft, ChevronRight, Repeat } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -272,6 +273,13 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
               />
             )}
           </div>
+
+          {/* Mobile Month Selector */}
+          <MobileMonthBar
+            selectedMonth={selectedMonth}
+            onMonthChange={onMonthChange}
+          />
+
           {/* Add Expense Buttons */}
           <div className="grid grid-cols-2 gap-2">
             <Button
