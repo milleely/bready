@@ -803,3 +803,80 @@ Addressed performance bottlenecks identified through code analysis without chang
 
 ### Migration Note
 The composite index requires running `npx prisma migrate dev` with a valid PostgreSQL connection. Will be applied during production deployment.
+
+---
+
+## Recurring Expense Carry-Forward Bug Fix (2026-05-02) **🚧 PENDING APPROVAL**
+
+### The Bug
+Recurring expenses set up in month N appear in N and N+1, then **skip month N+2 entirely**, then resume in N+3 onward. User created expenses in March 2026 → March + April populated → **May 2026 missing** (current month) → June onward populated.
+
+### Root Cause
+Off-by-one between creation and cron logic:
+- `app/api/recurring-expenses/route.ts:124-176` — POST creates **2 months** at setup: month 0 (current) + month 1 (next).
+- `app/api/cron/daily-recurring-expenses/route.ts:26` — cron uses `now.getMonth() + 2` ("two months ahead"), so April 1 cron generates **June**, not May.
+- Result: every recurring expense has a permanent gap in month +2 from creation.
+
+Additional fragility: cron only does work `if (isFirstDayOfMonth)` (line 22). A single missed run = entire month skipped with no recovery.
+
+### Plan
+
+#### Phase 1: Fix the off-by-one (the actual bug)
+- [ ] Change `now.getMonth() + 2` → `now.getMonth() + 1` in `app/api/cron/daily-recurring-expenses/route.ts:26`
+- [ ] Rename `twoMonthsAhead` → `nextMonth` and `targetMonthStart`/`targetMonthEnd` to match
+- [ ] Update line 23 log message ("sliding 2-month window forward" → "generating next month's recurring expenses")
+- [ ] Update line 137 log message ("2nd month ahead" → "next month")
+- [ ] Update line 21 comment to reflect new behavior
+
+#### Phase 2: Make cron self-healing (robustness) — **DESCOPED**
+- Skipped per user decision (2026-05-02): keep changes minimal. Cron stays first-of-month-only; relying on Vercel Cron reliability for now.
+
+#### Phase 3: Recover the missing May data (one-time)
+- [x] Write a one-off Node script `scripts/backfill-recurring.ts` with default-safe dry-run mode (writes only with `--apply`)
+- [x] Dry-run for `2026-05` — REVEALED: 23 active recurring expenses, of which 10 were duplicate blueprints. Diagnosis pivoted to address the underlying duplicate-blueprint problem first.
+- [x] Wrote `scripts/diagnose-recurring.ts` (read-only) which flagged 5 exact duplicate pairs + 5 fuzzy duplicate pairs. Confirmed the duplicates were created in a single Feb 7 2026 session — user re-entering recurring expenses they thought were broken.
+- [x] Wrote `scripts/deactivate-duplicate-recurring.ts` and ran with `--apply`: set `isActive: false` on 10 older blueprints. Per user direction: kept newer descriptions, kept "YMCA membership" (newer) over older "YMCA" for Nahye.
+- [x] Re-ran backfill dry-run: now shows 13 unique May expenses (was 23). Ran `--apply`, wrote all 13.
+- [x] Verified by re-running dry-run post-write: shows 0 would create / 13 skip (dedup correctly identifies all expenses are now present).
+
+### Review
+**Bug fixed in 1 line of code** (`now.getMonth() + 2` → `now.getMonth() + 1` in `app/api/cron/daily-recurring-expenses/route.ts:27`), with consistent renaming and updated log messages for clarity. From the next first-of-month cron run (2026-06-01) forward, the cron generates "next month" instead of "month +2", aligning with creation's "current + next" populating logic. The previous mismatch left a permanent gap at month +2 from creation — that gap is what made user's May 2026 (and historically every other month equal to creation_month + 2) appear empty.
+
+**Data recovery completed:**
+- 10 duplicate `RecurringExpense` blueprints flagged via `scripts/diagnose-recurring.ts` and deactivated via `scripts/deactivate-duplicate-recurring.ts --apply` (the duplicates didn't double-bill historically because old blueprints stopped firing right when new ones started — no overlap — but they would have started double-billing once the cron resumed cleanly).
+- 13 missing May 2026 `Expense` rows backfilled via `scripts/backfill-recurring.ts 2026-05 --apply`, totaling $1,931.13.
+- User noted some subscriptions in the active set are outdated; will adjust manually post-restoration.
+
+**Files modified (1):**
+- `app/api/cron/daily-recurring-expenses/route.ts` — off-by-one fix + renames + updated comments/logs
+
+**Files created (3, all in `scripts/`):**
+- `diagnose-recurring.ts` — read-only diagnostic, lists active blueprints + flags duplicates
+- `deactivate-duplicate-recurring.ts` — dry-run-by-default cleanup, hardcoded IDs from diagnostic
+- `backfill-recurring.ts` — dry-run-by-default backfill, mirrors `/api/recurring-expenses/backfill` logic without HTTP/auth
+
+**Open follow-up (out of scope, surfaced for awareness):**
+- The April 2026 YMCA expenses the user sees in the UI did NOT come from any active blueprint per the diagnostic. Source unknown — possibly manually entered, possibly from a now-deactivated blueprint. Worth investigating only if the user reports unexpected expenses.
+- The cron is still gated on `isFirstDayOfMonth`. If a Vercel cron run is missed for a given month-1, the entire next month is skipped with no recovery path. User opted to keep this minimal and not address the robustness issue. If it bites again, the daily-cron change is a small follow-up.
+
+#### Phase 4: Verification
+- [ ] Manually test: create a new recurring expense in May 2026 → confirm it appears in May + June
+- [ ] Manually test: simulate the cron locally (call the route with the right `Authorization` header) → confirm next month gets populated and dedup prevents double-creates
+- [ ] Verify the existing yearly-recurring logic (lines 99-125) still works with the new offset (yearly uses absolute dates, so it's unaffected — but confirm)
+
+### Files to Modify (1 file, ~10 lines)
+- `app/api/cron/daily-recurring-expenses/route.ts` — offset fix + remove first-of-month gate + window expansion
+
+### Files NOT Modified
+- `app/api/recurring-expenses/route.ts` — creation logic stays at "current + next" (correct, no change needed)
+- `app/api/recurring-expenses/backfill/route.ts` — already works as designed; we just call it once for May
+- `vercel.json` — cron schedule (`0 0 * * *` daily) already correct; no change
+
+### Risk Assessment
+- **Low risk**: dedup `Set` (line 54) prevents any double-creation regardless of how often the cron runs
+- **No schema changes**, no migrations needed
+- **No user-facing API changes** — fix is entirely server-side
+
+### Open Question
+Should we also expose a UI button somewhere (e.g., Settings → Recurring Expenses) to manually trigger backfill for any month? Out of scope for this fix, but worth flagging for future work.
+

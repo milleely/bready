@@ -18,14 +18,15 @@ export async function GET(request: NextRequest) {
     const isFirstDayOfMonth = now.getDate() === 1
     let createdCount = 0
 
-    // On first day of month, generate the 2nd month ahead for all recurring expenses
+    // On first day of month, generate the next month for all recurring expenses
+    // (creation populates current + next; this cron extends the window by one month each month)
     if (isFirstDayOfMonth) {
-      console.log('[Cron] First day of month - sliding 2-month window forward')
+      console.log('[Cron] First day of month - generating next month recurring expenses')
 
-      // Calculate the target month (2 months ahead)
-      const twoMonthsAhead = new Date(now.getFullYear(), now.getMonth() + 2)
-      const targetMonthStart = new Date(twoMonthsAhead.getFullYear(), twoMonthsAhead.getMonth(), 1)
-      const targetMonthEnd = new Date(twoMonthsAhead.getFullYear(), twoMonthsAhead.getMonth() + 1, 0)
+      // Calculate the target month (1 month ahead — pairs with creation's "current + next")
+      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1)
+      const targetMonthStart = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), 1)
+      const targetMonthEnd = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 0)
 
       // Also calculate 3-month window for yearly expenses
       const threeMonthsEnd = new Date(now.getFullYear(), now.getMonth() + 4, 0)
@@ -74,13 +75,13 @@ export async function GET(request: NextRequest) {
           // Handle -1 as "last day of month" for the target month
           let day: number
           if (recurring.dayOfMonth === -1) {
-            day = new Date(twoMonthsAhead.getFullYear(), twoMonthsAhead.getMonth() + 1, 0).getDate()
+            day = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 0).getDate()
           } else {
             // Cap day at last valid day of month to prevent overflow (e.g., Jan 31 → Feb 28)
-            const lastDayOfMonth = new Date(twoMonthsAhead.getFullYear(), twoMonthsAhead.getMonth() + 1, 0).getDate()
+            const lastDayOfMonth = new Date(nextMonth.getFullYear(), nextMonth.getMonth() + 1, 0).getDate()
             day = Math.min(recurring.dayOfMonth || 1, lastDayOfMonth)
           }
-          const expenseDate = new Date(twoMonthsAhead.getFullYear(), twoMonthsAhead.getMonth(), day)
+          const expenseDate = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), day)
           const monthKey = `${expenseDate.getFullYear()}-${String(expenseDate.getMonth() + 1).padStart(2, '0')}`
           const dedupKey = `${recurring.id}-${monthKey}`
 
@@ -134,7 +135,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    console.log(`[Cron] Generated ${createdCount} recurring expenses for 2nd month ahead`)
+    console.log(`[Cron] Generated ${createdCount} recurring expenses for next month`)
 
     return NextResponse.json({
       success: true,
