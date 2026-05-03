@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { UserForm } from "@/components/user-form"
 import { Edit, Trash2, Users as UsersIcon } from "lucide-react"
+import { toast } from "sonner"
 
 interface User {
   id: string
@@ -32,7 +33,7 @@ export function UserManagement({ users, onRefresh }: UserManagementProps) {
       await onRefresh()
     } else {
       const error = await response.json()
-      alert(error.error || 'Failed to add user')
+      toast.error(error.error || 'Failed to add user')
       throw new Error(error.error)
     }
   }
@@ -51,7 +52,7 @@ export function UserManagement({ users, onRefresh }: UserManagementProps) {
       await onRefresh()
     } else {
       const error = await response.json()
-      alert(error.error || 'Failed to update user')
+      toast.error(error.error || 'Failed to update user')
       throw new Error(error.error)
     }
   }
@@ -67,11 +68,11 @@ export function UserManagement({ users, onRefresh }: UserManagementProps) {
 
     if (response.ok) {
       const result = await response.json()
-      alert(result.message)
+      toast.success(result.message)
       await onRefresh()
     } else {
       const error = await response.json()
-      alert(error.error || 'Failed to delete user')
+      toast.error(error.error || 'Failed to delete user')
     }
   }
 

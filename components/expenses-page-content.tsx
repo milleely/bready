@@ -5,6 +5,7 @@ import { EnhancedRecentExpenses } from "@/components/enhanced-recent-expenses"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp, BarChart3, Plus } from "lucide-react"
+import { toast } from "sonner"
 import {
   Collapsible,
   CollapsibleContent,
@@ -209,7 +210,7 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
       window.dispatchEvent(new CustomEvent('expenseDeleted'))
     } else {
       const error = await response.json()
-      alert(`Failed to delete recurring series: ${error.error || 'Unknown error'}`)
+      toast.error(`Failed to delete recurring series: ${error.error || 'Unknown error'}`)
     }
   }
 

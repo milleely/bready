@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { categories } from "@/lib/utils"
 import { Repeat, Info } from "lucide-react"
+import { toast } from "sonner"
 
 interface User {
   id: string
@@ -39,7 +40,7 @@ export function RecurringExpenseForm({ users, open, onOpenChange }: RecurringExp
 
     // Validate date selection
     if (dayOfMonth === undefined) {
-      alert('Please select a day of the month')
+      toast.warning('Please select a day of the month')
       return
     }
 
@@ -82,7 +83,7 @@ export function RecurringExpenseForm({ users, open, onOpenChange }: RecurringExp
       onOpenChange(false)
     } catch (error) {
       console.error('Failed to create recurring expense:', error)
-      alert('Failed to create recurring expense. Please try again.')
+      toast.error('Failed to create recurring expense. Please try again.')
     } finally {
       setLoading(false)
     }

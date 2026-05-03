@@ -12,6 +12,7 @@ import { MobileMonthBar } from "@/components/mobile-month-bar"
 import { KeyboardShortcutsNavigation } from "@/components/keyboard-shortcuts-dialog"
 import { Menu, X, Plus, ChevronLeft, ChevronRight, Repeat } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 
 interface SidebarLayoutProps {
@@ -324,11 +325,11 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
                 window.dispatchEvent(new CustomEvent('expenseAdded'))
               } else {
                 const error = await response.json()
-                alert(error.error || 'Failed to add expense. Please try again.')
+                toast.error(error.error || 'Failed to add expense. Please try again.')
               }
             } catch (error) {
               console.error('Failed to add expense:', error)
-              alert('Failed to add expense. Please try again.')
+              toast.error('Failed to add expense. Please try again.')
             }
           }}
           open={expenseFormOpen}

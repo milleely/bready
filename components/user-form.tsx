@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { ColorPicker } from "@/components/ui/color-picker"
 import { UserPlus } from "lucide-react"
+import { toast } from "sonner"
 
 interface User {
   id?: string
@@ -45,7 +46,7 @@ export function UserForm({ user, onSubmit, trigger }: UserFormProps) {
     e.preventDefault()
 
     if (!formData.name.trim() || !formData.email.trim()) {
-      alert('Please fill in all fields')
+      toast.warning('Please fill in all fields')
       return
     }
 

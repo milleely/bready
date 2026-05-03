@@ -6,6 +6,7 @@ import { SettlementSummaryCards } from "@/components/settlement-summary-cards"
 import { SettlementHistory } from "@/components/settlement-history"
 import { BreadyLogo } from "@/components/bready-logo"
 import { CheckCircle2, Wallet } from "lucide-react"
+import { toast } from "sonner"
 
 interface Settlement {
   from: { id: string; name: string; color: string }
@@ -121,11 +122,11 @@ export function SettlementsPageContent({ month }: SettlementsPageContentProps) {
         await fetchData()
       } else {
         const error = await response.json()
-        alert(error.error || "Failed to record settlement")
+        toast.error(error.error || "Failed to record settlement")
       }
     } catch (error) {
       console.error("Failed to mark settlement as paid:", error)
-      alert("Failed to record settlement. Please try again.")
+      toast.error("Failed to record settlement. Please try again.")
     }
   }
 
@@ -140,11 +141,11 @@ export function SettlementsPageContent({ month }: SettlementsPageContentProps) {
         await fetchData()
       } else {
         const error = await response.json()
-        alert(error.error || "Failed to unmark settlement")
+        toast.error(error.error || "Failed to unmark settlement")
       }
     } catch (error) {
       console.error("Failed to unmark settlement:", error)
-      alert("Failed to unmark settlement. Please try again.")
+      toast.error("Failed to unmark settlement. Please try again.")
     }
   }
 

@@ -11,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { categories } from "@/lib/utils"
 import { Plus, Upload, X, Image as ImageIcon, Eye, FileText, Sparkles, Repeat } from "lucide-react"
+import { toast } from "sonner"
 
 interface User {
   id: string
@@ -89,13 +90,13 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
     if (file) {
       // Validate file size (5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('File too large. Maximum size is 5MB.')
+        toast.error('File too large. Maximum size is 5MB.')
         return
       }
       // Validate file type
       const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']
       if (!allowedTypes.includes(file.type)) {
-        alert('Invalid file type. Only JPG, PNG, and PDF are allowed.')
+        toast.error('Invalid file type. Only JPG, PNG, and PDF are allowed.')
         return
       }
       setSelectedFile(file)
@@ -134,7 +135,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
 
       if (!response.ok) {
         const error = await response.json()
-        alert(error.error || 'Failed to scan receipt')
+        toast.error(error.error || 'Failed to scan receipt')
         return
       }
 
@@ -151,10 +152,12 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
 
       // Show success message with confidence
       const confidence = ocrResult.confidence || 'medium'
-      alert(`Receipt scanned successfully! (Confidence: ${confidence})\n\nPlease review the extracted data before submitting.`)
+      toast.success(`Receipt scanned (${confidence} confidence)`, {
+        description: 'Please review the extracted data before submitting.',
+      })
     } catch (error) {
       console.error('Failed to scan receipt:', error)
-      alert('Failed to scan receipt. Please try again or enter manually.')
+      toast.error('Failed to scan receipt. Please try again or enter manually.')
     } finally {
       setScanning(false)
     }
@@ -165,7 +168,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
 
     // Defensive validation: Ensure userId is set
     if (!formData.userId) {
-      alert('Please wait for users to load, then try again. If the problem persists, refresh the page.')
+      toast.warning('Please wait for users to load, then try again. If the problem persists, refresh the page.')
       return
     }
 
@@ -187,7 +190,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
 
         if (!uploadRes.ok) {
           const errorData = await uploadRes.json()
-          alert(errorData.error || 'Failed to upload receipt')
+          toast.error(errorData.error || 'Failed to upload receipt')
           setUploading(false)
           setLoading(false)
           return
@@ -234,7 +237,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
       console.error('Failed to submit expense:', error)
       // Show user-friendly error message
       const errorMessage = error instanceof Error ? error.message : 'Failed to submit expense. Please try again.'
-      alert(errorMessage)
+      toast.error(errorMessage)
       // Don't close the form on error - let user retry
     } finally {
       setLoading(false)
@@ -295,13 +298,13 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                       throw new Error('Failed to unmark recurring')
                     }
 
-                    alert('Expense unmarked as recurring')
+                    toast.success('Expense unmarked as recurring')
                     setOpen(false)
                     // Dispatch event to refresh parent
                     window.dispatchEvent(new CustomEvent('expenseEdited'))
                   } catch (error) {
                     console.error('Failed to unmark:', error)
-                    alert('Failed to unmark recurring expense. Please try again.')
+                    toast.error('Failed to unmark recurring expense. Please try again.')
                   }
                 }}
                 className="h-auto p-0 ml-1 text-purple-700 hover:text-purple-900"

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Download } from "lucide-react"
+import { toast } from "sonner"
 import { categories } from "@/lib/utils"
 
 interface User {
@@ -62,7 +63,7 @@ export function ExportDialog({ users }: ExportDialogProps) {
       setFilters({ userId: undefined, category: undefined, startDate: '', endDate: '' })
     } catch (error) {
       console.error('Export error:', error)
-      alert('Failed to export expenses. Please try again.')
+      toast.error('Failed to export expenses. Please try again.')
     } finally {
       setExporting(false)
     }

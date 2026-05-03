@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
 import {
   Select,
   SelectContent,
@@ -74,7 +75,7 @@ export function BudgetDialog({ users, budget, onBudgetSet, open: controlledOpen,
     e.preventDefault()
 
     if (!category || !amount) {
-      alert("Please fill in all required fields")
+      toast.warning("Please fill in all required fields")
       return
     }
 
@@ -109,7 +110,7 @@ export function BudgetDialog({ users, budget, onBudgetSet, open: controlledOpen,
       setOpen(false)
       onBudgetSet()
     } catch (error: any) {
-      alert(error.message)
+      toast.error(error.message)
     } finally {
       setLoading(false)
     }
