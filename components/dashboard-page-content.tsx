@@ -21,6 +21,7 @@ import Link from "next/link"
 const SpendingSparkline = lazy(() => import("@/components/spending-sparkline"))
 import { BreadyLogo } from "@/components/bready-logo"
 import { ExpenseForm } from "@/components/expense-form"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Stats {
   totalSpent: number
@@ -275,10 +276,41 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <Wallet className="h-12 w-12 animate-pulse mx-auto mb-4 text-amber-600" />
-          <p className="text-muted-foreground">Loading your dashboard...</p>
+      <div className="space-y-6">
+        {/* Hero card skeleton */}
+        <div className="rounded-xl surface-card-hero elevation-prominent p-4 md:p-8 space-y-4">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-12 w-12 rounded-full bg-white/20" />
+            <Skeleton className="h-6 w-48 bg-white/20" />
+          </div>
+          <Skeleton className="h-12 w-64 bg-white/20" />
+          <Skeleton className="h-20 w-full rounded-lg bg-white/20" />
+        </div>
+        {/* Budget Health + Settlements grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="rounded-xl surface-card-subtle elevation-rest p-6 space-y-4 min-h-[200px]">
+              <Skeleton className="h-6 w-32" />
+              <Skeleton className="h-4 w-48" />
+              <Skeleton className="h-4 w-40" />
+              <div className="mt-auto pt-4">
+                <Skeleton className="h-9 w-32" />
+              </div>
+            </div>
+          ))}
+        </div>
+        {/* Top categories skeleton */}
+        <div className="rounded-xl surface-card-subtle elevation-rest p-6 space-y-4">
+          <Skeleton className="h-6 w-44" />
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-4 w-20" />
+              </div>
+              <Skeleton className="h-2 w-full rounded-full" />
+            </div>
+          ))}
         </div>
       </div>
     )
@@ -293,20 +325,20 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
           <p className="text-muted-foreground mt-1">Welcome to Bready!</p>
         </div>
 
-        <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border-0 shadow-lg">
+        <Card className="surface-card-subtle border-0 elevation-prominent">
           <CardContent className="pt-12 pb-12 text-center">
             <div className="mb-6 flex justify-center">
               <BreadyLogo size={64} />
             </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Start Tracking Your Dough</h2>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
+            <h2 className="text-2xl font-bold text-stone-800 mb-2">Start Tracking Your Dough</h2>
+            <p className="text-stone-600 mb-6 max-w-md mx-auto">
               You haven't added any expenses for this month yet. Start by adding your first expense to see your financial insights.
             </p>
             <div className="flex gap-3 justify-center">
               <Button
                 size="lg"
                 onClick={() => setExpenseFormOpen(true)}
-                className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold shadow-md"
+                className="surface-card-hero hover:opacity-95 text-white font-semibold elevation-hover"
               >
                 <Plus className="mr-2 h-5 w-5" />
                 Add Your First Expense
@@ -340,7 +372,7 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
       </div>
 
       {/* Hero Card - This Month at a Glance */}
-      <Card className="bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 border-0 shadow-xl text-white">
+      <Card className="surface-card-hero border-0 elevation-prominent text-white">
         <CardContent className="p-4 md:p-8">
           <div className="flex flex-col md:flex-row md:items-start gap-8">
             {/* Left Column: Financial Numbers (60%) */}
@@ -430,7 +462,7 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
       {/* Status Grid */}
       <div className="grid gap-4 md:grid-cols-2">
         {/* Budget Health Summary */}
-        <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 shadow-xl">
+        <Card className="surface-card-subtle border border-amber-200/50 elevation-prominent">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-amber-900">
               <AlertCircle className="h-5 w-5 text-amber-700" />
@@ -495,7 +527,7 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
         </Card>
 
         {/* Settlements */}
-        <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 shadow-xl">
+        <Card className="surface-card-subtle border border-amber-200/50 elevation-prominent">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-amber-900">
               <Wallet className="h-5 w-5 text-amber-700" />
@@ -539,7 +571,7 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
       </div>
 
       {/* Top 3 Categories */}
-      <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 shadow-xl">
+      <Card className="surface-card-subtle border border-amber-200/50 elevation-prominent">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="text-amber-900">Top Spending Categories</CardTitle>

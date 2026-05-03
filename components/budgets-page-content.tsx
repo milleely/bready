@@ -2,6 +2,9 @@
 
 import { Suspense, useEffect, useState, lazy } from "react"
 import { EnhancedBudgetProgress } from "@/components/enhanced-budget-progress"
+import { Skeleton } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
+import { Target } from "lucide-react"
 
 // Lazy load dialog component (only when opened)
 const BudgetDialog = lazy(() => import("@/components/budget-dialog").then(mod => ({ default: mod.BudgetDialog })))
@@ -128,12 +131,28 @@ export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-pulse mb-4">
-            <div className="h-12 w-12 bg-amber-200 rounded-full mx-auto"></div>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-56" />
+            <Skeleton className="hidden md:block h-4 w-72" />
           </div>
-          <p className="text-muted-foreground">Loading budgets...</p>
+          <Skeleton className="h-10 w-32" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="rounded-xl surface-card-subtle elevation-rest p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-5 w-24" />
+                <Skeleton className="h-4 w-12" />
+              </div>
+              <Skeleton className="h-2 w-full rounded-full" />
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-16" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     )
@@ -166,21 +185,17 @@ export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
       </div>
 
       {budgets.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-64 bg-white rounded-lg border-2 border-dashed border-gray-300">
-          <div className="text-center p-6">
-            <div className="mb-4 text-6xl">🎯</div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No budgets set yet</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Start tracking your spending by setting budgets for different categories.
-            </p>
+        <EmptyState
+          icon={Target}
+          title="No budgets set yet"
+          description="Start tracking your spending by setting budgets for different categories."
+          action={
             <Suspense fallback={null}>
-              <BudgetDialog
-                users={users}
-                onBudgetSet={fetchData}
-              />
+              <BudgetDialog users={users} onBudgetSet={fetchData} />
             </Suspense>
-          </div>
-        </div>
+          }
+          className="rounded-xl border-2 border-dashed border-amber-200/60 bg-white"
+        />
       ) : (
         <EnhancedBudgetProgress
           budgets={budgets}

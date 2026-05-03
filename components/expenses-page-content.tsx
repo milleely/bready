@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, ChevronUp, BarChart3, Plus } from "lucide-react"
 import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
 import {
   Collapsible,
   CollapsibleContent,
@@ -310,12 +311,29 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-pulse mb-4">
-            <div className="h-12 w-12 bg-amber-200 rounded-full mx-auto"></div>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-4 w-80" />
+        </div>
+        <div className="rounded-xl surface-card-subtle elevation-rest p-6 space-y-4">
+          <Skeleton className="h-6 w-44" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-20 rounded-lg" />
+            ))}
           </div>
-          <p className="text-muted-foreground">Loading expenses...</p>
+        </div>
+        <div className="rounded-xl bg-white elevation-rest border border-amber-200/50 p-4 space-y-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-4">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 flex-1" />
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-4 w-16" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+          ))}
         </div>
       </div>
     )
@@ -359,12 +377,14 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
           <CollapsibleContent>
             <CardContent>
               <Suspense fallback={
-                <div className="flex items-center justify-center py-12">
-                  <div className="text-center">
-                    <div className="animate-pulse mb-4">
-                      <BarChart3 className="h-12 w-12 text-amber-400 mx-auto" />
-                    </div>
-                    <p className="text-sm text-amber-700">Loading charts...</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
+                  <div className="space-y-3">
+                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="h-64 w-full rounded-lg" />
+                  </div>
+                  <div className="space-y-3">
+                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="h-64 w-full rounded-lg" />
                   </div>
                 </div>
               }>
