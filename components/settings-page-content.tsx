@@ -43,7 +43,8 @@ export function SettingsPageContent() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6" role="status" aria-busy="true">
+        <span className="sr-only">Loading settings</span>
         <div className="flex items-center justify-between">
           <div className="space-y-2">
             <Skeleton className="h-9 w-72" />

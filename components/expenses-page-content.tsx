@@ -311,7 +311,8 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6" role="status" aria-busy="true">
+        <span className="sr-only">Loading expenses</span>
         <div className="space-y-2">
           <Skeleton className="h-8 w-64" />
           <Skeleton className="h-4 w-80" />

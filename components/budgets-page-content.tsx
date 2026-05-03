@@ -131,7 +131,8 @@ export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6" role="status" aria-busy="true">
+        <span className="sr-only">Loading budgets</span>
         <div className="flex items-center justify-between">
           <div className="space-y-2">
             <Skeleton className="h-8 w-56" />

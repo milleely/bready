@@ -276,7 +276,8 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
 
   if (loading) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-6" role="status" aria-busy="true">
+        <span className="sr-only">Loading dashboard</span>
         {/* Hero card skeleton */}
         <div className="rounded-xl surface-card-hero elevation-prominent p-4 md:p-8 space-y-4">
           <div className="flex items-center gap-3">
