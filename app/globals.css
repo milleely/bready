@@ -217,7 +217,7 @@ select:focus-visible {
  * palette tweak lives in one place per class.
  */
 .surface-page-warm {
-  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 50%, #fefce8 100%);
 }
 
 .surface-card-subtle {

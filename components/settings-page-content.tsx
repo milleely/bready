@@ -8,6 +8,7 @@ import { NotificationSettingsPreview } from "@/components/settings/notification-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Settings as SettingsIcon } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface User {
   id: string
@@ -42,12 +43,18 @@ export function SettingsPageContent() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-pulse mb-4">
-            <div className="h-12 w-12 bg-amber-200 rounded-full mx-auto"></div>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-9 w-72" />
+            <Skeleton className="h-4 w-80" />
           </div>
-          <p className="text-muted-foreground">Loading settings...</p>
+          <Skeleton className="h-7 w-24 rounded-full" />
+        </div>
+        <Skeleton className="h-64 rounded-xl" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Skeleton className="h-48 rounded-xl" />
+          <Skeleton className="h-48 rounded-xl" />
         </div>
       </div>
     )

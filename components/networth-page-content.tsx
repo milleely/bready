@@ -23,6 +23,7 @@ import { IncomeFormDialog } from "@/components/networth/income-form-dialog"
 import { AssetFormDialog } from "@/components/networth/asset-form-dialog"
 import { LiabilityFormDialog } from "@/components/networth/liability-form-dialog"
 import { Loader2, Copy } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import { toast } from "sonner"
 import { createSessionAction, logoutAction } from "@/app/actions/networth-session"
 import type {
@@ -499,8 +500,10 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))}
           </div>
         ) : (
           <>
@@ -559,8 +562,13 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
+        <div className="space-y-6">
+          <Skeleton className="h-40 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Skeleton className="h-64 rounded-xl" />
+            <Skeleton className="h-64 rounded-xl" />
+          </div>
         </div>
       ) : (
         <>

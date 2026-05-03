@@ -7,6 +7,7 @@ import { SettlementHistory } from "@/components/settlement-history"
 import { BreadyLogo } from "@/components/bready-logo"
 import { CheckCircle2, Wallet } from "lucide-react"
 import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface Settlement {
   from: { id: string; name: string; color: string }
@@ -151,10 +152,30 @@ export function SettlementsPageContent({ month }: SettlementsPageContentProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <Wallet className="h-12 w-12 animate-pulse mx-auto mb-4 text-amber-600" />
-          <p className="text-muted-foreground">Loading settlements...</p>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-4 w-72" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Skeleton key={i} className="h-28 rounded-xl" />
+          ))}
+        </div>
+        <div className="rounded-xl surface-card-subtle elevation-rest p-6 space-y-4">
+          <Skeleton className="h-6 w-44" />
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="flex items-center justify-between gap-4 rounded-lg bg-white/60 p-4">
+              <div className="flex items-center gap-3 flex-1">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="space-y-2 flex-1">
+                  <Skeleton className="h-4 w-40" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+              </div>
+              <Skeleton className="h-9 w-24" />
+            </div>
+          ))}
         </div>
       </div>
     )
