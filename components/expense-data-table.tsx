@@ -164,7 +164,8 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 hover:bg-golden-crust-light/30"
+                aria-label="View receipt"
+                className="h-11 w-11 p-0 hover:bg-golden-crust-light/30"
                 onClick={() => {
                   setSelectedReceiptUrl(expense.receiptUrl!)
                   setLightboxOpen(true)
