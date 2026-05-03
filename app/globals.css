@@ -1,5 +1,41 @@
 @import "tailwindcss";
 
+/*
+ * =============================================================================
+ * Bready Design Tokens — usage contract
+ * =============================================================================
+ *
+ * Color tokens (via @theme + Tailwind v4):
+ *   --color-*                 base surface colors → bg-*, text-*, border-*, ring-*
+ *   --toast-*                 brand-themed accent palette (fresh / golden / caramel / burnt / crust / crumb)
+ *   --color-state-*           semantic state aliases (on-track / warning / over-budget / success / info)
+ *   --border-*-crust          divider weights from light to bold
+ *
+ * Elevation tokens:
+ *   --shadow-card-rest        cards at rest (default surfaces)
+ *   --shadow-card-hover       cards on hover (interactive surfaces)
+ *   --shadow-card-prominent   hero / featured cards (one per page max)
+ *
+ * Surface utility classes (defined below):
+ *   .surface-page-warm        top-level page background gradient
+ *   .surface-card-subtle      default card surface (light amber → dim amber)
+ *   .surface-card-emphasized  draws-the-eye card (medium amber gradient)
+ *   .surface-card-hero        the loudest surface in a layout (saturated amber/orange)
+ *
+ * Semantic state mapping:
+ *   on-track   → toast-golden    (#f59e0b)   used for "budget healthy"
+ *   warning    → toast-caramel   (#d97706)   used for "approaching budget limit"
+ *   over-budget → toast-burnt    (#b45309)   used for "over budget"
+ *   success    → state-success   (warm green) used for "settled / paid"
+ *   info       → toast-crumb     (#fef3c7)   used for neutral notices
+ *
+ * Adopting a token: when you reach for a raw Tailwind utility like
+ * `bg-gradient-to-br from-amber-50 to-orange-50`, prefer the matching
+ * semantic class above so the system stays single-sourced.
+ *
+ * =============================================================================
+ */
+
 @theme {
   /* Golden Crust Theme - Light Mode */
   --color-background: 42 50% 97%;
@@ -43,6 +79,18 @@
   --border-golden-crust: 43 96% 56%; /* #fbbf24 - Medium borders */
   --border-dark-crust: 32 95% 44%; /* #d97706 - Strong borders */
   --border-burnt-crust: 25 90% 32%; /* #92400e - Bold borders */
+
+  /* Semantic state colors — aliases over toast-* for clarity at call site */
+  --color-state-on-track: 38 92% 50%;     /* toast-golden  — budget healthy */
+  --color-state-warning: 32 95% 44%;      /* toast-caramel — approaching limit */
+  --color-state-over-budget: 25 91% 37%;  /* toast-burnt   — over budget */
+  --color-state-success: 142 50% 42%;     /* warm sage     — settled / paid */
+  --color-state-info: 48 95% 88%;         /* toast-crumb   — neutral notice */
+
+  /* Elevation tokens — warm-tinted shadows so depth still feels Bready */
+  --shadow-card-rest: 0 1px 3px rgba(146, 64, 14, 0.08), 0 1px 2px rgba(146, 64, 14, 0.06);
+  --shadow-card-hover: 0 6px 16px rgba(146, 64, 14, 0.14), 0 2px 6px rgba(146, 64, 14, 0.08);
+  --shadow-card-prominent: 0 16px 40px rgba(146, 64, 14, 0.20), 0 6px 14px rgba(146, 64, 14, 0.10);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -162,6 +210,37 @@ select:focus-visible {
     linear-gradient(-45deg, transparent 25%, rgba(217, 119, 6, 0.15) 50%, transparent 75%);
   background-size: 15px 15px;
 }
+
+/*
+ * Semantic Surface Gradients — preferred for new code over raw `from-* to-*`
+ * Tailwind utilities. Each maps to a single visual purpose so a future
+ * palette tweak lives in one place per class.
+ */
+.surface-page-warm {
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.surface-card-subtle {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+}
+
+.surface-card-emphasized {
+  background: linear-gradient(135deg, #fde68a 0%, #fbbf24 100%);
+}
+
+.surface-card-hero {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);
+}
+
+/*
+ * Elevation utility classes that consume the warm-tinted shadow tokens above.
+ * Use .elevation-rest by default; pair with hover-elevation-* for interactive lift.
+ */
+.elevation-rest { box-shadow: var(--shadow-card-rest); }
+.elevation-hover { box-shadow: var(--shadow-card-hover); }
+.elevation-prominent { box-shadow: var(--shadow-card-prominent); }
+.hover-elevation-hover:hover { box-shadow: var(--shadow-card-hover); transition: box-shadow 200ms ease-out; }
+.hover-elevation-prominent:hover { box-shadow: var(--shadow-card-prominent); transition: box-shadow 200ms ease-out; }
 
 /* Toast Gradient System */
 .toast-gradient-light {
