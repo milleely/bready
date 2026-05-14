@@ -31,7 +31,7 @@ export function KeyboardShortcutsCard() {
   }, {} as Record<string, Shortcut[]>)
 
   return (
-    <Card className="bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-sm">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Keyboard className="h-5 w-5" />
@@ -45,19 +45,19 @@ export function KeyboardShortcutsCard() {
         <div className="space-y-4">
           {Object.entries(groupedShortcuts).map(([category, categoryShortcuts]) => (
             <div key={category}>
-              <h3 className="text-sm font-semibold text-golden-crust-dark mb-2">{category}</h3>
+              <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100 mb-2">{category}</h3>
               <div className="space-y-2">
                 {categoryShortcuts.map((shortcut, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between py-2 px-3 bg-white/60 backdrop-blur-sm border-2 border-golden-crust-primary/40 rounded-lg hover:shadow-md transition-shadow"
+                    className="flex items-center justify-between py-2 px-3 bg-white/60 backdrop-blur-sm border-2 border-stone-200 dark:border-stone-800 rounded-lg hover:shadow-md transition-shadow"
                   >
-                    <span className="text-sm text-golden-crust-dark">{shortcut.description}</span>
+                    <span className="text-sm text-stone-900 dark:text-stone-100">{shortcut.description}</span>
                     <div className="flex items-center gap-1 flex-shrink-0 ml-2">
                       {shortcut.keys.map((key, keyIndex) => (
                         <kbd
                           key={keyIndex}
-                          className="px-2 py-1 text-xs font-semibold text-amber-900 bg-amber-50 border border-amber-300 rounded shadow-sm"
+                          className="px-2 py-1 text-xs font-semibold text-amber-900 dark:text-amber-200 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 rounded shadow-sm"
                         >
                           {key}
                         </kbd>

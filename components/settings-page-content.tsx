@@ -7,7 +7,7 @@ import { KeyboardShortcutsCard } from "@/components/keyboard-shortcuts-card"
 import { NotificationSettingsPreview } from "@/components/settings/notification-settings-preview"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Settings as SettingsIcon } from "lucide-react"
+import { PageHeader } from "@/components/ui/page-header"
 import { Skeleton } from "@/components/ui/skeleton"
 
 interface User {
@@ -45,17 +45,67 @@ export function SettingsPageContent() {
     return (
       <div className="space-y-6" role="status" aria-busy="true">
         <span className="sr-only">Loading settings</span>
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <Skeleton className="h-9 w-72" />
-            <Skeleton className="h-4 w-80" />
+        {/* PageHeader skeleton with members badge in actions slot */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+          <div className="space-y-2 min-w-0 flex-1">
+            <Skeleton className="h-8 w-32" />
+            <Skeleton className="h-4 w-56" />
           </div>
-          <Skeleton className="h-7 w-24 rounded-full" />
+          <Skeleton className="h-7 w-28 rounded-md" />
         </div>
-        <Skeleton className="h-64 rounded-xl" />
+
+        {/* UserManagement card — header (title + Add User button) + member rows */}
+        <div className="rounded-xl border border-stone-200 bg-card shadow-sm dark:border-stone-800">
+          <div className="flex items-center justify-between p-6 pb-4">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-44" />
+              <Skeleton className="h-3 w-60" />
+            </div>
+            <Skeleton className="h-9 w-28 rounded-md" />
+          </div>
+          <div className="px-6 pb-6 space-y-3">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between gap-3 rounded-lg border border-stone-200 bg-stone-50 p-4 dark:border-stone-800 dark:bg-stone-950/50"
+              >
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+                  <div className="space-y-2 flex-1 min-w-0">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-44" />
+                  </div>
+                </div>
+                <div className="flex gap-2 flex-shrink-0">
+                  <Skeleton className="h-9 w-9 rounded-md" />
+                  <Skeleton className="h-9 w-9 rounded-md" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 2-col secondary cards: KeyboardShortcuts + NotificationPreview */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Skeleton className="h-48 rounded-xl" />
-          <Skeleton className="h-48 rounded-xl" />
+          {Array.from({ length: 2 }).map((_, i) => (
+            <div
+              key={i}
+              className="rounded-xl border border-stone-200 bg-card shadow-sm dark:border-stone-800 p-6 space-y-4"
+            >
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-44" />
+                <Skeleton className="h-3 w-60" />
+              </div>
+              <div className="space-y-3 pt-2">
+                {Array.from({ length: 4 }).map((_, j) => (
+                  <div key={j} className="flex items-center justify-between">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-6 w-16 rounded-md" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     )
@@ -63,21 +113,16 @@ export function SettingsPageContent() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <SettingsIcon className="h-8 w-8 text-amber-600" />
-            Household Settings
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your household members and preferences
-          </p>
-        </div>
-        <Badge variant="outline" className="bg-amber-50 border-amber-300 text-amber-800">
-          {users.length} / 4 Members
-        </Badge>
-      </div>
+      <PageHeader
+        title="Settings"
+        description="Your household, your rules."
+        actions={
+          <Badge variant="outline" className="bg-amber-50 border-amber-300 text-amber-800 dark:bg-amber-950/30 dark:border-amber-800 dark:text-amber-300">
+            {users.length} / 4 members
+          </Badge>
+        }
+      />
+
 
       {/* User Management Section */}
       <UserManagement users={users} onRefresh={fetchUsers} />

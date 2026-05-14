@@ -82,12 +82,12 @@ export function ExpensesSection({
   }
 
   return (
-    <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 shadow-xl">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardContent className="pt-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-amber-100">
+            <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-950/40">
               <Receipt className="h-5 w-5 text-amber-600" />
             </div>
             <div>
@@ -121,7 +121,7 @@ export function ExpensesSection({
         ) : (
           <div className="space-y-4">
             {/* Manual Override Toggle */}
-            <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-[hsl(var(--border-light-crust))]">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-stone-200 dark:border-stone-800">
               <div>
                 <Label htmlFor="use-override" className="text-sm font-medium">
                   Use Manual Override
@@ -176,7 +176,7 @@ export function ExpensesSection({
               </Button>
               <Button
                 onClick={handleSave}
-                className="flex-1 bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600"
+                className="flex-1 bg-amber-500 hover:bg-amber-600 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-amber-950"
                 disabled={isSaving}
               >
                 <Check className="h-4 w-4 mr-1" />

@@ -85,11 +85,11 @@ export function EnhancedRecentExpenses({
   const [showFilters, setShowFilters] = useState(false)
 
   return (
-    <Card className="bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-md">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-golden-crust-dark">Recent Expenses</CardTitle>
-          <p className="text-sm text-golden-crust-dark/70 mt-1">Latest transactions from your household</p>
+          <CardTitle className="text-stone-900 dark:text-stone-100">Recent Expenses</CardTitle>
+          <p className="text-sm text-stone-600 dark:text-stone-400 mt-1">Latest transactions from your household</p>
         </div>
         <ExportDialog users={users} />
       </CardHeader>
@@ -101,7 +101,7 @@ export function EnhancedRecentExpenses({
               variant="outline"
               size="sm"
               onClick={() => setShowFilters(!showFilters)}
-              className="bg-amber-50 border-golden-crust-medium hover:bg-amber-100"
+              className="bg-card border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-amber-950/40"
             >
               <Filter className="h-4 w-4 mr-2" />
               Filters
@@ -131,10 +131,10 @@ export function EnhancedRecentExpenses({
 
           {/* Collapsible filter grid */}
           {showFilters && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-white/50 rounded-lg border border-golden-crust-medium">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-4 bg-white/50 rounded-lg border border-stone-200 dark:border-stone-800">
               {/* User Filter */}
               <div className="space-y-2">
-                <Label htmlFor="filter-user" className="text-golden-crust-dark font-semibold text-sm">
+                <Label htmlFor="filter-user" className="text-stone-900 dark:text-stone-100 font-semibold text-sm">
                   User
                 </Label>
                 <Select
@@ -143,11 +143,11 @@ export function EnhancedRecentExpenses({
                 >
                   <SelectTrigger
                     id="filter-user"
-                    className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark h-9"
+                    className="h-9"
                   >
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+                  <SelectContent>
                     <SelectItem value="all">All Users</SelectItem>
                     {users.map((user) => (
                       <SelectItem key={user.id} value={user.id}>
@@ -166,7 +166,7 @@ export function EnhancedRecentExpenses({
 
               {/* Category Filter */}
               <div className="space-y-2">
-                <Label htmlFor="filter-category" className="text-golden-crust-dark font-semibold text-sm">
+                <Label htmlFor="filter-category" className="text-stone-900 dark:text-stone-100 font-semibold text-sm">
                   Category
                 </Label>
                 <Select
@@ -175,11 +175,11 @@ export function EnhancedRecentExpenses({
                 >
                   <SelectTrigger
                     id="filter-category"
-                    className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark h-9"
+                    className="h-9"
                   >
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark max-h-[280px]">
+                  <SelectContent className="max-h-[280px]">
                     <SelectItem value="all">All Categories</SelectItem>
                     {categories.map((cat) => (
                       <SelectItem key={cat.value} value={cat.value}>
@@ -199,7 +199,7 @@ export function EnhancedRecentExpenses({
 
               {/* Expense Type Filter */}
               <div className="space-y-2">
-                <Label htmlFor="filter-type" className="text-golden-crust-dark font-semibold text-sm">
+                <Label htmlFor="filter-type" className="text-stone-900 dark:text-stone-100 font-semibold text-sm">
                   Type
                 </Label>
                 <Select
@@ -208,11 +208,11 @@ export function EnhancedRecentExpenses({
                 >
                   <SelectTrigger
                     id="filter-type"
-                    className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark h-9"
+                    className="h-9"
                   >
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+                  <SelectContent>
                     <SelectItem value="all">All Expenses</SelectItem>
                     <SelectItem value="shared">Shared Only</SelectItem>
                     <SelectItem value="personal">Personal Only</SelectItem>
@@ -222,7 +222,7 @@ export function EnhancedRecentExpenses({
 
               {/* Recurring Filter */}
               <div className="space-y-2">
-                <Label htmlFor="filter-recurring" className="text-golden-crust-dark font-semibold text-sm">
+                <Label htmlFor="filter-recurring" className="text-stone-900 dark:text-stone-100 font-semibold text-sm">
                   Recurring
                 </Label>
                 <Select
@@ -231,11 +231,11 @@ export function EnhancedRecentExpenses({
                 >
                   <SelectTrigger
                     id="filter-recurring"
-                    className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark h-9"
+                    className="h-9"
                   >
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+                  <SelectContent>
                     <SelectItem value="all">All Expenses</SelectItem>
                     <SelectItem value="recurring">Recurring Only</SelectItem>
                     <SelectItem value="one-time">One-time Only</SelectItem>
@@ -245,7 +245,7 @@ export function EnhancedRecentExpenses({
 
               {/* Min Amount Filter */}
               <div className="space-y-2">
-                <Label htmlFor="filter-min" className="text-golden-crust-dark font-semibold text-sm">
+                <Label htmlFor="filter-min" className="text-stone-900 dark:text-stone-100 font-semibold text-sm">
                   Min Amount
                 </Label>
                 <Input
@@ -256,13 +256,13 @@ export function EnhancedRecentExpenses({
                   placeholder="$0.00"
                   value={minAmount ?? ""}
                   onChange={(e) => setMinAmount(e.target.value ? parseFloat(e.target.value) : null)}
-                  className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark h-9"
+                  className="h-9"
                 />
               </div>
 
               {/* Max Amount Filter */}
               <div className="space-y-2">
-                <Label htmlFor="filter-max" className="text-golden-crust-dark font-semibold text-sm">
+                <Label htmlFor="filter-max" className="text-stone-900 dark:text-stone-100 font-semibold text-sm">
                   Max Amount
                 </Label>
                 <Input
@@ -273,7 +273,7 @@ export function EnhancedRecentExpenses({
                   placeholder="$999.99"
                   value={maxAmount ?? ""}
                   onChange={(e) => setMaxAmount(e.target.value ? parseFloat(e.target.value) : null)}
-                  className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark h-9"
+                  className="h-9"
                 />
               </div>
             </div>

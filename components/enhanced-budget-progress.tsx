@@ -78,9 +78,9 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
   }
 
   return (
-    <Card className="bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-md">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-golden-crust-dark">
+        <CardTitle className="flex items-center gap-2 text-stone-900 dark:text-stone-100">
           <Target className="h-5 w-5" />
           Budget Tracker
         </CardTitle>
@@ -152,7 +152,7 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
                       variant="ghost"
                       size="icon"
                       onClick={() => onEdit(budget)}
-                      className="h-11 w-11 hover:bg-amber-100 text-golden-crust-primary hover:text-golden-crust-dark"
+                      className="h-11 w-11 hover:bg-amber-100 dark:hover:bg-amber-950/40 text-amber-700 dark:text-amber-400 hover:text-stone-900 dark:text-stone-100"
                       aria-label={`Edit ${categoryInfo?.label || budget.category} budget`}
                     >
                       <Pencil className="h-5 w-5" />

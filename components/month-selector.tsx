@@ -64,7 +64,7 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
   const isCurrentMonth = year === today.getFullYear() && month === today.getMonth() + 1
 
   return (
-    <div className="flex items-center gap-1 bg-white/80 rounded-lg px-2 py-1.5 border-2 border-amber-300 shadow-sm">
+    <div className="flex items-center gap-1 rounded-lg px-2 py-1.5 border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <Popover open={calendarOpen} onOpenChange={(open) => {
         setCalendarOpen(open)
         if (open) {
@@ -75,34 +75,34 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 hover:bg-amber-100"
+            className="h-10 w-10 hover:bg-amber-100 dark:hover:bg-amber-950/40"
             aria-label="Open calendar"
           >
-            <CalendarIcon className="h-5 w-5 text-amber-700 cursor-pointer" />
+            <CalendarIcon className="h-5 w-5 text-amber-700 dark:text-amber-400 cursor-pointer" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-80 p-4 bg-white border-2 border-amber-200" align="center">
+        <PopoverContent className="w-80 p-4" align="center">
           <div className="space-y-4">
             {/* Year selector */}
             <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-gray-700">Year</span>
+              <span className="text-sm font-semibold text-stone-700 dark:text-stone-300">Year</span>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8 border-amber-300 hover:bg-amber-50"
+                  className="h-8 w-8"
                   onClick={() => setPickerYear(pickerYear - 1)}
                   aria-label="Previous year"
                 >
                   <ChevronDown className="h-4 w-4" />
                 </Button>
-                <span className="text-lg font-bold text-amber-900 min-w-[60px] text-center">
+                <span className="text-lg font-semibold tabular-nums text-stone-900 dark:text-stone-100 min-w-[60px] text-center">
                   {pickerYear}
                 </span>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8 border-amber-300 hover:bg-amber-50"
+                  className="h-8 w-8"
                   onClick={() => setPickerYear(pickerYear + 1)}
                   aria-label="Next year"
                 >
@@ -113,7 +113,7 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
 
             {/* Month grid */}
             <div>
-              <span className="text-sm font-semibold text-gray-700">Month</span>
+              <span className="text-sm font-semibold text-stone-700 dark:text-stone-300">Month</span>
               <div className="grid grid-cols-3 gap-2 mt-2">
                 {monthNames.map((monthName, index) => {
                   const isSelected = index === month - 1 && pickerYear === year
@@ -126,10 +126,10 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
                       size="sm"
                       className={`
                         ${isSelected
-                          ? 'bg-amber-600 hover:bg-amber-700 text-white font-semibold'
-                          : 'border-amber-200 hover:bg-amber-50 text-gray-700'
+                          ? 'bg-amber-500 hover:bg-amber-600 text-white font-medium dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-amber-950'
+                          : 'text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800'
                         }
-                        ${isCurrent && !isSelected ? 'ring-2 ring-amber-400' : ''}
+                        ${isCurrent && !isSelected ? 'ring-2 ring-amber-500' : ''}
                       `}
                       onClick={() => handleMonthSelect(index, pickerYear)}
                     >
@@ -141,11 +141,11 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
             </div>
 
             {/* Quick actions */}
-            <div className="flex justify-between pt-2 border-t border-amber-100">
+            <div className="flex justify-between pt-2 border-t border-stone-200 dark:border-stone-800">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-amber-700 hover:bg-amber-50"
+                className="text-amber-700 dark:text-amber-400 hover:bg-stone-100 dark:hover:bg-stone-800"
                 onClick={() => {
                   const now = new Date()
                   handleMonthSelect(now.getMonth(), now.getFullYear())
@@ -161,15 +161,15 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
       <Button
         variant="ghost"
         size="icon"
-        className="h-10 w-10 hover:bg-amber-100"
+        className="h-10 w-10 hover:bg-stone-100 dark:hover:bg-stone-800"
         onClick={goToPrevMonth}
         aria-label="Previous month"
       >
-        <ChevronLeft className="h-5 w-5 text-amber-700" />
+        <ChevronLeft className="h-5 w-5 text-amber-700 dark:text-amber-400" />
       </Button>
 
       <div className="w-[140px] text-center">
-        <span className="text-sm font-semibold text-amber-900">
+        <span className="text-sm font-semibold tabular-nums text-stone-900 dark:text-stone-100">
           {displayMonth}
         </span>
       </div>
@@ -177,11 +177,11 @@ export function MonthSelector({ selectedMonth, onMonthChange }: MonthSelectorPro
       <Button
         variant="ghost"
         size="icon"
-        className="h-10 w-10 hover:bg-amber-100"
+        className="h-10 w-10 hover:bg-stone-100 dark:hover:bg-stone-800"
         onClick={goToNextMonth}
         aria-label="Next month"
       >
-        <ChevronRight className="h-5 w-5 text-amber-700" />
+        <ChevronRight className="h-5 w-5 text-amber-700 dark:text-amber-400" />
       </Button>
     </div>
   )

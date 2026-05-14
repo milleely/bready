@@ -29,7 +29,7 @@ export function BudgetAllocationCard({
       ...budgetAllocation.wants,
       color: "bg-amber-500",
       textColor: "text-amber-600",
-      bgColor: "bg-amber-50",
+      bgColor: "bg-amber-50 dark:bg-amber-950/30",
     },
     {
       ...budgetAllocation.savings,
@@ -40,11 +40,11 @@ export function BudgetAllocationCard({
   ]
 
   return (
-    <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 shadow-xl">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardContent className="pt-6 flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
-          <div className="p-2 rounded-lg bg-amber-100">
+          <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-950/40">
             <PieChart className="h-5 w-5 text-amber-600" />
           </div>
           <div className="flex-1">
@@ -54,7 +54,7 @@ export function BudgetAllocationCard({
         </div>
 
         {/* Total Monthly Income */}
-        <div className="mb-4 p-3 rounded-lg bg-white border border-[hsl(var(--border-light-crust))]">
+        <div className="mb-4 p-3 rounded-lg bg-white border border-stone-200 dark:border-stone-800">
           <p className="text-xs text-stone-600">Monthly Income</p>
           <p className="text-2xl font-bold text-stone-900">
             ${budgetAllocation.totalMonthlyIncome.toLocaleString("en-US", {
@@ -68,7 +68,7 @@ export function BudgetAllocationCard({
           {allocations.map((allocation) => (
             <div
               key={allocation.label}
-              className={`p-4 rounded-lg border border-[hsl(var(--border-light-crust))] ${allocation.bgColor}`}
+              className={`p-4 rounded-lg border border-stone-200 dark:border-stone-800 ${allocation.bgColor}`}
             >
               <div className="flex items-center justify-between gap-3 mb-2">
                 <div className="flex items-center gap-2 min-w-0">
@@ -88,7 +88,7 @@ export function BudgetAllocationCard({
         </div>
 
         {/* Info Footer */}
-        <div className="mt-auto p-3 rounded-lg bg-white border border-[hsl(var(--border-light-crust))]">
+        <div className="mt-auto p-3 rounded-lg bg-white border border-stone-200 dark:border-stone-800">
           <p className="text-xs text-stone-600">
             💡 <strong>Budget Allocation:</strong> Standard rule - balanced approach to needs, wants, and savings
           </p>

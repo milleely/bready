@@ -26,7 +26,7 @@ export function NotificationSettingsPreview({ userEmail }: NotificationSettingsP
   const selectedRecurringDays = ["1", "3", "7"]
 
   return (
-    <Card className="bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-sm">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bell className="h-5 w-5" />
@@ -44,7 +44,7 @@ export function NotificationSettingsPreview({ userEmail }: NotificationSettingsP
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Coming Soon Banner */}
-        <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-md">
+        <div className="bg-amber-50 dark:bg-amber-950/30 border-l-4 border-amber-500 p-4 rounded-md">
           <div className="flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
             <div className="flex-1">

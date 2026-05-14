@@ -34,7 +34,7 @@ export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWo
   const isNetWorthUp = netWorthChange >= 0
 
   return (
-    <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 shadow-xl">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardContent className="pt-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-3 rounded-lg bg-amber-100">
@@ -81,7 +81,7 @@ export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWo
         {/* Financial Breakdown */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Total Assets */}
-          <div className="p-4 rounded-lg border border-[hsl(var(--border-light-crust))] bg-emerald-50">
+          <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-emerald-50">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="h-4 w-4 text-emerald-600" />
               <span className="text-sm font-medium text-stone-700">Assets</span>
@@ -92,7 +92,7 @@ export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWo
           </div>
 
           {/* Total Liabilities */}
-          <div className="p-4 rounded-lg border border-[hsl(var(--border-light-crust))] bg-red-50">
+          <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-red-50">
             <div className="flex items-center gap-2 mb-2">
               <TrendingDown className="h-4 w-4 text-red-600" />
               <span className="text-sm font-medium text-stone-700">Liabilities</span>
@@ -103,7 +103,7 @@ export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWo
           </div>
 
           {/* Monthly Savings Rate */}
-          <div className="p-4 rounded-lg border border-[hsl(var(--border-light-crust))] bg-amber-50">
+          <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-amber-50 dark:bg-amber-950/30">
             <div className="flex items-center gap-2 mb-2">
               <PiggyBank className="h-4 w-4 text-amber-600" />
               <span className="text-sm font-medium text-stone-700">Savings Rate</span>
@@ -125,14 +125,14 @@ export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWo
         <div className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Monthly Income */}
-            <div className="p-4 rounded-lg border border-[hsl(var(--border-light-crust))] bg-emerald-50">
+            <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-emerald-50">
               <p className="text-sm font-medium text-stone-700 mb-2">Monthly Income</p>
               <p className="text-2xl font-bold text-emerald-600">
                 ${summary.monthlyIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </p>
             </div>
             {/* Monthly Expenses */}
-            <div className="p-4 rounded-lg border border-[hsl(var(--border-light-crust))] bg-red-50">
+            <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-red-50">
               <div className="flex items-center gap-2 mb-2">
                 <p className="text-sm font-medium text-stone-700">Monthly Expenses</p>
                 {onEditExpenses && (
@@ -140,7 +140,7 @@ export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWo
                     onClick={onEditExpenses}
                     size="sm"
                     variant="ghost"
-                    className="h-6 px-2 text-xs hover:bg-amber-100"
+                    className="h-6 px-2 text-xs hover:bg-amber-100 dark:hover:bg-amber-950/40"
                   >
                     <Pencil className="h-3 w-3 mr-1" />
                     Edit

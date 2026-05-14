@@ -77,7 +77,7 @@ export function UserManagement({ users, onRefresh }: UserManagementProps) {
   }
 
   return (
-    <Card className="bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-sm">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -97,7 +97,7 @@ export function UserManagement({ users, onRefresh }: UserManagementProps) {
           {users.map((user) => (
             <div
               key={user.id}
-              className="bg-white/60 backdrop-blur-sm border-2 border-golden-crust-primary/40 rounded-lg p-4 hover:shadow-md transition-shadow"
+              className="bg-white/60 backdrop-blur-sm border-2 border-stone-200 dark:border-stone-800 rounded-lg p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -108,9 +108,9 @@ export function UserManagement({ users, onRefresh }: UserManagementProps) {
                     {user.name.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-golden-crust-dark truncate">{user.name}</p>
+                    <p className="font-semibold text-stone-900 dark:text-stone-100 truncate">{user.name}</p>
                     {user.email && (
-                      <p className="text-sm text-golden-crust-dark/70 truncate">{user.email}</p>
+                      <p className="text-sm text-stone-600 dark:text-stone-400 truncate">{user.email}</p>
                     )}
                   </div>
                 </div>
@@ -119,7 +119,7 @@ export function UserManagement({ users, onRefresh }: UserManagementProps) {
                     variant="ghost"
                     size="icon"
                     onClick={() => setEditingUser(user)}
-                    className="h-11 w-11 hover:bg-amber-100 text-golden-crust-dark"
+                    className="h-11 w-11 hover:bg-amber-100 dark:hover:bg-amber-950/40 text-stone-900 dark:text-stone-100"
                     aria-label={`Edit ${user.name}`}
                   >
                     <Edit className="h-5 w-5" />

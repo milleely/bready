@@ -546,7 +546,7 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
         <div className="flex items-center gap-2">
           <button
             onClick={handleCopyToNextMonth}
-            className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 transition-colors"
+            className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-950/40 transition-colors"
             title="Copy all data to next month"
           >
             <Copy className="h-4 w-4" />

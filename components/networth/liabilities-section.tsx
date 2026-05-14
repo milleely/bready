@@ -29,7 +29,7 @@ export function LiabilitiesSection({
   onDelete,
 }: LiabilitiesSectionProps) {
   return (
-    <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 shadow-xl">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardContent className="pt-6">
         {/* Header */}
         <div className="flex items-center justify-between gap-3 mb-4">
@@ -47,7 +47,7 @@ export function LiabilitiesSection({
           <Button
             onClick={onAdd}
             size="sm"
-            className="flex items-center shrink-0 text-xs md:text-sm bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600"
+            className="flex items-center shrink-0 text-xs md:text-sm bg-amber-500 hover:bg-amber-600 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-amber-950"
           >
             <Plus className="h-4 w-4 mr-1" />
             Add Liability
@@ -79,7 +79,7 @@ export function LiabilitiesSection({
                   {categoryGroup.items.map((liability) => (
                     <div
                       key={liability.id}
-                      className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white border border-[hsl(var(--border-light-crust))] hover:border-[hsl(var(--border-golden-crust))] transition-colors"
+                      className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white border border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:border-stone-700 transition-colors"
                     >
                       <div className="flex-1 min-w-0 mr-3">
                         <p className="font-medium text-stone-900 truncate">{liability.name}</p>

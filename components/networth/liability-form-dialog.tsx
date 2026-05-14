@@ -149,10 +149,10 @@ export function LiabilityFormDialog({
               value={category}
               onValueChange={(value) => setCategory(value as LiabilityCategory)}
             >
-              <SelectTrigger id="liability-category" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
+              <SelectTrigger id="liability-category" className="">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark max-h-[280px]">
+              <SelectContent className="max-h-[280px]">
                 {LIABILITY_CATEGORIES.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value}>
                     {cat.label}
@@ -259,7 +259,7 @@ export function LiabilityFormDialog({
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600"
+              className="flex-1 bg-amber-500 hover:bg-amber-600 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-amber-950"
               disabled={isSaving}
             >
               {isSaving ? "Saving..." : isEditing ? "Update" : "Add"}

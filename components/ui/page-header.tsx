@@ -23,11 +23,11 @@ export function PageHeader({
       {...props}
     >
       <div className="min-w-0 flex-1">
-        <h1 className="text-2xl font-bold text-stone-800 sm:text-3xl">
+        <h1 className="font-display text-2xl font-semibold tracking-tight text-stone-900 dark:text-stone-100 sm:text-3xl">
           {title}
         </h1>
         {description && (
-          <p className="mt-1 text-sm text-stone-600 sm:text-base">{description}</p>
+          <p className="mt-1 text-sm text-stone-600 dark:text-stone-400 sm:text-base">{description}</p>
         )}
       </div>
       {actions && (

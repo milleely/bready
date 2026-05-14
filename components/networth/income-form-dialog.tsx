@@ -142,10 +142,10 @@ export function IncomeFormDialog({
           <div className="space-y-2">
             <Label htmlFor="income-frequency">Frequency</Label>
             <Select value={frequency} onValueChange={(value) => setFrequency(value as IncomeFrequency)}>
-              <SelectTrigger id="income-frequency" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
+              <SelectTrigger id="income-frequency" className="">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark max-h-[280px]">
+              <SelectContent className="max-h-[280px]">
                 {INCOME_FREQUENCIES.map((freq) => (
                   <SelectItem key={freq.value} value={freq.value}>
                     {freq.label}
@@ -168,7 +168,7 @@ export function IncomeFormDialog({
             </Button>
             <Button
               type="submit"
-              className="flex-1 bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600"
+              className="flex-1 bg-amber-500 hover:bg-amber-600 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-amber-950"
               disabled={isSaving}
             >
               {isSaving ? "Saving..." : isEditing ? "Update" : "Add"}

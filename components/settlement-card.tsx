@@ -49,15 +49,15 @@ export function SettlementCard({ settlements, onMarkAsPaid }: SettlementCardProp
   }
 
   return (
-    <Card className="bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-md">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-golden-crust-primary/20 rounded-lg">
-            <DollarSign className="h-6 w-6 text-golden-crust-primary" />
+          <div className="p-2 bg-amber-100 dark:bg-amber-950/40 rounded-lg">
+            <DollarSign className="h-6 w-6 text-amber-700 dark:text-amber-400" />
           </div>
           <div>
-            <CardTitle className="text-golden-crust-dark">Settle Up</CardTitle>
-            <CardDescription className="text-golden-crust-dark/70">
+            <CardTitle className="text-stone-900 dark:text-stone-100">Settle Up</CardTitle>
+            <CardDescription className="text-stone-600 dark:text-stone-400">
               {hasSettlements
                 ? "Balance settlements for shared expenses"
                 : "Everyone is settled up!"}
@@ -75,7 +75,7 @@ export function SettlementCard({ settlements, onMarkAsPaid }: SettlementCardProp
               return (
                 <div
                   key={`${settlement.from.id}-${settlement.to.id}-${index}`}
-                  className="bg-white/60 backdrop-blur-sm border-2 border-golden-crust-primary/40 rounded-lg p-4 hover:shadow-md transition-shadow"
+                  className="bg-white/60 backdrop-blur-sm border-2 border-stone-200 dark:border-stone-800 rounded-lg p-4 hover:shadow-md transition-shadow"
                 >
                   <div className="flex flex-col sm:grid sm:grid-cols-3 items-center gap-4">
                     {/* From User */}
@@ -87,33 +87,33 @@ export function SettlementCard({ settlements, onMarkAsPaid }: SettlementCardProp
                         {settlement.from.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-golden-crust-dark truncate">
+                        <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 truncate">
                           {settlement.from.name}
                         </p>
-                        <p className="text-xs text-golden-crust-dark/70">owes</p>
+                        <p className="text-xs text-stone-600 dark:text-stone-400">owes</p>
                       </div>
                     </div>
 
                     {/* Arrow and Amount - Centered */}
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
                       <div className="text-center">
-                        <p className="text-2xl font-extrabold text-golden-crust-primary whitespace-nowrap">
+                        <p className="text-2xl font-extrabold text-amber-700 dark:text-amber-400 whitespace-nowrap">
                           {formatCurrency(settlement.amount)}
                         </p>
                       </div>
                       {/* Down arrow on mobile, right arrow on desktop */}
-                      <ArrowDown className="h-6 w-6 text-golden-crust-primary flex-shrink-0 sm:hidden" />
-                      <ArrowRight className="h-6 w-6 text-golden-crust-primary flex-shrink-0 hidden sm:block" />
+                      <ArrowDown className="h-6 w-6 text-amber-700 dark:text-amber-400 flex-shrink-0 sm:hidden" />
+                      <ArrowRight className="h-6 w-6 text-amber-700 dark:text-amber-400 flex-shrink-0 hidden sm:block" />
                     </div>
 
                     {/* To User + Button */}
                     <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 flex-1 w-full sm:w-auto">
                       <div className="flex items-center gap-3 flex-1 w-full sm:w-auto">
                         <div className="flex-1 min-w-0 sm:text-right">
-                          <p className="text-sm font-semibold text-golden-crust-dark truncate">
+                          <p className="text-sm font-semibold text-stone-900 dark:text-stone-100 truncate">
                             {settlement.to.name}
                           </p>
-                          <p className="text-xs text-golden-crust-dark/70">receives</p>
+                          <p className="text-xs text-stone-600 dark:text-stone-400">receives</p>
                         </div>
                         <div
                           className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md flex-shrink-0"
@@ -146,7 +146,7 @@ export function SettlementCard({ settlements, onMarkAsPaid }: SettlementCardProp
                 </div>
               )
             })}
-            <div className="text-xs text-golden-crust-dark/60 text-center mt-4 font-medium">
+            <div className="text-xs text-stone-900 dark:text-stone-100/60 text-center mt-4 font-medium">
               {settlements.length} {settlements.length === 1 ? 'settlement' : 'settlements'} needed
             </div>
           </div>
@@ -155,10 +155,10 @@ export function SettlementCard({ settlements, onMarkAsPaid }: SettlementCardProp
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 toast-texture-subtle mb-4">
               <CheckCircle2 className="h-8 w-8 text-amber-600" />
             </div>
-            <h3 className="text-lg font-bold text-golden-crust-dark mb-2">
+            <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100 mb-2">
               All Settled Up!
             </h3>
-            <p className="text-sm text-golden-crust-dark/70">
+            <p className="text-sm text-stone-600 dark:text-stone-400">
               No outstanding balances for shared expenses this month.
             </p>
           </div>

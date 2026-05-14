@@ -89,7 +89,7 @@ export function ExpenseOverrideDialog({
 
         <div className="space-y-4 mt-4">
           {/* Manual Override Toggle */}
-          <div className="flex items-center justify-between p-4 rounded-lg bg-amber-50 border border-amber-200">
+          <div className="flex items-center justify-between p-4 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
             <div>
               <Label htmlFor="use-override" className="text-sm font-medium">
                 Use Manual Override
@@ -141,7 +141,7 @@ export function ExpenseOverrideDialog({
             </Button>
             <Button
               onClick={handleSave}
-              className="flex-1 bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600"
+              className="flex-1 bg-amber-500 hover:bg-amber-600 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-amber-950"
               disabled={isSaving}
             >
               <Check className="h-4 w-4 mr-1" />

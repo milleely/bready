@@ -165,14 +165,14 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
                 variant="ghost"
                 size="sm"
                 aria-label="View receipt"
-                className="h-11 w-11 p-0 hover:bg-golden-crust-light/30"
+                className="h-11 w-11 p-0 hover:bg-stone-100 dark:bg-stone-800"
                 onClick={() => {
                   setSelectedReceiptUrl(expense.receiptUrl!)
                   setLightboxOpen(true)
                 }}
                 title="View receipt"
               >
-                <FileImage className="h-5 w-5 text-golden-crust-primary" />
+                <FileImage className="h-5 w-5 text-amber-700 dark:text-amber-400" />
               </Button>
             ) : (
               <span className="text-gray-400" title="No receipt">-</span>
@@ -374,11 +374,11 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
           onChange={(event) =>
             table.getColumn("description")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm bg-white border-golden-crust-primary/40 focus-visible:ring-golden-crust-primary"
+          className="max-w-sm bg-white border-stone-200 dark:border-stone-800 focus-visible:ring-golden-crust-primary"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto border-golden-crust-primary/40 hover:bg-golden-crust-light/30">
+            <Button variant="outline" className="ml-auto border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:bg-stone-800">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -403,14 +403,14 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border border-golden-crust-primary/40 bg-white/50 overflow-x-auto">
+      <div className="rounded-md border border-stone-200 dark:border-stone-800 bg-white/50 overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="border-golden-crust-primary/40 hover:bg-golden-crust-light/20">
+              <TableRow key={headerGroup.id} className="border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:bg-stone-800">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id} className="text-golden-crust-dark">
+                    <TableHead key={header.id} className="text-stone-900 dark:text-stone-100">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -433,7 +433,7 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={`border-golden-crust-primary/20 hover:bg-golden-crust-light/20 ${isOptimistic ? 'opacity-70' : ''} ${isRecurring ? 'bg-purple-50/30 hover:bg-purple-50/50' : ''}`}
+                    className={`border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:bg-stone-800 ${isOptimistic ? 'opacity-70' : ''} ${isRecurring ? 'bg-purple-50/30 hover:bg-purple-50/50' : ''}`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
@@ -470,7 +470,7 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="border-golden-crust-primary/40 hover:bg-golden-crust-light/30"
+            className="border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:bg-stone-800"
           >
             Previous
           </Button>
@@ -479,7 +479,7 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="border-golden-crust-primary/40 hover:bg-golden-crust-light/30"
+            className="border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:bg-stone-800"
           >
             Next
           </Button>

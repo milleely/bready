@@ -1,6 +1,13 @@
 @import "tailwindcss";
 
 /*
+ * Dark mode pivots on a class added by next-themes (attribute="class"), not the
+ * OS prefers-color-scheme query. This custom variant makes `dark:` utilities
+ * apply when `.dark` is present on <html> or any ancestor.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
  * =============================================================================
  * Bready Design Tokens — usage contract
  * =============================================================================
@@ -59,6 +66,9 @@
   --color-ring: 43 75% 63%;
   --radius: 1rem;
 
+  /* Display font (Fraunces) — exposed by next/font in app/layout.tsx */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+
   /* Chart colors */
   --chart-1: 43 75% 63%; /* #e3c462 */
   --chart-2: 48 60% 87%; /* #e7d791 */
@@ -93,32 +103,53 @@
   --shadow-card-prominent: 0 16px 40px rgba(146, 64, 14, 0.20), 0 6px 14px rgba(146, 64, 14, 0.10);
 }
 
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-background: 25 35% 12%;
-    --color-foreground: 40 25% 92%;
-    --color-card: 25 30% 15%;
-    --color-card-foreground: 40 25% 92%;
-    --color-popover: 25 30% 15%;
-    --color-popover-foreground: 40 25% 92%;
-    --color-primary: 38 85% 60%;
-    --color-primary-foreground: 25 35% 12%;
-    --color-secondary: 25 25% 22%;
-    --color-secondary-foreground: 40 25% 92%;
-    --color-muted: 25 20% 20%;
-    --color-muted-foreground: 40 15% 65%;
-    --color-accent: 25 30% 25%;
-    --color-accent-foreground: 40 25% 92%;
-    --color-destructive: 0 65% 45%;
-    --color-destructive-foreground: 40 25% 92%;
-    --color-border: 25 20% 25%;
-    --color-input: 25 20% 25%;
-    --color-ring: 38 85% 60%;
-  }
+/*
+ * Dark mode token overrides — applied when next-themes adds `.dark` to <html>.
+ * Canvas darkens to stone-950; brand amber brightens to amber-400 so the
+ * accent stays warm against the cooler dark surface.
+ */
+.dark {
+  --color-background: 24 6% 10%;     /* stone-950 */
+  --color-foreground: 40 20% 92%;
+  --color-card: 24 6% 14%;           /* stone-900 */
+  --color-card-foreground: 40 20% 92%;
+  --color-popover: 24 6% 14%;
+  --color-popover-foreground: 40 20% 92%;
+  --color-primary: 38 92% 60%;       /* amber-400 — brand brightens, canvas darkens */
+  --color-primary-foreground: 24 6% 10%;
+  --color-secondary: 24 5% 22%;
+  --color-secondary-foreground: 40 20% 92%;
+  --color-muted: 24 5% 18%;
+  --color-muted-foreground: 40 10% 65%;
+  --color-accent: 24 5% 22%;
+  --color-accent-foreground: 40 20% 92%;
+  --color-destructive: 0 65% 50%;
+  --color-destructive-foreground: 40 20% 92%;
+  --color-border: 24 5% 22%;         /* stone-800 */
+  --color-input: 24 5% 22%;
+  --color-ring: 38 92% 60%;
+
+  /* Elevation in dark mode uses softer black shadows — warm tint disappears */
+  --shadow-card-rest: 0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.15);
+  --shadow-card-hover: 0 6px 16px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.20);
+  --shadow-card-prominent: 0 16px 40px rgba(0, 0, 0, 0.45), 0 6px 14px rgba(0, 0, 0, 0.25);
 }
 
 body {
   font-feature-settings: "rlig" 1, "calt" 1;
+  /* Currency and tabular data align to a grid by default — opt out with .font-prop */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Display font (Fraunces) — for hero numerals and page titles only */
+.font-display {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  letter-spacing: -0.02em;
+}
+
+/* Opt-out when proportional figures are wanted (rare in this app) */
+.font-prop {
+  font-variant-numeric: normal;
 }
 
 /* Golden Crust Gradient Text */
@@ -216,8 +247,16 @@ select:focus-visible {
  * Tailwind utilities. Each maps to a single visual purpose so a future
  * palette tweak lives in one place per class.
  */
+/*
+ * Page canvas — neutralized to stone so amber accents can carry the brand
+ * without competing. Amber lives in the hero, the brand mark, and CTAs.
+ */
 .surface-page-warm {
-  background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 50%, #fefce8 100%);
+  background: linear-gradient(180deg, #fafaf9 0%, #f5f5f4 100%); /* stone-50 → stone-100 */
+}
+
+.dark .surface-page-warm {
+  background: linear-gradient(180deg, #1c1917 0%, #0c0a09 100%); /* stone-900 → stone-950 */
 }
 
 .surface-card-subtle {
@@ -312,6 +351,22 @@ select:focus-visible {
 
 .animate-breathe {
   animation: breathe 1.5s ease-in-out infinite;
+}
+
+/*
+ * Reduced motion — turn off decorative loops for users who request it.
+ * The motion library handles JS-driven animations separately via the
+ * useReducedMotion hook in /hooks/use-reduced-motion.ts.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .animate-toasting,
+  .animate-breathe,
+  .animate-fade-in {
+    animation: none;
+  }
+  .toast-mascot-3d:hover {
+    transform: none;
+  }
 }
 
 /* Toast Mascot 3D Depth Enhancements */

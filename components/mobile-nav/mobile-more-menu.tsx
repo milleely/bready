@@ -63,11 +63,11 @@ export function MobileMoreMenu({ isOpen, onClose, month }: MobileMoreMenuProps) 
         </div>
 
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pb-4 border-b border-[hsl(var(--border-golden-crust))]">
+        <div className="flex items-center justify-between px-6 pb-4 border-b border-stone-300 dark:border-stone-700">
           <h2 className="text-lg font-semibold text-amber-900">More</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-amber-100 transition-colors"
+            className="p-2 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-950/40 transition-colors"
             aria-label="Close menu"
           >
             <X className="h-5 w-5 text-amber-700" />
@@ -88,13 +88,13 @@ export function MobileMoreMenu({ isOpen, onClose, month }: MobileMoreMenuProps) 
                 className={cn(
                   "flex items-center gap-4 px-4 py-4 rounded-xl transition-all",
                   isActive
-                    ? "bg-amber-50 text-amber-900 toast-texture-subtle"
-                    : "text-amber-800 hover:bg-amber-50"
+                    ? "bg-amber-50 dark:bg-amber-950/30 text-amber-900 toast-texture-subtle"
+                    : "text-amber-800 hover:bg-amber-50 dark:hover:bg-amber-950/40"
                 )}
               >
                 <div className={cn(
                   "p-2.5 rounded-lg",
-                  isActive ? "bg-amber-100" : "bg-amber-50"
+                  isActive ? "bg-amber-100 dark:bg-amber-950/40" : "bg-amber-50 dark:bg-amber-950/30"
                 )}>
                   <Icon className={cn(
                     "h-5 w-5",

@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState, lazy } from "react"
 import { EnhancedBudgetProgress } from "@/components/enhanced-budget-progress"
 import { Skeleton } from "@/components/ui/skeleton"
 import { EmptyState } from "@/components/ui/empty-state"
+import { PageHeader } from "@/components/ui/page-header"
 import { Target } from "lucide-react"
 
 // Lazy load dialog component (only when opened)
@@ -133,27 +134,44 @@ export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
     return (
       <div className="space-y-6" role="status" aria-busy="true">
         <span className="sr-only">Loading budgets</span>
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
+        {/* PageHeader skeleton (title + description on left, action button on right) */}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
+          <div className="space-y-2 min-w-0 flex-1">
             <Skeleton className="h-8 w-56" />
             <Skeleton className="hidden md:block h-4 w-72" />
           </div>
-          <Skeleton className="h-10 w-32" />
+          <Skeleton className="h-10 w-32 rounded-md" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-xl surface-card-subtle elevation-rest p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-5 w-24" />
-                <Skeleton className="h-4 w-12" />
+
+        {/* Single wrapping Card matching EnhancedBudgetProgress: title + vertical stack of budget rows */}
+        <div className="rounded-xl border border-stone-200 bg-card shadow-sm dark:border-stone-800">
+          <div className="p-6 pb-2">
+            <Skeleton className="h-6 w-40" />
+          </div>
+          <div className="p-6 pt-2 space-y-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-xl border border-stone-200 bg-stone-50 p-4 space-y-3 dark:border-stone-800 dark:bg-stone-950/50"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <Skeleton className="h-10 w-10 rounded-lg flex-shrink-0" />
+                    <div className="space-y-2 min-w-0 flex-1">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-3 w-20" />
+                      <Skeleton className="h-3 w-40" />
+                    </div>
+                  </div>
+                  <div className="flex gap-2 flex-shrink-0">
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                    <Skeleton className="h-9 w-9 rounded-md" />
+                  </div>
+                </div>
+                <Skeleton className="h-2 w-full rounded-full" />
               </div>
-              <Skeleton className="h-2 w-full rounded-full" />
-              <div className="flex items-center justify-between">
-                <Skeleton className="h-4 w-20" />
-                <Skeleton className="h-4 w-16" />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     )
@@ -161,41 +179,39 @@ export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">{getMonthName(selectedMonth)} Budgets</h1>
-          <p className="hidden md:block text-muted-foreground mt-1">
-            Set and track your spending limits for each category.
-          </p>
-        </div>
-        <Suspense fallback={null}>
-          <BudgetDialog
-            users={users}
-            onBudgetSet={fetchData}
-            budget={editingBudget}
-            {...(editingBudget && {
-              open: true,
-              onOpenChange: (open: boolean) => {
-                if (!open) {
-                  setEditingBudget(undefined)
+      <PageHeader
+        title={`${getMonthName(selectedMonth)} budgets`}
+        description="Limits and how they're breathing."
+        actions={
+          <Suspense fallback={null}>
+            <BudgetDialog
+              users={users}
+              onBudgetSet={fetchData}
+              budget={editingBudget}
+              {...(editingBudget && {
+                open: true,
+                onOpenChange: (open: boolean) => {
+                  if (!open) {
+                    setEditingBudget(undefined)
+                  }
                 }
-              }
-            })}
-          />
-        </Suspense>
-      </div>
+              })}
+            />
+          </Suspense>
+        }
+      />
 
       {budgets.length === 0 ? (
         <EmptyState
           icon={Target}
-          title="No budgets set yet"
-          description="Start tracking your spending by setting budgets for different categories."
+          title="No budgets yet"
+          description="Set a limit on any category to see how the month is breathing."
           action={
             <Suspense fallback={null}>
               <BudgetDialog users={users} onBudgetSet={fetchData} />
             </Suspense>
           }
-          className="rounded-xl border-2 border-dashed border-amber-200/60 bg-white"
+          className="rounded-xl border-2 border-dashed border-stone-200 bg-card dark:border-stone-700"
         />
       ) : (
         <EnhancedBudgetProgress

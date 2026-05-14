@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState, lazy } from "react"
 import { EnhancedRecentExpenses } from "@/components/enhanced-recent-expenses"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { PageHeader } from "@/components/ui/page-header"
 import { ChevronDown, ChevronUp, BarChart3, Plus } from "lucide-react"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -313,28 +314,81 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
     return (
       <div className="space-y-6" role="status" aria-busy="true">
         <span className="sr-only">Loading expenses</span>
+        {/* PageHeader skeleton */}
         <div className="space-y-2">
           <Skeleton className="h-8 w-64" />
-          <Skeleton className="h-4 w-80" />
+          <Skeleton className="h-4 w-72" />
         </div>
-        <div className="rounded-xl surface-card-subtle elevation-rest p-6 space-y-4">
-          <Skeleton className="h-6 w-44" />
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-20 rounded-lg" />
+
+        {/* Collapsible Spending Analytics card — header + 2-col chart cards inside */}
+        <div className="rounded-xl border border-stone-200 bg-card shadow-sm dark:border-stone-800">
+          <div className="flex items-center justify-between p-6 pb-4">
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-5 w-5 rounded-sm" />
+              <Skeleton className="h-5 w-40" />
+            </div>
+            <Skeleton className="h-8 w-16 rounded-md" />
+          </div>
+          <div className="grid gap-4 p-6 pt-0 sm:gap-6 md:grid-cols-2">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-xl border border-stone-200 bg-card dark:border-stone-800"
+              >
+                <div className="flex items-start justify-between gap-4 border-b border-stone-200 px-5 py-4 dark:border-stone-800">
+                  <div className="space-y-1.5 min-w-0">
+                    <Skeleton className="h-5 w-44" />
+                    <Skeleton className="h-3 w-56" />
+                  </div>
+                </div>
+                <div className="p-5">
+                  <Skeleton className="aspect-square w-full max-w-[260px] mx-auto rounded-full" />
+                </div>
+              </div>
             ))}
           </div>
         </div>
-        <div className="rounded-xl bg-white elevation-rest border border-amber-200/50 p-4 space-y-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-4">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-4 flex-1" />
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-4 w-16" />
-              <Skeleton className="h-4 w-20" />
+
+        {/* Recent Expenses card — header (title + export button) + filter row + table */}
+        <div className="rounded-xl border border-stone-200 bg-card shadow-sm dark:border-stone-800">
+          <div className="flex flex-row items-center justify-between p-6 pb-4">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-40" />
+              <Skeleton className="h-3 w-60" />
             </div>
-          ))}
+            <Skeleton className="h-9 w-28 rounded-md" />
+          </div>
+          <div className="space-y-4 px-6 pb-6">
+            {/* Filter button row */}
+            <div className="flex items-center justify-between">
+              <Skeleton className="h-8 w-24 rounded-md" />
+            </div>
+            {/* Table header row */}
+            <div className="hidden md:grid grid-cols-[100px_1fr_70px_120px_110px_90px_90px_40px] items-center gap-3 border-b border-stone-200 pb-2 dark:border-stone-800">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="h-3 w-full" />
+              ))}
+            </div>
+            {/* Table rows */}
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="grid grid-cols-[1fr_auto] md:grid-cols-[100px_1fr_70px_120px_110px_90px_90px_40px] items-center gap-3"
+              >
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full hidden md:block" />
+                <Skeleton className="h-6 w-6 rounded-sm hidden md:block" />
+                <Skeleton className="h-6 w-24 rounded-full hidden md:block" />
+                <div className="flex items-center gap-2 hidden md:flex">
+                  <Skeleton className="h-3 w-3 rounded-full" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <Skeleton className="h-6 w-20 rounded-full hidden md:block" />
+                <Skeleton className="h-4 w-16 ml-auto hidden md:block tabular-nums" />
+                <Skeleton className="h-6 w-6 rounded-full ml-auto hidden md:block" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     )
@@ -342,24 +396,22 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">{getMonthName(selectedMonth)} Expenses</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage all your transactions and track spending patterns.
-        </p>
-      </div>
+      <PageHeader
+        title={`${getMonthName(selectedMonth)} expenses`}
+        description="Every expense, every month."
+      />
 
       {/* Collapsible Analytics Section */}
       <Collapsible open={analyticsOpen} onOpenChange={setAnalyticsOpen}>
-        <Card className="border-amber-200 bg-gradient-to-br from-amber-50/50 to-orange-50/50">
+        <Card className="border-stone-200 bg-card dark:border-stone-800">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-amber-700" />
-                <CardTitle className="text-amber-900">Spending Analytics</CardTitle>
+                <BarChart3 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                <CardTitle className="font-display text-lg font-semibold text-stone-900 dark:text-stone-100">Spending analytics</CardTitle>
               </div>
               <CollapsibleTrigger asChild>
-                <Button variant="ghost" size="sm" className="hover:bg-amber-100">
+                <Button variant="ghost" size="sm" className="hover:bg-stone-100 dark:hover:bg-stone-800">
                   {analyticsOpen ? (
                     <>
                       <ChevronUp className="h-4 w-4 mr-2" />

@@ -86,12 +86,12 @@ export function ExportDialog({ users }: ExportDialogProps) {
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <Label htmlFor="user-filter" className="text-golden-crust-dark font-semibold">Filter by User (Optional)</Label>
+            <Label htmlFor="user-filter" className="text-stone-900 dark:text-stone-100 font-semibold">Filter by User (Optional)</Label>
             <Select value={filters.userId} onValueChange={(value) => setFilters({ ...filters, userId: value })}>
-              <SelectTrigger id="user-filter" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
+              <SelectTrigger id="user-filter" className="">
                 <SelectValue placeholder="All users" />
               </SelectTrigger>
-              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+              <SelectContent>
                 {users.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     {user.name}
@@ -102,12 +102,12 @@ export function ExportDialog({ users }: ExportDialogProps) {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="category-filter" className="text-golden-crust-dark font-semibold">Filter by Category (Optional)</Label>
+            <Label htmlFor="category-filter" className="text-stone-900 dark:text-stone-100 font-semibold">Filter by Category (Optional)</Label>
             <Select value={filters.category} onValueChange={(value) => setFilters({ ...filters, category: value })}>
-              <SelectTrigger id="category-filter" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
+              <SelectTrigger id="category-filter" className="">
                 <SelectValue placeholder="All categories" />
               </SelectTrigger>
-              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+              <SelectContent>
                 {categories.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value}>
                     <div className="flex items-center gap-2">
@@ -121,24 +121,24 @@ export function ExportDialog({ users }: ExportDialogProps) {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="start-date" className="text-golden-crust-dark font-semibold">Start Date (Optional)</Label>
+            <Label htmlFor="start-date" className="text-stone-900 dark:text-stone-100 font-semibold">Start Date (Optional)</Label>
             <Input
               id="start-date"
               type="date"
               value={filters.startDate}
               onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-              className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
+              className=""
             />
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="end-date" className="text-golden-crust-dark font-semibold">End Date (Optional)</Label>
+            <Label htmlFor="end-date" className="text-stone-900 dark:text-stone-100 font-semibold">End Date (Optional)</Label>
             <Input
               id="end-date"
               type="date"
               value={filters.endDate}
               onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-              className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
+              className=""
             />
           </div>
         </div>
@@ -148,14 +148,14 @@ export function ExportDialog({ users }: ExportDialogProps) {
             variant="outline"
             onClick={() => setOpen(false)}
             disabled={exporting}
-            className="border border-golden-crust-medium text-golden-crust-dark hover:bg-amber-100 font-semibold"
+            className="border border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 hover:bg-amber-100 dark:hover:bg-amber-950/40 font-semibold"
           >
             Cancel
           </Button>
           <Button
             onClick={handleExport}
             disabled={exporting}
-            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold shadow-lg"
+            className="bg-amber-500 hover:bg-amber-600 text-white font-medium shadow-sm dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-amber-950"
           >
             {exporting ? (
               <>

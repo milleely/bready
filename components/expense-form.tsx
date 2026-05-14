@@ -256,7 +256,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl text-golden-crust-dark">
+          <DialogTitle className="flex items-center gap-2 text-xl text-stone-900 dark:text-stone-100">
             {expense ? (
               <>Edit Expense</>
             ) : (
@@ -270,7 +270,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
 
         {/* Show warning if no users are loaded yet */}
         {users.length === 0 && (
-          <Alert className="bg-amber-50 border-amber-200 mt-4">
+          <Alert className="bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800 mt-4">
             <AlertDescription className="text-sm text-amber-900">
               ⚠️ Loading your household users... Please wait a moment before submitting.
             </AlertDescription>
@@ -318,7 +318,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
         <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-4 mt-2 sm:mt-4 min-w-0 overflow-hidden">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
             <div className="space-y-2">
-              <Label htmlFor="amount" className="text-golden-crust-dark font-semibold">Amount</Label>
+              <Label htmlFor="amount" className="text-stone-900 dark:text-stone-100 font-semibold">Amount</Label>
               <Input
                 id="amount"
                 type="number"
@@ -327,30 +327,30 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                 placeholder="0.00"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
+                className=""
                 required
               />
             </div>
             <div className="space-y-2 max-w-xs sm:max-w-none">
-              <Label htmlFor="date" className="text-golden-crust-dark font-semibold">Date</Label>
+              <Label htmlFor="date" className="text-stone-900 dark:text-stone-100 font-semibold">Date</Label>
               <Input
                 id="date"
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
+                className=""
                 required
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category" className="text-golden-crust-dark font-semibold">Category</Label>
+            <Label htmlFor="category" className="text-stone-900 dark:text-stone-100 font-semibold">Category</Label>
             <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-              <SelectTrigger className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
+              <SelectTrigger className="">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark max-h-[280px]">
+              <SelectContent className="max-h-[280px]">
                 {categories.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value}>
                     <div className="flex items-center gap-2">
@@ -365,24 +365,24 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-golden-crust-dark font-semibold">Description</Label>
+            <Label htmlFor="description" className="text-stone-900 dark:text-stone-100 font-semibold">Description</Label>
             <Input
               id="description"
               placeholder="What was this expense for?"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark placeholder:text-golden-crust-dark/60"
+              className="placeholder:text-stone-900 dark:text-stone-100/60"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="user" className="text-golden-crust-dark font-semibold">User</Label>
+            <Label htmlFor="user" className="text-stone-900 dark:text-stone-100 font-semibold">User</Label>
             <Select value={formData.userId} onValueChange={(value) => setFormData({ ...formData, userId: value })}>
-              <SelectTrigger className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
+              <SelectTrigger className="">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+              <SelectContent>
                 {users.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     <div className="flex items-center gap-2">
@@ -396,7 +396,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="receipt" className="text-golden-crust-dark font-semibold">Receipt (Optional)</Label>
+            <Label htmlFor="receipt" className="text-stone-900 dark:text-stone-100 font-semibold">Receipt (Optional)</Label>
             <div className="space-y-2">
               {/* Hidden file input */}
               <input
@@ -408,7 +408,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
               />
 
               {/* Fixed-dimension container - same size whether empty or with receipt */}
-              <div className="min-h-[48px] sm:min-h-[60px] flex items-center gap-2 p-2 sm:p-3 bg-amber-50/50 border border-golden-crust-medium rounded-md">
+              <div className="min-h-[48px] sm:min-h-[60px] flex items-center gap-2 p-2 sm:p-3 bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800 rounded-md">
                 {(selectedFile || receiptUrl) ? (
                   <>
                     {/* Thumbnail preview for images */}
@@ -416,19 +416,19 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                       <img
                         src={previewUrl}
                         alt="Receipt preview"
-                        className="h-12 w-12 object-cover rounded border border-golden-crust-medium flex-shrink-0"
+                        className="h-12 w-12 object-cover rounded border border-stone-200 dark:border-stone-800 flex-shrink-0"
                       />
                     ) : selectedFile?.type === 'application/pdf' ? (
-                      <FileText className="h-12 w-12 text-golden-crust-primary flex-shrink-0" />
+                      <FileText className="h-12 w-12 text-amber-700 dark:text-amber-400 flex-shrink-0" />
                     ) : (
-                      <ImageIcon className="h-12 w-12 text-golden-crust-primary flex-shrink-0" />
+                      <ImageIcon className="h-12 w-12 text-amber-700 dark:text-amber-400 flex-shrink-0" />
                     )}
 
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-golden-crust-dark font-medium truncate">
+                      <p className="text-sm text-stone-900 dark:text-stone-100 font-medium truncate">
                         {selectedFile ? selectedFile.name : 'Receipt attached'}
                       </p>
-                      <p className="text-xs text-golden-crust-dark/60">
+                      <p className="text-xs text-stone-900 dark:text-stone-100/60">
                         {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB` : 'Click view to see'}
                       </p>
                     </div>
@@ -440,7 +440,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                         variant="outline"
                         size="sm"
                         onClick={() => setShowPreview(true)}
-                        className="border-golden-crust-medium hover:bg-amber-100"
+                        className="border-stone-200 dark:border-stone-800 hover:bg-amber-100 dark:hover:bg-amber-950/40"
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -461,7 +461,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                     type="button"
                     variant="ghost"
                     onClick={() => document.getElementById('receipt')?.click()}
-                    className="w-full h-full text-golden-crust-dark hover:bg-amber-100"
+                    className="w-full h-full text-stone-900 dark:text-stone-100 hover:bg-amber-100 dark:hover:bg-amber-950/40"
                   >
                     <Upload className="mr-2 h-4 w-4" />
                     Upload Receipt (JPG, PNG, or PDF)
@@ -476,7 +476,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
                   variant="outline"
                   onClick={handleScanReceipt}
                   disabled={scanning}
-                  className="w-full border-2 border-amber-500 bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold toast-texture-subtle"
+                  className="w-full border-2 border-amber-500 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/40 text-amber-700 font-semibold toast-texture-subtle"
                 >
                   <Sparkles className="mr-2 h-4 w-4" />
                   {scanning ? 'Analyzing Receipt...' : 'Scan Receipt with AI'}
@@ -491,7 +491,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
               checked={formData.isShared}
               onCheckedChange={(checked) => setFormData({ ...formData, isShared: checked === true })}
             />
-            <Label htmlFor="shared" className="cursor-pointer text-golden-crust-dark">
+            <Label htmlFor="shared" className="cursor-pointer text-stone-900 dark:text-stone-100">
               This is a shared expense (split among all users)
             </Label>
           </div>
@@ -501,7 +501,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
               type="button"
               variant="outline"
               onClick={() => setOpen(false)}
-              className="border border-golden-crust-medium text-golden-crust-dark hover:bg-amber-100 font-semibold"
+              className="border border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 hover:bg-amber-100 dark:hover:bg-amber-950/40 font-semibold"
             >
               Cancel
             </Button>
@@ -527,13 +527,13 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
               <img
                 src={previewUrl}
                 alt="Receipt full preview"
-                className="w-full h-auto max-h-[70vh] object-contain rounded-md border border-golden-crust-medium"
+                className="w-full h-auto max-h-[70vh] object-contain rounded-md border border-stone-200 dark:border-stone-800"
               />
             ) : receiptUrl ? (
               <img
                 src={receiptUrl}
                 alt="Receipt full preview"
-                className="w-full h-auto max-h-[70vh] object-contain rounded-md border border-golden-crust-medium"
+                className="w-full h-auto max-h-[70vh] object-contain rounded-md border border-stone-200 dark:border-stone-800"
               />
             ) : (
               <p className="text-center text-gray-500">No preview available</p>

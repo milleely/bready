@@ -18,7 +18,7 @@ interface UserSelectorProps {
 
 export function UserSelector({ users, selectedUserId, onSelectUser }: UserSelectorProps) {
   return (
-    <Card className="border-[hsl(var(--border-light-crust))]/50 bg-gradient-to-br from-stone-50 to-stone-100 shadow-xl">
+    <Card className="border-stone-200 dark:border-stone-800/50 bg-gradient-to-br from-stone-50 to-stone-100 shadow-xl">
       <CardContent className="pt-6">
         <h2 className="text-lg font-semibold text-stone-900 mb-4">Select Household Member</h2>
         <p className="text-sm text-stone-600 mb-4">
@@ -34,8 +34,8 @@ export function UserSelector({ users, selectedUserId, onSelectUser }: UserSelect
                 flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all duration-200
                 ${
                   selectedUserId === user.id
-                    ? "border-amber-500 bg-amber-50 shadow-md"
-                    : "border-[hsl(var(--border-light-crust))] bg-white hover:border-[hsl(var(--border-golden-crust))] hover:shadow-sm"
+                    ? "border-amber-500 bg-amber-50 dark:bg-amber-950/30 shadow-md"
+                    : "border-stone-200 dark:border-stone-800 bg-white hover:border-stone-300 dark:border-stone-700 hover:shadow-sm"
                 }
               `}
             >

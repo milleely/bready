@@ -10,22 +10,25 @@ import { formatCurrency } from "@/lib/utils"
 
 interface SpendingSparklineProps {
   expenses: Array<{ date: string; amount: number }>
-  month?: string  // Format: "YYYY-MM" - shows all days of this month
-  days?: number   // Fallback: rolling N-day window from today
+  month?: string // Format: "YYYY-MM" - shows all days of this month
+  days?: number // Fallback: rolling N-day window from today
   className?: string
 }
 
-export default function SpendingSparkline({ expenses, month, days = 30, className }: SpendingSparklineProps) {
+export default function SpendingSparkline({
+  expenses,
+  month,
+  days = 30,
+  className,
+}: SpendingSparklineProps) {
   // Calculate date range based on month prop or fallback to rolling window
   const getDateRange = () => {
     if (month) {
-      // Use selected month - show all days from 1st to last day
-      const [year, monthNum] = month.split('-').map(Number)
+      const [year, monthNum] = month.split("-").map(Number)
       const startDate = new Date(year, monthNum - 1, 1)
-      const lastDay = new Date(year, monthNum, 0).getDate() // Last day of month
+      const lastDay = new Date(year, monthNum, 0).getDate()
       return { startDate, numDays: lastDay }
     }
-    // Fallback to rolling N-day window from today
     const today = new Date()
     const startDate = new Date(today)
     startDate.setDate(today.getDate() - days)
@@ -34,27 +37,22 @@ export default function SpendingSparkline({ expenses, month, days = 30, classNam
 
   const { startDate, numDays } = getDateRange()
 
-  // Create daily spending map
+  // Daily spending map
   const dailySpending = new Map<string, number>()
-
-  // Initialize all days with 0
   for (let i = 0; i < numDays; i++) {
     const date = new Date(startDate)
     date.setDate(startDate.getDate() + i)
-    // Format as YYYY-MM-DD in local timezone (avoid UTC shift from toISOString)
-    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+    const dateStr = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`
     dailySpending.set(dateStr, 0)
   }
 
-  // Aggregate expenses by date
-  expenses.forEach(exp => {
-    const expDate = exp.date.split('T')[0] // Get YYYY-MM-DD
+  expenses.forEach((exp) => {
+    const expDate = exp.date.split("T")[0]
     if (dailySpending.has(expDate)) {
       dailySpending.set(expDate, (dailySpending.get(expDate) || 0) + exp.amount)
     }
   })
 
-  // Convert to chart data
   const chartData = Array.from(dailySpending.entries())
     .map(([date, spending]) => ({ date, spending }))
     .sort((a, b) => a.date.localeCompare(b.date))
@@ -63,13 +61,13 @@ export default function SpendingSparkline({ expenses, month, days = 30, classNam
     return null
   }
 
-  // Calculate average spending for tooltip context
-  const avgSpending = chartData.reduce((sum, d) => sum + d.spending, 0) / chartData.length
+  const avgSpending =
+    chartData.reduce((sum, d) => sum + d.spending, 0) / chartData.length
 
   const chartConfig = {
     spending: {
-      label: "Daily Spending",
-      color: "rgba(255, 255, 255, 0.9)",
+      label: "Daily spending",
+      color: "hsl(var(--chart-1))",
     },
   } satisfies ChartConfig
 
@@ -77,40 +75,52 @@ export default function SpendingSparkline({ expenses, month, days = 30, classNam
     <ChartContainer config={chartConfig} className="h-full w-full aspect-auto">
       <AreaChart
         data={chartData}
-        margin={{ top: 0, right: -4, left: 0, bottom: 0 }}
+        margin={{ top: 4, right: 0, left: 0, bottom: 0 }}
+        accessibilityLayer
       >
         <defs>
           <linearGradient id="fillSpending" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(255, 255, 255, 0.6)" />
-            <stop offset="50%" stopColor="rgba(255, 255, 255, 0.25)" />
-            <stop offset="100%" stopColor="rgba(255, 255, 255, 0.05)" />
+            <stop offset="0%" stopColor="hsl(var(--chart-1))" stopOpacity={0.45} />
+            <stop offset="60%" stopColor="hsl(var(--chart-1))" stopOpacity={0.15} />
+            <stop offset="100%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
           </linearGradient>
         </defs>
         <ChartTooltip
-          cursor={{ stroke: 'rgba(255,255,255,0.3)', strokeWidth: 1 }}
+          cursor={{ stroke: "hsl(var(--color-border))", strokeWidth: 1 }}
           content={({ active, payload }) => {
             if (!active || !payload?.length) return null
             const data = payload[0].payload
-            // Parse date string as local time (avoid UTC interpretation)
-            const [year, month, day] = data.date.split('-').map(Number)
-            const date = new Date(year, month - 1, day)
-            const formattedDate = date.toLocaleDateString('en-US', {
-              month: 'short',
-              day: 'numeric'
+            const [year, monthNum, day] = data.date.split("-").map(Number)
+            const date = new Date(year, monthNum - 1, day)
+            const formattedDate = date.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
             })
-
-            const percentVsAvg = ((data.spending - avgSpending) / avgSpending * 100).toFixed(0)
+            const percentVsAvg =
+              avgSpending > 0
+                ? (((data.spending - avgSpending) / avgSpending) * 100).toFixed(0)
+                : "0"
             const isAboveAvg = data.spending > avgSpending
 
             return (
-              <div className="bg-white/95 backdrop-blur-sm border border-amber-200 rounded-lg px-3 py-2 shadow-xl">
-                <p className="text-xs font-medium text-amber-900">{formattedDate}</p>
-                <p className="text-lg font-bold text-amber-700">
+              <div className="rounded-md border border-stone-200 bg-card px-3 py-2 shadow-md dark:border-stone-800">
+                <p className="text-xs font-medium text-stone-600 dark:text-stone-400">
+                  {formattedDate}
+                </p>
+                <p className="font-display text-lg font-semibold tabular-nums text-stone-900 dark:text-stone-100">
                   {formatCurrency(data.spending)}
                 </p>
                 {data.spending > 0 && (
-                  <p className={`text-xs ${isAboveAvg ? 'text-orange-600' : 'text-green-600'}`}>
-                    {isAboveAvg ? '+' : ''}{percentVsAvg}% vs avg
+                  <p
+                    className={
+                      "text-xs tabular-nums " +
+                      (isAboveAvg
+                        ? "text-rose-600 dark:text-rose-400"
+                        : "text-emerald-600 dark:text-emerald-400")
+                    }
+                  >
+                    {isAboveAvg ? "+" : ""}
+                    {percentVsAvg}% vs avg
                   </p>
                 )}
               </div>
@@ -120,13 +130,18 @@ export default function SpendingSparkline({ expenses, month, days = 30, classNam
         <Area
           type="monotone"
           dataKey="spending"
-          stroke="rgba(255, 255, 255, 0.8)"
+          stroke="hsl(var(--chart-1))"
           strokeWidth={2}
           fill="url(#fillSpending)"
           fillOpacity={1}
           dot={false}
-          activeDot={{ r: 4, fill: 'white', strokeWidth: 2, stroke: 'rgba(251, 146, 60, 0.8)' }}
-          animationDuration={500}
+          activeDot={{
+            r: 4,
+            fill: "hsl(var(--color-background))",
+            strokeWidth: 2,
+            stroke: "hsl(var(--chart-1))",
+          }}
+          animationDuration={800}
         />
       </AreaChart>
     </ChartContainer>

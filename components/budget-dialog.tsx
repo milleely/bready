@@ -119,9 +119,9 @@ export function BudgetDialog({ users, budget, onBudgetSet, open: controlledOpen,
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="gap-2 bg-gradient-to-r from-amber-600 via-orange-500 to-amber-700 hover:from-amber-700 hover:via-orange-600 hover:to-amber-800 text-white font-semibold shadow-lg transform hover:scale-105 transition-all duration-200">
+        <Button className="gap-2 bg-amber-500 hover:bg-amber-600 text-white shadow-sm dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-amber-950">
           <Croissant className="h-4 w-4" />
-          Set Budget
+          New budget
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -134,12 +134,12 @@ export function BudgetDialog({ users, budget, onBudgetSet, open: controlledOpen,
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="category" className="text-golden-crust-dark font-semibold">Category</Label>
+              <Label htmlFor="category" className="text-stone-900 dark:text-stone-100 font-semibold">Category</Label>
               <Select value={category} onValueChange={setCategory} required>
-                <SelectTrigger id="category" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
+                <SelectTrigger id="category" className="">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
-                <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark max-h-[280px]">
+                <SelectContent className="max-h-[280px]">
                   {categories.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value}>
                       <div className="flex items-center gap-2">
@@ -157,7 +157,7 @@ export function BudgetDialog({ users, budget, onBudgetSet, open: controlledOpen,
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="amount" className="text-golden-crust-dark font-semibold">Budget Amount</Label>
+              <Label htmlFor="amount" className="text-stone-900 dark:text-stone-100 font-semibold">Budget Amount</Label>
               <Input
                 id="amount"
                 type="number"
@@ -166,18 +166,18 @@ export function BudgetDialog({ users, budget, onBudgetSet, open: controlledOpen,
                 placeholder="500.00"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
+                className=""
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="user" className="text-golden-crust-dark font-semibold">Apply To</Label>
+              <Label htmlFor="user" className="text-stone-900 dark:text-stone-100 font-semibold">Apply To</Label>
               <Select value={userId} onValueChange={setUserId} required>
-                <SelectTrigger id="user" className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
+                <SelectTrigger id="user" className="">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+                <SelectContent>
                   <SelectItem value="shared">Shared (All Users)</SelectItem>
                   {users.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
@@ -198,7 +198,7 @@ export function BudgetDialog({ users, budget, onBudgetSet, open: controlledOpen,
             <Button
               type="submit"
               disabled={loading}
-              className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-semibold shadow-lg"
+              className="bg-amber-500 hover:bg-amber-600 dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-amber-950 text-white font-semibold shadow-lg"
             >
               {loading ? (budget ? "Updating..." : "Setting...") : (budget ? "Update Budget" : "Set Budget")}
             </Button>

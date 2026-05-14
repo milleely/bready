@@ -4,22 +4,27 @@ import { Suspense, useEffect, useState, useMemo, lazy, useRef, useCallback } fro
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { PageHeader } from "@/components/ui/page-header"
+import { EmptyState } from "@/components/ui/empty-state"
+import { ChartCard } from "@/components/ui/chart-card"
+import { TrendBadge } from "@/components/ui/trend-badge"
+import { AnimatedNumber } from "@/components/ui/animated-number"
 import {
-  TrendingUp,
-  TrendingDown,
   AlertTriangle,
   CheckCircle2,
   AlertCircle,
   ArrowRight,
   Wallet,
   CircleDashed,
-  Plus
+  Plus,
+  XCircle,
+  Sparkles,
+  type LucideIcon,
 } from "lucide-react"
-import { formatCurrency, categories } from "@/lib/utils"
+import { formatCurrency, categories, cn } from "@/lib/utils"
 import Link from "next/link"
 // 🚀 PERFORMANCE: Lazy load chart component to reduce initial bundle size
 const SpendingSparkline = lazy(() => import("@/components/spending-sparkline"))
-import { BreadyLogo } from "@/components/bready-logo"
 import { ExpenseForm } from "@/components/expense-form"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -247,17 +252,20 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
 
   const totalBudgets = budgets.length
 
-  // Calculate overall budget health indicator
-  const getOverallBudgetHealth = () => {
-    if (budgets.length === 0) return { status: 'none' as const, emoji: '⚪', label: 'No Budgets Set', color: 'text-gray-400' }
-
-    if (budgetHealth.over > 0) {
-      return { status: 'over' as const, emoji: '🔴', label: 'Over Budget', color: 'text-red-100' }
-    } else if (budgetHealth.warning > 0) {
-      return { status: 'warning' as const, emoji: '🟡', label: 'Watch Spending', color: 'text-amber-100' }
-    } else {
-      return { status: 'healthy' as const, emoji: '🟢', label: 'Healthy', color: 'text-green-100' }
-    }
+  // Calculate overall budget health indicator — lucide icon + tone, no emoji
+  type HealthStatus = "none" | "healthy" | "warning" | "over"
+  const getOverallBudgetHealth = (): {
+    status: HealthStatus
+    label: string
+    Icon: LucideIcon
+  } => {
+    if (budgets.length === 0)
+      return { status: "none", label: "No budgets set", Icon: CircleDashed }
+    if (budgetHealth.over > 0)
+      return { status: "over", label: "Over budget", Icon: AlertTriangle }
+    if (budgetHealth.warning > 0)
+      return { status: "warning", label: "Watching", Icon: AlertCircle }
+    return { status: "healthy", label: "On track", Icon: CheckCircle2 }
   }
 
   const overallHealth = getOverallBudgetHealth()
@@ -278,40 +286,88 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
     return (
       <div className="space-y-6" role="status" aria-busy="true">
         <span className="sr-only">Loading dashboard</span>
-        {/* Hero card skeleton */}
-        <div className="rounded-xl surface-card-hero elevation-prominent p-4 md:p-8 space-y-4">
-          <div className="flex items-center gap-3">
-            <Skeleton className="h-12 w-12 rounded-full bg-white/20" />
-            <Skeleton className="h-6 w-48 bg-white/20" />
+
+        {/* PageHeader skeleton */}
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-40" />
+          <Skeleton className="h-4 w-72" />
+        </div>
+
+        {/* Hero — caption + headline numeral + trend pill + breakdown line */}
+        <section className="relative overflow-hidden rounded-3xl surface-card-hero elevation-prominent text-white px-6 py-8 md:px-10 md:py-12">
+          <Skeleton className="h-3 w-32 bg-white/15" />
+          <div className="mt-4 flex flex-wrap items-end gap-x-6 gap-y-3">
+            <Skeleton className="h-14 md:h-20 w-56 md:w-80 bg-white/15" />
+            <Skeleton className="h-7 w-48 rounded-md bg-white/15" />
           </div>
-          <Skeleton className="h-12 w-64 bg-white/20" />
-          <Skeleton className="h-20 w-full rounded-lg bg-white/20" />
-        </div>
-        {/* Budget Health + Settlements grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="rounded-xl surface-card-subtle elevation-rest p-6 space-y-4 min-h-[200px]">
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-4 w-48" />
-              <Skeleton className="h-4 w-40" />
-              <div className="mt-auto pt-4">
-                <Skeleton className="h-9 w-32" />
-              </div>
-            </div>
-          ))}
-        </div>
-        {/* Top categories skeleton */}
-        <div className="rounded-xl surface-card-subtle elevation-rest p-6 space-y-4">
-          <Skeleton className="h-6 w-44" />
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="space-y-2">
-              <div className="flex items-center justify-between">
+          <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1">
+            <Skeleton className="h-4 w-32 bg-white/15" />
+            <Skeleton className="h-4 w-32 bg-white/15" />
+          </div>
+        </section>
+
+        {/* Row 2 — Daily spending ChartCard + Budget health card */}
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* Daily spending */}
+          <div className="flex flex-col rounded-xl border border-stone-200 bg-card shadow-sm dark:border-stone-800">
+            <div className="flex items-start justify-between gap-4 border-b border-stone-200 px-5 py-4 dark:border-stone-800">
+              <div className="space-y-1.5 min-w-0">
                 <Skeleton className="h-5 w-32" />
-                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-3 w-20" />
               </div>
-              <Skeleton className="h-2 w-full rounded-full" />
             </div>
-          ))}
+            <div className="p-5">
+              <Skeleton className="h-44 w-full rounded-md" />
+            </div>
+            <div className="border-t border-stone-200 px-5 py-3 dark:border-stone-800">
+              <Skeleton className="h-3 w-32" />
+            </div>
+          </div>
+
+          {/* Budget health */}
+          <div className="rounded-xl border border-stone-200 bg-card shadow-sm dark:border-stone-800">
+            <div className="flex flex-row items-center justify-between gap-2 p-6 pb-4">
+              <Skeleton className="h-5 w-28" />
+              <Skeleton className="h-6 w-24 rounded-md" />
+            </div>
+            <div className="px-6 pb-6 space-y-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-4 rounded-sm" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                  <Skeleton className="h-3 w-16" />
+                </div>
+              ))}
+              <Skeleton className="h-4 w-32 mt-2" />
+            </div>
+          </div>
+        </div>
+
+        {/* Top categories — title + action link, then 3 rows with icon chip + label + amount + progress bar */}
+        <div className="rounded-xl border border-stone-200 bg-card shadow-sm dark:border-stone-800">
+          <div className="flex flex-row items-center justify-between p-6 pb-4">
+            <Skeleton className="h-5 w-44" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <div className="px-6 pb-6 space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Skeleton className="h-6 w-6 rounded-full" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                  <div className="space-y-1 text-right">
+                    <Skeleton className="h-4 w-20 ml-auto" />
+                    <Skeleton className="h-3 w-16 ml-auto" />
+                  </div>
+                </div>
+                <Skeleton className="h-1.5 w-full rounded-full" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     )
@@ -321,32 +377,27 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
   if (stats.totalSpent === 0 && expenses.length === 0) {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">Welcome to Bready!</p>
-        </div>
+        <PageHeader
+          title="Dashboard"
+          description={`Your snapshot for ${getMonthName(selectedMonth)}.`}
+        />
 
-        <Card className="surface-card-subtle border-0 elevation-prominent">
-          <CardContent className="pt-12 pb-12 text-center">
-            <div className="mb-6 flex justify-center">
-              <BreadyLogo size={64} />
-            </div>
-            <h2 className="text-2xl font-bold text-stone-800 mb-2">Start Tracking Your Dough</h2>
-            <p className="text-stone-600 mb-6 max-w-md mx-auto">
-              You haven't added any expenses for this month yet. Start by adding your first expense to see your financial insights.
-            </p>
-            <div className="flex gap-3 justify-center">
-              <Button
-                size="lg"
-                onClick={() => setExpenseFormOpen(true)}
-                className="surface-card-hero hover:opacity-95 text-white font-semibold elevation-hover"
-              >
-                <Plus className="mr-2 h-5 w-5" />
-                Add Your First Expense
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={Sparkles}
+          title="Welcome to Bready"
+          description="Add your first expense to see your month take shape."
+          action={
+            <Button
+              size="lg"
+              onClick={() => setExpenseFormOpen(true)}
+              className="bg-amber-500 hover:bg-amber-600 text-white shadow-sm"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add your first expense
+            </Button>
+          }
+          className="rounded-xl border border-stone-200 bg-card dark:border-stone-800"
+        />
 
         {/* Expense Form Dialog */}
         {expenseFormOpen && (
@@ -364,260 +415,239 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
     )
   }
 
+  // Approximate avg/day for the sparkline footer
+  const daysInMonth = (() => {
+    const [year, monthNum] = selectedMonth.split("-").map(Number)
+    return new Date(year, monthNum, 0).getDate()
+  })()
+  const avgPerDay = stats.totalSpent > 0 ? stats.totalSpent / daysInMonth : 0
+
+  const HealthIcon = overallHealth.Icon
+
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Your financial snapshot for {getMonthName(selectedMonth)}</p>
-      </div>
+      <PageHeader
+        title="Dashboard"
+        description={`Your snapshot for ${getMonthName(selectedMonth)}.`}
+      />
 
-      {/* Hero Card - This Month at a Glance */}
-      <Card className="surface-card-hero border-0 elevation-prominent text-white">
-        <CardContent className="p-4 md:p-8">
-          <div className="flex flex-col md:flex-row md:items-start gap-8">
-            {/* Left Column: Financial Numbers (60%) */}
-            <div className="flex-1 md:max-w-[60%]">
-              <p className="text-amber-100 text-sm font-medium mb-2">{getMonthName(selectedMonth)} at a Glance</p>
-              <h2 className="text-5xl font-bold mb-3">{formatCurrency(stats.totalSpent)}</h2>
+      {/* Hero — headline numeral + trend + secondary breakdown */}
+      <section
+        className="relative overflow-hidden rounded-3xl surface-card-hero elevation-prominent text-white px-6 py-8 md:px-10 md:py-12"
+        aria-label="Spending overview"
+      >
+        <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-amber-50/80">
+          {getMonthName(selectedMonth)}
+        </div>
+        <div className="mt-4 flex flex-wrap items-end gap-x-6 gap-y-3">
+          <AnimatedNumber
+            value={stats.totalSpent}
+            format={formatCurrency}
+            duration={0.7}
+            className="font-display text-5xl md:text-7xl font-semibold tabular-nums leading-none"
+          />
+          {hasPreviousMonthData ? (
+            <TrendBadge
+              direction={spendingChange === 0 ? "flat" : isSpendingUp ? "up" : "down"}
+              delta={`${isSpendingUp ? "+" : ""}${formatCurrency(Math.abs(spendingChange))}`}
+              period={`${spendingChangePercent}% vs last month`}
+              invertSemantics
+              className="!bg-white/10 !text-amber-50 ring-1 ring-inset ring-white/20 backdrop-blur-sm"
+            />
+          ) : (
+            <span className="text-sm text-amber-50/70">No data from last month</span>
+          )}
+        </div>
+        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-amber-50/85">
+          <span>
+            <span className="font-semibold text-amber-50">Shared</span>{" "}
+            <span className="tabular-nums">{formatCurrency(stats.sharedExpenses)}</span>
+          </span>
+          <span className="hidden sm:inline text-amber-50/40">·</span>
+          <span>
+            <span className="font-semibold text-amber-50">Personal</span>{" "}
+            <span className="tabular-nums">{formatCurrency(personalExpenses)}</span>
+          </span>
+        </div>
+      </section>
 
-              {/* Trend Indicator */}
-              <div className="flex items-center gap-2 mb-4">
-                {hasPreviousMonthData ? (
-                  <>
-                    {isSpendingUp ? (
-                      <TrendingUp className="h-5 w-5" />
-                    ) : (
-                      <TrendingDown className="h-5 w-5" />
-                    )}
-                    <span className="text-lg font-semibold">
-                      {isSpendingUp ? '+' : ''}{formatCurrency(Math.abs(spendingChange))}
-                    </span>
-                    <span className="text-sm text-amber-100/90 whitespace-nowrap">
-                      ({isSpendingUp ? '+' : ''}{spendingChangePercent}% vs last mo)
-                    </span>
-                  </>
-                ) : (
-                  <span className="text-sm text-amber-100/90">No data from last month</span>
-                )}
-              </div>
-
-              {/* Nested Breakdown */}
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-amber-100">Including:</p>
-                <div className="ml-3 space-y-1">
-                  <div className="text-base opacity-90 flex items-center gap-2">
-                    <span className="text-xs">🥖</span>
-                    <span>Shared: {formatCurrency(stats.sharedExpenses)}</span>
-                  </div>
-                  <div className="text-base opacity-90 flex items-center gap-2">
-                    <span className="text-xs">🍞</span>
-                    <span>Personal: {formatCurrency(personalExpenses)}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Column: Visuals (40%) */}
-            <div className="flex flex-col items-end gap-4 w-full">
-              {/* Budget Health Indicator */}
-              <div className="flex items-center gap-3 bg-white/10 rounded-2xl px-5 py-3 backdrop-blur-sm">
-                {overallHealth.status === 'healthy' && (
-                  <div className="bg-green-500/90 rounded-full p-1.5 shadow-sm">
-                    <CheckCircle2 className="h-5 w-5 text-white" />
-                  </div>
-                )}
-                {overallHealth.status === 'warning' && (
-                  <div className="bg-amber-400/90 rounded-full p-1.5 shadow-sm">
-                    <AlertCircle className="h-5 w-5 text-white" />
-                  </div>
-                )}
-                {overallHealth.status === 'over' && (
-                  <div className="bg-red-500/90 rounded-full p-1.5 shadow-sm">
-                    <AlertTriangle className="h-5 w-5 text-white" />
-                  </div>
-                )}
-                {overallHealth.status === 'none' && (
-                  <div className="bg-gray-400/80 rounded-full p-1.5 shadow-sm">
-                    <CircleDashed className="h-5 w-5 text-white" />
-                  </div>
-                )}
-                <div className="text-right">
-                  <div className={`text-xs font-medium ${overallHealth.color}`}>Budget Health</div>
-                  <div className="text-sm font-bold">{overallHealth.label}</div>
-                </div>
-              </div>
-
-              {/* Monthly Sparkline - Enhanced & Enlarged */}
-              <div className="w-full md:w-72 h-44 bg-white/10 rounded-lg overflow-hidden border border-white/20 shadow-[0_0_16px_rgba(255,255,255,0.2),0_2px_8px_rgba(0,0,0,0.1)]">
-                <Suspense fallback={<div className="h-44 animate-pulse bg-amber-100/30 rounded-lg" />}>
-                  <SpendingSparkline expenses={expenses} month={selectedMonth} />
-                </Suspense>
-              </div>
-              <p className="text-xs text-amber-100 font-medium">Daily spending</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Status Grid */}
+      {/* Row 2 — Daily spending + Budget health */}
       <div className="grid gap-4 md:grid-cols-2">
-        {/* Budget Health Summary */}
-        <Card className="surface-card-subtle border border-amber-200/50 elevation-prominent">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-amber-900">
-              <AlertCircle className="h-5 w-5 text-amber-700" />
-              Budget Health
+        <ChartCard
+          title="Daily spending"
+          description="This month"
+          footer={`Avg ${formatCurrency(avgPerDay)} per day`}
+        >
+          <div className="h-44 w-full">
+            <Suspense fallback={<Skeleton className="h-44 w-full rounded-lg" />}>
+              <SpendingSparkline expenses={expenses} month={selectedMonth} />
+            </Suspense>
+          </div>
+        </ChartCard>
+
+        <Card className="rounded-xl border border-stone-200 bg-card dark:border-stone-800">
+          <CardHeader className="flex flex-row items-center justify-between gap-2">
+            <CardTitle className="font-display text-lg font-semibold text-stone-900 dark:text-stone-100">
+              Budget health
             </CardTitle>
+            {totalBudgets > 0 && (
+              <Badge
+                variant="outline"
+                className="inline-flex items-center gap-1 border-stone-200 text-stone-700 dark:border-stone-700 dark:text-stone-300"
+              >
+                <HealthIcon
+                  className={cn("h-3.5 w-3.5", {
+                    "text-emerald-600 dark:text-emerald-400": overallHealth.status === "healthy",
+                    "text-amber-600 dark:text-amber-400": overallHealth.status === "warning",
+                    "text-rose-600 dark:text-rose-400": overallHealth.status === "over",
+                    "text-stone-500 dark:text-stone-400": overallHealth.status === "none",
+                  })}
+                />
+                {overallHealth.label}
+              </Badge>
+            )}
           </CardHeader>
-          <CardContent className="flex flex-col min-h-[200px]">
+          <CardContent className="flex flex-col gap-4">
             {totalBudgets === 0 ? (
-              <div className="text-center py-6">
-                <p className="text-sm text-gray-600 mb-3">No budgets set yet</p>
+              <div className="flex flex-col items-start gap-3 py-2">
+                <p className="text-sm text-stone-600 dark:text-stone-400">
+                  No budgets yet — set one to see how spending is breathing.
+                </p>
                 <Link href="/budgets">
-                  <Button
-                    size="sm"
-                    className="bg-amber-600 hover:bg-amber-700 text-white hover:shadow-lg transition-all"
-                  >
-                    Set Your First Budget
+                  <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white">
+                    Set your first budget
                   </Button>
                 </Link>
               </div>
             ) : (
               <>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="h-5 w-5 text-green-600" />
-                      <span className="text-sm font-medium text-gray-700">On Track</span>
-                    </div>
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
-                      {budgetHealth.onTrack}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <AlertCircle className="h-5 w-5 text-amber-600" />
-                      <span className="text-sm font-medium text-gray-700">Warning</span>
-                    </div>
-                    <Badge variant="secondary" className="bg-amber-100 text-amber-800">
-                      {budgetHealth.warning}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle className="h-5 w-5 text-red-600" />
-                      <span className="text-sm font-medium text-gray-700">Over Budget</span>
-                    </div>
-                    <Badge variant="secondary" className="bg-red-100 text-red-800">
-                      {budgetHealth.over}
-                    </Badge>
-                  </div>
-                </div>
-                <Link href="/budgets" className="mt-auto">
-                  <Button
-                    size="sm"
-                    className="w-full mt-3 bg-amber-600 hover:bg-amber-700 text-white hover:shadow-lg transition-all"
-                  >
-                    View All Budgets <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
+                <ul className="space-y-2.5">
+                  <BudgetHealthRow
+                    Icon={CheckCircle2}
+                    label="On track"
+                    count={budgetHealth.onTrack}
+                    total={totalBudgets}
+                    tone="success"
+                  />
+                  <BudgetHealthRow
+                    Icon={AlertCircle}
+                    label="Watching"
+                    count={budgetHealth.warning}
+                    total={totalBudgets}
+                    tone="warning"
+                  />
+                  <BudgetHealthRow
+                    Icon={XCircle}
+                    label="Over budget"
+                    count={budgetHealth.over}
+                    total={totalBudgets}
+                    tone="danger"
+                  />
+                </ul>
+                <Link
+                  href="/budgets"
+                  className="inline-flex items-center gap-1 text-sm font-medium text-amber-700 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300"
+                >
+                  View all budgets
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </>
             )}
           </CardContent>
         </Card>
+      </div>
 
-        {/* Settlements */}
-        <Card className="surface-card-subtle border border-amber-200/50 elevation-prominent">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-amber-900">
-              <Wallet className="h-5 w-5 text-amber-700" />
+      {/* Settlements — kept as a focused secondary card */}
+      {settlements.length > 0 && (
+        <Card className="rounded-xl border border-stone-200 bg-card dark:border-stone-800">
+          <CardHeader className="flex flex-row items-center justify-between gap-2">
+            <CardTitle className="flex items-center gap-2 font-display text-lg font-semibold text-stone-900 dark:text-stone-100">
+              <Wallet className="h-4 w-4 text-amber-600 dark:text-amber-400" />
               Settlements
             </CardTitle>
+            <Badge
+              variant="outline"
+              className="border-amber-200 text-amber-800 dark:border-amber-900 dark:text-amber-300"
+            >
+              {settlements.length} pending
+            </Badge>
           </CardHeader>
-          <CardContent className="flex flex-col min-h-[200px]">
-            {settlements.length === 0 ? (
-              <div className="text-center py-6">
-                <CheckCircle2 className="h-12 w-12 text-green-600 mx-auto mb-2" />
-                <p className="text-sm font-medium text-gray-900">All Settled Up!</p>
-                <p className="text-xs text-gray-600 mt-1">No pending settlements this month</p>
+          <CardContent className="flex items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="font-display text-2xl font-semibold tabular-nums text-stone-900 dark:text-stone-100">
+                {formatCurrency(settlements.reduce((sum, s) => sum + s.amount, 0))}
               </div>
-            ) : (
-              <>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-2xl font-bold text-gray-900">
-                      {formatCurrency(settlements.reduce((sum, s) => sum + s.amount, 0))}
-                    </span>
-                    <Badge variant="secondary" className="bg-orange-100 text-orange-800">
-                      {settlements.length} pending
-                    </Badge>
-                  </div>
-                  <p className="text-sm text-gray-600">
-                    {settlements.length} {settlements.length === 1 ? 'settlement' : 'settlements'} need attention
-                  </p>
-                </div>
-                <Link href="/settlements" className="mt-auto">
-                  <Button
-                    size="sm"
-                    className="w-full mt-3 bg-amber-600 hover:bg-amber-700 text-white hover:shadow-lg transition-all"
-                  >
-                    Settle Now <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </Link>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Top 3 Categories */}
-      <Card className="surface-card-subtle border border-amber-200/50 elevation-prominent">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-amber-900">Top Spending Categories</CardTitle>
-            <Link href="/expenses">
-              <Button
-                size="sm"
-                className="bg-amber-600 hover:bg-amber-700 text-white hover:shadow-lg transition-all"
-              >
-                View All <ArrowRight className="h-4 w-4 ml-2" />
+              <p className="text-sm text-stone-600 dark:text-stone-400">
+                {settlements.length === 1 ? "settlement" : "settlements"} need attention
+              </p>
+            </div>
+            <Link href="/settlements">
+              <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white">
+                Settle now
+                <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
               </Button>
             </Link>
-          </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Top 3 Categories — neutralized styling */}
+      <Card className="rounded-xl border border-stone-200 bg-card dark:border-stone-800">
+        <CardHeader className="flex flex-row items-center justify-between gap-2">
+          <CardTitle className="font-display text-lg font-semibold text-stone-900 dark:text-stone-100">
+            Top spending categories
+          </CardTitle>
+          <Link
+            href="/expenses"
+            className="inline-flex items-center gap-1 text-sm font-medium text-amber-700 hover:text-amber-800 dark:text-amber-400 dark:hover:text-amber-300"
+          >
+            View all
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
         </CardHeader>
         <CardContent>
           {topCategories.length === 0 ? (
-            <p className="text-sm text-gray-500 text-center py-6">
-              No expenses yet. Start tracking to see your top categories!
+            <p className="text-sm text-stone-500 dark:text-stone-400 text-center py-6">
+              No expenses yet — start tracking to see your top categories.
             </p>
           ) : (
             <div className="space-y-4">
-              {topCategories.map(cat => {
-                const categoryInfo = categories.find(c => c.value === cat.category)
+              {topCategories.map((cat) => {
+                const categoryInfo = categories.find((c) => c.value === cat.category)
                 const percentage = ((cat.amount / stats.totalSpent) * 100).toFixed(1)
 
                 return (
                   <div key={cat.category} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xl">{categoryInfo?.icon || '📦'}</span>
-                        <span className="font-medium text-gray-900">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span
+                          className="inline-flex h-6 w-6 items-center justify-center rounded-full text-sm"
+                          aria-hidden="true"
+                          style={{
+                            backgroundColor: `${categoryInfo?.color || "#78716c"}1a`,
+                          }}
+                        >
+                          {categoryInfo?.icon || "📦"}
+                        </span>
+                        <span className="font-medium text-stone-800 dark:text-stone-200 truncate">
                           {categoryInfo?.label || cat.category}
                         </span>
                       </div>
                       <div className="text-right">
-                        <div className="font-bold text-gray-900">{formatCurrency(cat.amount)}</div>
-                        <div className="text-xs text-gray-600">{percentage}% of total</div>
+                        <div className="font-semibold tabular-nums text-stone-900 dark:text-stone-100">
+                          {formatCurrency(cat.amount)}
+                        </div>
+                        <div className="text-xs tabular-nums text-stone-500 dark:text-stone-400">
+                          {percentage}% of total
+                        </div>
                       </div>
                     </div>
-                    {/* Progress Bar */}
-                    <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-1.5 overflow-hidden rounded-full bg-stone-100 dark:bg-stone-800">
                       <div
                         className="h-full rounded-full transition-all duration-500"
                         style={{
                           width: `${percentage}%`,
-                          backgroundColor: categoryInfo?.color || '#78716c'
+                          backgroundColor: categoryInfo?.color || "#78716c",
                         }}
                       />
                     </div>
@@ -642,5 +672,38 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
         />
       )}
     </div>
+  )
+}
+
+// Small helper for budget-health rows — keeps the dashboard JSX readable
+function BudgetHealthRow({
+  Icon,
+  label,
+  count,
+  total,
+  tone,
+}: {
+  Icon: LucideIcon
+  label: string
+  count: number
+  total: number
+  tone: "success" | "warning" | "danger"
+}) {
+  const iconColor = {
+    success: "text-emerald-600 dark:text-emerald-400",
+    warning: "text-amber-600 dark:text-amber-400",
+    danger: "text-rose-600 dark:text-rose-400",
+  }[tone]
+  return (
+    <li className="flex items-center justify-between text-sm">
+      <span className="flex items-center gap-2 text-stone-700 dark:text-stone-300">
+        <Icon className={cn("h-4 w-4", iconColor)} aria-hidden="true" />
+        {label}
+      </span>
+      <span className="tabular-nums text-stone-600 dark:text-stone-400">
+        <span className="font-semibold text-stone-900 dark:text-stone-100">{count}</span>
+        <span className="text-stone-500 dark:text-stone-500"> of {total}</span>
+      </span>
+    </li>
   )
 }

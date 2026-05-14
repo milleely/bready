@@ -64,7 +64,7 @@ export function MobileMonthPickerSheet({
             <Button
               variant="outline"
               size="icon"
-              className="h-12 w-12 border-amber-300 hover:bg-amber-50 active:bg-amber-100 touch-manipulation"
+              className="h-12 w-12 border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/40 active:bg-amber-100 dark:active:bg-amber-950/40 touch-manipulation"
               onClick={() => setPickerYear(pickerYear - 1)}
               aria-label="Previous year"
             >
@@ -76,7 +76,7 @@ export function MobileMonthPickerSheet({
             <Button
               variant="outline"
               size="icon"
-              className="h-12 w-12 border-amber-300 hover:bg-amber-50 active:bg-amber-100 touch-manipulation"
+              className="h-12 w-12 border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/40 active:bg-amber-100 dark:active:bg-amber-950/40 touch-manipulation"
               onClick={() => setPickerYear(pickerYear + 1)}
               aria-label="Next year"
             >
@@ -98,7 +98,7 @@ export function MobileMonthPickerSheet({
                     h-14 text-base font-medium touch-manipulation
                     ${isSelected
                       ? 'bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white'
-                      : 'border-amber-200 hover:bg-amber-50 active:bg-amber-100 text-stone-700'
+                      : 'border-amber-200 hover:bg-amber-50 dark:hover:bg-amber-950/40 active:bg-amber-100 dark:active:bg-amber-950/40 text-stone-700'
                     }
                     ${isCurrent && !isSelected ? 'ring-2 ring-amber-400 ring-offset-1' : ''}
                   `}
@@ -115,7 +115,7 @@ export function MobileMonthPickerSheet({
           <div className="pt-2 border-t border-amber-100">
             <Button
               variant="ghost"
-              className="w-full h-12 text-amber-700 hover:bg-amber-50 active:bg-amber-100 font-medium touch-manipulation"
+              className="w-full h-12 text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/40 active:bg-amber-100 dark:active:bg-amber-950/40 font-medium touch-manipulation"
               onClick={goToCurrentMonth}
             >
               Go to Current Month

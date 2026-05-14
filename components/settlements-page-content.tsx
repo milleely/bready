@@ -4,8 +4,10 @@ import { Suspense, useEffect, useState } from "react"
 import { SettlementCard } from "@/components/settlement-card"
 import { SettlementSummaryCards } from "@/components/settlement-summary-cards"
 import { SettlementHistory } from "@/components/settlement-history"
-import { BreadyLogo } from "@/components/bready-logo"
-import { CheckCircle2, Wallet } from "lucide-react"
+import { PageHeader } from "@/components/ui/page-header"
+import { EmptyState } from "@/components/ui/empty-state"
+import { SectionHeading } from "@/components/ui/section-heading"
+import { CheckCircle2 } from "lucide-react"
 import { toast } from "sonner"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -154,29 +156,52 @@ export function SettlementsPageContent({ month }: SettlementsPageContentProps) {
     return (
       <div className="space-y-6" role="status" aria-busy="true">
         <span className="sr-only">Loading settlements</span>
+        {/* PageHeader skeleton */}
         <div className="space-y-2">
           <Skeleton className="h-8 w-64" />
-          <Skeleton className="h-4 w-72" />
+          <Skeleton className="h-4 w-40" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <Skeleton key={i} className="h-28 rounded-xl" />
-          ))}
-        </div>
-        <div className="rounded-xl surface-card-subtle elevation-rest p-6 space-y-4">
-          <Skeleton className="h-6 w-44" />
+
+        {/* SettlementSummaryCards — 2-col StatCards (Outstanding + Settled this month) */}
+        <div className="grid gap-4 md:grid-cols-2">
           {Array.from({ length: 2 }).map((_, i) => (
-            <div key={i} className="flex items-center justify-between gap-4 rounded-lg bg-white/60 p-4">
-              <div className="flex items-center gap-3 flex-1">
-                <Skeleton className="h-10 w-10 rounded-full" />
-                <div className="space-y-2 flex-1">
-                  <Skeleton className="h-4 w-40" />
-                  <Skeleton className="h-3 w-24" />
-                </div>
+            <div
+              key={i}
+              className="flex flex-col gap-3 rounded-xl border border-stone-200 bg-card p-5 shadow-sm dark:border-stone-800"
+            >
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-4 w-4 rounded-sm" />
               </div>
-              <Skeleton className="h-9 w-24" />
+              <Skeleton className="h-10 w-32" />
+              <Skeleton className="h-5 w-40 rounded-md" />
             </div>
           ))}
+        </div>
+
+        {/* SectionHeading + Pending settlements card */}
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Skeleton className="h-6 w-48" />
+            <Skeleton className="h-3 w-72" />
+          </div>
+          <div className="rounded-xl border border-stone-200 bg-card shadow-sm dark:border-stone-800 p-6 space-y-4">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between gap-4 rounded-lg border border-stone-200 bg-stone-50 p-4 dark:border-stone-800 dark:bg-stone-950/50"
+              >
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <Skeleton className="h-10 w-10 rounded-full flex-shrink-0" />
+                  <div className="space-y-2 flex-1 min-w-0">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-3 w-28" />
+                  </div>
+                </div>
+                <Skeleton className="h-9 w-24 rounded-md flex-shrink-0" />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     )
@@ -186,13 +211,10 @@ export function SettlementsPageContent({ month }: SettlementsPageContentProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">{getMonthName(selectedMonth)} Settlements</h1>
-        <p className="text-muted-foreground mt-1">
-          Balance shared expenses for {getMonthName(selectedMonth)}
-        </p>
-      </div>
+      <PageHeader
+        title={`${getMonthName(selectedMonth)} settlements`}
+        description="Who owes whom."
+      />
 
       {/* Summary Cards */}
       <SettlementSummaryCards
@@ -204,40 +226,22 @@ export function SettlementsPageContent({ month }: SettlementsPageContentProps) {
       {/* Pending Settlements */}
       {hasSettlements ? (
         <div className="space-y-4">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              Pending Settlements
-            </h2>
-            <p className="text-sm text-gray-600">
-              These settlements need to be paid to balance shared expenses.
-            </p>
-          </div>
+          <SectionHeading
+            title="Pending settlements"
+            description="Pay these to balance shared expenses."
+          />
           <SettlementCard
             settlements={settlements}
             onMarkAsPaid={handleMarkAsPaid}
           />
         </div>
       ) : (
-        // Empty State - All Settled Up
-        <div className="bg-gradient-to-br from-emerald-50 via-green-50 to-emerald-100 border-0 shadow-xl rounded-lg p-12">
-          <div className="text-center">
-            <div className="mb-6">
-              <BreadyLogo size={80} />
-            </div>
-            <div className="mb-4">
-              <CheckCircle2 className="h-16 w-16 text-emerald-600 mx-auto" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">
-              Fresh Out of the Oven!
-            </h2>
-            <p className="text-lg text-gray-700 max-w-md mx-auto mb-2">
-              Everyone is settled up for {getMonthName(selectedMonth)}.
-            </p>
-            <p className="text-gray-600 max-w-md mx-auto">
-              Your household finances are perfectly balanced.
-            </p>
-          </div>
-        </div>
+        <EmptyState
+          icon={CheckCircle2}
+          title="Nothing to settle"
+          description={`Everyone's even for ${getMonthName(selectedMonth)}.`}
+          className="rounded-xl border border-stone-200 bg-card dark:border-stone-800"
+        />
       )}
 
       {/* Settlement History */}

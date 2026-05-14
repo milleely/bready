@@ -147,7 +147,7 @@ export function NotificationSettings({ userId, userEmail }: NotificationSettings
 
   if (isLoading) {
     return (
-      <Card className="bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-sm">
+      <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Bell className="h-5 w-5" />
@@ -163,7 +163,7 @@ export function NotificationSettings({ userId, userEmail }: NotificationSettings
   }
 
   return (
-    <Card className="bg-gradient-to-br from-amber-100 to-orange-100 border-0 shadow-sm">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Bell className="h-5 w-5" />
@@ -208,7 +208,7 @@ export function NotificationSettings({ userId, userEmail }: NotificationSettings
                         {selectedThresholds.map(threshold => (
                           <Badge
                             key={threshold}
-                            className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100"
+                            className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100 dark:hover:bg-amber-950/40"
                           >
                             {threshold}%
                           </Badge>
@@ -274,7 +274,7 @@ export function NotificationSettings({ userId, userEmail }: NotificationSettings
                         {selectedSettlementDays.map(day => (
                           <Badge
                             key={day}
-                            className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100"
+                            className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100 dark:hover:bg-amber-950/40"
                           >
                             {day === 'first' ? 'First day' : 'Last day'}
                           </Badge>
@@ -343,7 +343,7 @@ export function NotificationSettings({ userId, userEmail }: NotificationSettings
                         {selectedRecurringDays.map(day => (
                           <Badge
                             key={day}
-                            className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100"
+                            className="bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-100 dark:hover:bg-amber-950/40"
                           >
                             {day} {day === '1' ? 'day' : 'days'}
                           </Badge>

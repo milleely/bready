@@ -71,7 +71,7 @@ export function PinSetupDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 rounded-lg bg-amber-100">
+            <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-950/40">
               <Lock className="h-5 w-5 text-amber-600" />
             </div>
             <DialogTitle>Set Up PIN</DialogTitle>
@@ -162,14 +162,14 @@ export function PinSetupDialog({
             <Button
               type="submit"
               disabled={pin.length < 4 || pin !== confirmPin || isSaving}
-              className="flex-1 bg-gradient-to-br from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600"
+              className="flex-1 bg-amber-500 hover:bg-amber-600 text-white dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-amber-950"
             >
               {isSaving ? "Creating..." : "Create PIN"}
             </Button>
           </div>
 
           {/* Security Note */}
-          <div className="p-3 rounded-lg bg-amber-50 border border-amber-200">
+          <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
             <p className="text-xs text-amber-800">
               🔒 <strong>Security Note:</strong> Choose a PIN you can remember but others can't
               guess. Avoid birthdays or simple patterns.

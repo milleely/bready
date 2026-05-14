@@ -85,7 +85,7 @@ export function MobileNav({ month }: MobileNavProps = {}) {
     <>
       <nav
         className={cn(
-          "fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around bg-white border-t border-[hsl(var(--border-golden-crust))] px-4 py-2 safe-area-inset-bottom md:hidden transition-transform duration-300 ease-in-out",
+          "fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around bg-white border-t border-stone-300 dark:border-stone-700 px-4 py-2 safe-area-inset-bottom md:hidden transition-transform duration-300 ease-in-out",
           isVisible ? "translate-y-0" : "translate-y-full"
         )}
       >
@@ -100,8 +100,8 @@ export function MobileNav({ month }: MobileNavProps = {}) {
               className={cn(
                 "flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all min-w-[64px]",
                 isActive
-                  ? "text-amber-700 bg-amber-50"
-                  : "text-gray-600 hover:text-amber-700 hover:bg-amber-50/50"
+                  ? "text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40"
+                  : "text-gray-600 hover:text-amber-700 hover:bg-stone-50 dark:bg-stone-900/50"
               )}
             >
               <Icon className={cn("h-5 w-5", isActive && "text-amber-700")} />
@@ -118,8 +118,8 @@ export function MobileNav({ month }: MobileNavProps = {}) {
           className={cn(
             "flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all min-w-[64px]",
             isMoreMenuActive
-              ? "text-amber-700 bg-amber-50"
-              : "text-gray-600 hover:text-amber-700 hover:bg-amber-50/50"
+              ? "text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40"
+              : "text-gray-600 hover:text-amber-700 hover:bg-stone-50 dark:bg-stone-900/50"
           )}
           aria-label="More menu"
           aria-expanded={moreMenuOpen}

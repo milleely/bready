@@ -93,7 +93,7 @@ export function RecurringExpenseForm({ users, open, onOpenChange }: RecurringExp
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl text-golden-crust-dark">
+          <DialogTitle className="flex items-center gap-2 text-xl text-stone-900 dark:text-stone-100">
             <Repeat className="h-5 w-5 text-amber-600" />
             Add Recurring Expense
           </DialogTitle>
@@ -103,7 +103,7 @@ export function RecurringExpenseForm({ users, open, onOpenChange }: RecurringExp
           {/* Amount and Category (2-column grid) */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="amount" className="text-golden-crust-dark font-semibold">
+              <Label htmlFor="amount" className="text-stone-900 dark:text-stone-100 font-semibold">
                 Amount
               </Label>
               <Input
@@ -114,22 +114,22 @@ export function RecurringExpenseForm({ users, open, onOpenChange }: RecurringExp
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                 required
                 placeholder="0.00"
-                className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark"
+                className=""
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="category" className="text-golden-crust-dark font-semibold">
+              <Label htmlFor="category" className="text-stone-900 dark:text-stone-100 font-semibold">
                 Category
               </Label>
               <Select
                 value={formData.category}
                 onValueChange={(value) => setFormData({ ...formData, category: value })}
               >
-                <SelectTrigger className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
+                <SelectTrigger className="">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark max-h-[300px]">
+                <SelectContent className="max-h-[300px]">
                   {categories.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value}>
                       <div className="flex items-center gap-2">
@@ -146,7 +146,7 @@ export function RecurringExpenseForm({ users, open, onOpenChange }: RecurringExp
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description" className="text-golden-crust-dark font-semibold">
+            <Label htmlFor="description" className="text-stone-900 dark:text-stone-100 font-semibold">
               Description
             </Label>
             <Input
@@ -155,23 +155,23 @@ export function RecurringExpenseForm({ users, open, onOpenChange }: RecurringExp
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               required
               placeholder="What is this expense for?"
-              className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark placeholder:text-golden-crust-dark/60"
+              className="placeholder:text-stone-900 dark:text-stone-100/60"
             />
           </div>
 
           {/* User */}
           <div className="space-y-2">
-            <Label htmlFor="user" className="text-golden-crust-dark font-semibold">
+            <Label htmlFor="user" className="text-stone-900 dark:text-stone-100 font-semibold">
               User
             </Label>
             <Select
               value={formData.userId}
               onValueChange={(value) => setFormData({ ...formData, userId: value })}
             >
-              <SelectTrigger className="bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
+              <SelectTrigger className="">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+              <SelectContent>
                 {users.map((user) => (
                   <SelectItem key={user.id} value={user.id}>
                     <span className="flex items-center gap-2">
@@ -194,22 +194,22 @@ export function RecurringExpenseForm({ users, open, onOpenChange }: RecurringExp
               checked={formData.isShared}
               onCheckedChange={(checked) => setFormData({ ...formData, isShared: checked === true })}
             />
-            <Label htmlFor="shared" className="cursor-pointer text-golden-crust-dark">
+            <Label htmlFor="shared" className="cursor-pointer text-stone-900 dark:text-stone-100">
               This is a shared expense (split among all users)
             </Label>
           </div>
 
           {/* Monthly Recurring Date Selector */}
-          <div className="p-4 rounded-lg bg-amber-50/50 border-2 border-amber-300/50 space-y-3">
+          <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-900/50 border-2 border-amber-300/50 space-y-3">
             <div className="space-y-2">
-              <Label className="text-sm font-semibold text-golden-crust-dark">
+              <Label className="text-sm font-semibold text-stone-900 dark:text-stone-100">
                 Monthly Recurring Date
               </Label>
               <Select value={dayOfMonth?.toString() ?? ""} onValueChange={(value) => setDayOfMonth(Number(value))}>
-                <SelectTrigger className="w-[180px] bg-amber-50/50 border border-golden-crust-medium text-golden-crust-dark">
+                <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select date" />
                 </SelectTrigger>
-                <SelectContent className="max-h-[200px] bg-amber-50 border border-golden-crust-medium text-golden-crust-dark">
+                <SelectContent className="max-h-[200px]">
                   {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
                     <SelectItem key={day} value={day.toString()}>
                       {day === 1 ? '1st' : day === 2 ? '2nd' : day === 3 ? '3rd' : `${day}th`}
@@ -220,7 +220,7 @@ export function RecurringExpenseForm({ users, open, onOpenChange }: RecurringExp
               </Select>
             </div>
 
-            <Alert className="bg-amber-50 border-amber-200">
+            <Alert className="bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800">
               <Info className="h-4 w-4 text-amber-600" />
               <AlertDescription className="text-xs text-amber-700 font-medium">
                 Recurring expenses will be auto generated each month with 1 month in advanced until cancelled. To edit a recurring expense, delete it and re-create it.
@@ -234,7 +234,7 @@ export function RecurringExpenseForm({ users, open, onOpenChange }: RecurringExp
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="border border-golden-crust-medium text-golden-crust-dark hover:bg-amber-100 font-semibold"
+              className="border border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 hover:bg-amber-100 dark:hover:bg-amber-950/40 font-semibold"
             >
               Cancel
             </Button>

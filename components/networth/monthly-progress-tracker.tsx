@@ -112,11 +112,11 @@ export function MonthlyProgressTracker({
   }
 
   return (
-    <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 shadow-xl">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardContent className="pt-6 flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center gap-2 mb-4">
-          <div className="p-2 rounded-lg bg-amber-100">
+          <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-950/40">
             <Target className="h-5 w-5 text-amber-600" />
           </div>
           <div>
@@ -134,7 +134,7 @@ export function MonthlyProgressTracker({
             return (
               <div
                 key={allocation.key}
-                className="p-4 rounded-lg bg-white border border-[hsl(var(--border-light-crust))]"
+                className="p-4 rounded-lg bg-white border border-stone-200 dark:border-stone-800"
               >
                 {/* Header Row */}
                 <div className="flex items-center justify-between mb-2">
@@ -202,7 +202,7 @@ export function MonthlyProgressTracker({
         </div>
 
         {/* Category Breakdown */}
-        <div className="mt-4 p-4 rounded-lg bg-white border border-[hsl(var(--border-light-crust))]">
+        <div className="mt-4 p-4 rounded-lg bg-white border border-stone-200 dark:border-stone-800">
           <h3 className="text-sm font-semibold text-stone-900 mb-3">📊 Category Breakdown</h3>
           <p className="text-xs text-stone-600 mb-3">
             Expense categories are automatically classified into Needs and Wants:
@@ -236,7 +236,7 @@ export function MonthlyProgressTracker({
               {EXPENSE_TO_BUDGET_MAPPING.wants.map((category) => (
                 <span
                   key={category}
-                  className="text-xs px-2 py-1 rounded-md bg-amber-50 text-amber-700 border border-amber-200"
+                  className="text-xs px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-950/30 text-amber-700 border border-amber-200"
                 >
                   {category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ')}
                 </span>
