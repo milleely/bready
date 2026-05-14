@@ -88,11 +88,11 @@ export function ExpensesSection({
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-950/40">
-              <Receipt className="h-5 w-5 text-amber-600" />
+              <Receipt className="h-5 w-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-stone-900">Monthly Expenses</h2>
-              <p className="text-sm text-stone-600">
+              <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100">Monthly Expenses</h2>
+              <p className="text-sm text-stone-600 dark:text-stone-400">
                 {useOverride ? "Manual override" : "Auto-calculated from tracker"}
               </p>
             </div>
@@ -113,20 +113,20 @@ export function ExpensesSection({
         {/* Expense Display / Edit Form */}
         {!isEditing ? (
           <div className="text-center py-8">
-            <p className="text-4xl font-bold text-stone-900">
+            <p className="text-4xl font-bold text-stone-900 dark:text-stone-100">
               ${displayedExpenses.toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </p>
-            <p className="text-sm text-stone-500 mt-2">per month</p>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mt-2">per month</p>
           </div>
         ) : (
           <div className="space-y-4">
             {/* Manual Override Toggle */}
-            <div className="flex items-center justify-between p-4 rounded-lg bg-white border border-stone-200 dark:border-stone-800">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800">
               <div>
                 <Label htmlFor="use-override" className="text-sm font-medium">
                   Use Manual Override
                 </Label>
-                <p className="text-xs text-stone-500 mt-1">
+                <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
                   Override auto-calculated expenses with a custom amount
                 </p>
               </div>
@@ -142,7 +142,7 @@ export function ExpensesSection({
               <div className="space-y-2">
                 <Label htmlFor="override-amount">Monthly Expense Amount</Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400">
                     $
                   </span>
                   <Input
@@ -156,7 +156,7 @@ export function ExpensesSection({
                     placeholder="0.00"
                   />
                 </div>
-                <p className="text-xs text-stone-500">
+                <p className="text-xs text-stone-500 dark:text-stone-400">
                   Auto-calculated: $
                   {monthlyExpenses.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                 </p>

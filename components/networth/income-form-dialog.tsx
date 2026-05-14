@@ -94,8 +94,8 @@ export function IncomeFormDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 rounded-lg bg-emerald-100">
-              <DollarSign className="h-5 w-5 text-emerald-600" />
+            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/40">
+              <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <DialogTitle>{isEditing ? "Edit" : "Add"} Income Source</DialogTitle>
           </div>
@@ -124,7 +124,7 @@ export function IncomeFormDialog({
           <div className="space-y-2">
             <Label htmlFor="income-amount">Amount</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400">$</span>
               <Input
                 id="income-amount"
                 type="number"

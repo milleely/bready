@@ -34,12 +34,12 @@ export function AssetsSection({
         {/* Header */}
         <div className="flex items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="p-2 rounded-lg bg-emerald-100">
-              <TrendingUp className="h-5 w-5 text-emerald-600" />
+            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/40">
+              <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base md:text-lg font-semibold text-stone-900">Assets</h2>
-              <p className="text-xs md:text-sm text-stone-600 truncate">
+              <h2 className="text-base md:text-lg font-semibold text-stone-900 dark:text-stone-100">Assets</h2>
+              <p className="text-xs md:text-sm text-stone-600 dark:text-stone-400 truncate">
                 Total: ${totalAssets.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </p>
             </div>
@@ -56,7 +56,7 @@ export function AssetsSection({
 
         {/* Assets List (Grouped by Category) */}
         {assetsByCategory.length === 0 ? (
-          <div className="text-center py-8 text-stone-500">
+          <div className="text-center py-8 text-stone-500 dark:text-stone-400">
             <p className="text-sm">No assets added yet</p>
             <p className="text-xs mt-1">Click "Add Asset" to get started</p>
           </div>
@@ -66,10 +66,10 @@ export function AssetsSection({
               <div key={categoryGroup.category}>
                 {/* Category Header */}
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-semibold text-stone-700">
+                  <h3 className="text-sm font-semibold text-stone-700 dark:text-stone-300">
                     {getAssetCategoryLabel(categoryGroup.category)}
                   </h3>
-                  <span className="text-sm font-medium text-emerald-600">
+                  <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
                     ${categoryGroup.total.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -79,29 +79,29 @@ export function AssetsSection({
                   {categoryGroup.items.map((asset) => (
                     <div
                       key={asset.id}
-                      className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white border border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:border-stone-700 transition-colors"
+                      className="flex items-center justify-between gap-3 p-3 rounded-lg bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700 transition-colors"
                     >
                       <div className="flex-1 min-w-0 mr-3">
-                        <p className="font-medium text-stone-900 truncate">{asset.name}</p>
+                        <p className="font-medium text-stone-900 dark:text-stone-100 truncate">{asset.name}</p>
                         {asset.notes && (
-                          <p className="text-xs text-stone-500 mt-1 truncate">{asset.notes}</p>
+                          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 truncate">{asset.notes}</p>
                         )}
                       </div>
                       <div className="flex items-center gap-2 md:gap-4 shrink-0">
-                        <span className="text-sm font-semibold text-stone-900 whitespace-nowrap">
+                        <span className="text-sm font-semibold text-stone-900 dark:text-stone-100 whitespace-nowrap">
                           ${asset.value.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                         </span>
                         <div className="flex items-center gap-1.5 md:gap-2">
                           <button
                             onClick={() => onEdit(asset)}
-                            className="p-2.5 md:p-2 rounded-lg hover:bg-stone-100 text-stone-600 hover:text-stone-900 transition-colors"
+                            className="p-2.5 md:p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
                             aria-label={`Edit ${asset.name}`}
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => onDelete(asset.id)}
-                            className="p-2.5 md:p-2 rounded-lg hover:bg-red-50 text-stone-600 hover:text-red-600 transition-colors"
+                            className="p-2.5 md:p-2 rounded-lg hover:bg-red-50 dark:bg-red-950/30 text-stone-600 dark:text-stone-400 hover:text-red-600 dark:text-red-400 transition-colors"
                             aria-label={`Delete ${asset.name}`}
                           >
                             <Trash2 className="h-4 w-4" />

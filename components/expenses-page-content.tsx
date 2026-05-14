@@ -493,6 +493,12 @@ export function ExpensesPageContent({ month }: ExpensesPageContentProps) {
               await handleAddExpense(expense)
               setAddingExpense(false)
             }}
+            onSaveAndAddAnother={async (expense) => {
+              // handleAddExpense throws on error so the form's catch handles
+              // toast + keep-open. Success path lets the form do the partial
+              // reset + focus rather than us closing the dialog.
+              await handleAddExpense(expense)
+            }}
             open={addingExpense}
             onOpenChange={setAddingExpense}
           />

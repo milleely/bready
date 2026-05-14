@@ -72,7 +72,7 @@ export function PinSetupDialog({
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
             <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-950/40">
-              <Lock className="h-5 w-5 text-amber-600" />
+              <Lock className="h-5 w-5 text-amber-600 dark:text-amber-400" />
             </div>
             <DialogTitle>Set Up PIN</DialogTitle>
           </div>
@@ -106,7 +106,7 @@ export function PinSetupDialog({
               <button
                 type="button"
                 onClick={() => setShowPin(!showPin)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-700"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:text-stone-300"
               >
                 {showPin ? (
                   <EyeOff className="h-4 w-4" />
@@ -115,7 +115,7 @@ export function PinSetupDialog({
                 )}
               </button>
             </div>
-            <p className="text-xs text-stone-500">{pin.length}/6 digits</p>
+            <p className="text-xs text-stone-500 dark:text-stone-400">{pin.length}/6 digits</p>
           </div>
 
           {/* Confirm PIN */}
@@ -137,10 +137,10 @@ export function PinSetupDialog({
               maxLength={6}
             />
             {confirmPin && pin !== confirmPin && (
-              <p className="text-xs text-red-600">PINs do not match</p>
+              <p className="text-xs text-red-600 dark:text-red-400">PINs do not match</p>
             )}
             {confirmPin && pin === confirmPin && (
-              <p className="text-xs text-emerald-600">PINs match ✓</p>
+              <p className="text-xs text-emerald-600 dark:text-emerald-400">PINs match ✓</p>
             )}
           </div>
 
@@ -169,7 +169,7 @@ export function PinSetupDialog({
           </div>
 
           {/* Security Note */}
-          <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+          <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 dark:border-amber-800">
             <p className="text-xs text-amber-800">
               🔒 <strong>Security Note:</strong> Choose a PIN you can remember but others can't
               guess. Avoid birthdays or simple patterns.

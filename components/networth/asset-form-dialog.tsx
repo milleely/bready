@@ -102,8 +102,8 @@ export function AssetFormDialog({ open, onOpenChange, asset, onSave }: AssetForm
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 rounded-lg bg-emerald-100">
-              <TrendingUp className="h-5 w-5 text-emerald-600" />
+            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/40">
+              <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <DialogTitle>{isEditing ? "Edit" : "Add"} Asset</DialogTitle>
           </div>
@@ -128,7 +128,7 @@ export function AssetFormDialog({ open, onOpenChange, asset, onSave }: AssetForm
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-stone-500">
+            <p className="text-xs text-stone-500 dark:text-stone-400">
               {ASSET_CATEGORIES.find((c) => c.value === category)?.description}
             </p>
           </div>
@@ -150,7 +150,7 @@ export function AssetFormDialog({ open, onOpenChange, asset, onSave }: AssetForm
           <div className="space-y-2">
             <Label htmlFor="asset-value">Current Value</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400">$</span>
               <Input
                 id="asset-value"
                 type="number"

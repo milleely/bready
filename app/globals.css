@@ -177,14 +177,25 @@ a:focus-visible,
   box-shadow: 0 0 0 4px hsl(var(--color-ring) / 0.2);
 }
 
-/* Focus styles for form inputs */
+/*
+ * Focus styles for form inputs — pure box-shadow ring (no outline).
+ *
+ * Rationale: `outline` on elements with `border-radius` renders inconsistently
+ * across engines (Chrome historically clipped one edge thinner than the
+ * others). `box-shadow` follows the element's border-path, so the ring is
+ * mathematically even on all four sides regardless of corner radius.
+ *
+ * Two-layer shadow: a 2px solid inner ring (the "I'm focused" signal) and a
+ * 4px soft outer glow at 20% opacity (the "this is the active field" halo).
+ */
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid hsl(var(--color-ring));
-  outline-offset: 0;
+  outline: none;
   border-color: hsl(var(--color-ring));
-  box-shadow: 0 0 0 3px hsl(var(--color-ring) / 0.15);
+  box-shadow:
+    0 0 0 2px hsl(var(--color-ring) / 0.55),
+    0 0 0 4px hsl(var(--color-ring) / 0.18);
 }
 
 /* Focus for custom components like dialog triggers */

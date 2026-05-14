@@ -34,12 +34,12 @@ export function LiabilitiesSection({
         {/* Header */}
         <div className="flex items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="p-2 rounded-lg bg-red-100">
-              <TrendingDown className="h-5 w-5 text-red-600" />
+            <div className="p-2 rounded-lg bg-red-100 dark:bg-red-950/40">
+              <TrendingDown className="h-5 w-5 text-red-600 dark:text-red-400" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base md:text-lg font-semibold text-stone-900">Liabilities</h2>
-              <p className="text-xs md:text-sm text-stone-600 truncate">
+              <h2 className="text-base md:text-lg font-semibold text-stone-900 dark:text-stone-100">Liabilities</h2>
+              <p className="text-xs md:text-sm text-stone-600 dark:text-stone-400 truncate">
                 Total: ${totalLiabilities.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </p>
             </div>
@@ -56,7 +56,7 @@ export function LiabilitiesSection({
 
         {/* Liabilities List (Grouped by Category) */}
         {liabilitiesByCategory.length === 0 ? (
-          <div className="text-center py-8 text-stone-500">
+          <div className="text-center py-8 text-stone-500 dark:text-stone-400">
             <p className="text-sm">No liabilities added yet</p>
             <p className="text-xs mt-1">Click "Add Liability" to get started</p>
           </div>
@@ -66,10 +66,10 @@ export function LiabilitiesSection({
               <div key={categoryGroup.category}>
                 {/* Category Header */}
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-semibold text-stone-700">
+                  <h3 className="text-sm font-semibold text-stone-700 dark:text-stone-300">
                     {getLiabilityCategoryLabel(categoryGroup.category)}
                   </h3>
-                  <span className="text-sm font-medium text-red-600">
+                  <span className="text-sm font-medium text-red-600 dark:text-red-400">
                     ${categoryGroup.total.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                   </span>
                 </div>
@@ -79,11 +79,11 @@ export function LiabilitiesSection({
                   {categoryGroup.items.map((liability) => (
                     <div
                       key={liability.id}
-                      className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white border border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:border-stone-700 transition-colors"
+                      className="flex items-center justify-between gap-3 p-3 rounded-lg bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700 transition-colors"
                     >
                       <div className="flex-1 min-w-0 mr-3">
-                        <p className="font-medium text-stone-900 truncate">{liability.name}</p>
-                        <div className="flex items-center gap-4 mt-1 text-xs text-stone-500">
+                        <p className="font-medium text-stone-900 dark:text-stone-100 truncate">{liability.name}</p>
+                        <div className="flex items-center gap-4 mt-1 text-xs text-stone-500 dark:text-stone-400">
                           {liability.interestRate != null && (
                             <span>{liability.interestRate.toFixed(2)}% APR</span>
                           )}
@@ -97,24 +97,24 @@ export function LiabilitiesSection({
                           )}
                         </div>
                         {liability.notes && (
-                          <p className="text-xs text-stone-500 mt-1 truncate">{liability.notes}</p>
+                          <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 truncate">{liability.notes}</p>
                         )}
                       </div>
                       <div className="flex items-center gap-2 md:gap-4 shrink-0">
-                        <span className="text-sm font-semibold text-stone-900 whitespace-nowrap">
+                        <span className="text-sm font-semibold text-stone-900 dark:text-stone-100 whitespace-nowrap">
                           ${liability.balance.toLocaleString("en-US", { minimumFractionDigits: 2 })}
                         </span>
                         <div className="flex items-center gap-1.5 md:gap-2">
                           <button
                             onClick={() => onEdit(liability)}
-                            className="p-2.5 md:p-2 rounded-lg hover:bg-stone-100 text-stone-600 hover:text-stone-900 transition-colors"
+                            className="p-2.5 md:p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
                             aria-label={`Edit ${liability.name}`}
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => onDelete(liability.id)}
-                            className="p-2.5 md:p-2 rounded-lg hover:bg-red-50 text-stone-600 hover:text-red-600 transition-colors"
+                            className="p-2.5 md:p-2 rounded-lg hover:bg-red-50 dark:bg-red-950/30 text-stone-600 dark:text-stone-400 hover:text-red-600 dark:text-red-400 transition-colors"
                             aria-label={`Delete ${liability.name}`}
                           >
                             <Trash2 className="h-4 w-4" />

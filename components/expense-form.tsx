@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -35,12 +35,21 @@ interface ExpenseFormProps {
   users: User[]
   expense?: Expense
   onSubmit: (expense: Omit<Expense, 'id'>) => Promise<void>
+  /**
+   * Optional: enables the "Save & add another" button.
+   * When provided, ExpenseForm renders a third button next to Cancel/Save that
+   * persists the expense, keeps the dialog open, resets only amount/category/
+   * description/receipt (date, user, and isShared stay sticky), and focuses
+   * the amount input for the next entry. Caller MUST NOT close the dialog
+   * from inside this callback.
+   */
+  onSaveAndAddAnother?: (expense: Omit<Expense, 'id'>) => Promise<void>
   trigger?: React.ReactNode
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }
 
-export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlledOpen, onOpenChange: controlledOnOpenChange }: ExpenseFormProps) {
+export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, trigger, open: controlledOpen, onOpenChange: controlledOnOpenChange }: ExpenseFormProps) {
   const [internalOpen, setInternalOpen] = useState(false)
   const [formData, setFormData] = useState({
     amount: expense?.amount?.toString() || '',
@@ -63,10 +72,19 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [showPreview, setShowPreview] = useState(false)
   const [scanning, setScanning] = useState(false)
+  const [addedCount, setAddedCount] = useState(0)
+  const amountInputRef = useRef<HTMLInputElement>(null)
 
   // Use controlled open state if provided, otherwise use internal state
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen
   const setOpen = controlledOnOpenChange !== undefined ? controlledOnOpenChange : setInternalOpen
+
+  // Reset session-counter when the dialog closes so each open starts at 0.
+  useEffect(() => {
+    if (!open) {
+      setAddedCount(0)
+    }
+  }, [open])
 
   useEffect(() => {
     if (expense) {
@@ -163,9 +181,14 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
+  /**
+   * Core submit pipeline shared by Save and "Save & add another".
+   *
+   *   mode === 'save'         → submit + close dialog + full reset (existing behavior)
+   *   mode === 'add-another'  → submit + KEEP dialog open + partial reset (date/user/isShared stay)
+   *                             + increment session counter + focus the amount input
+   */
+  const processSubmit = async (mode: 'save' | 'add-another') => {
     // Defensive validation: Ensure userId is set
     if (!formData.userId) {
       toast.warning('Please wait for users to load, then try again. If the problem persists, refresh the page.')
@@ -180,12 +203,12 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
       // Upload new file if selected
       if (selectedFile) {
         setUploading(true)
-        const formData = new FormData()
-        formData.append('file', selectedFile)
+        const uploadForm = new FormData()
+        uploadForm.append('file', selectedFile)
 
         const uploadRes = await fetch('/api/upload', {
           method: 'POST',
-          body: formData,
+          body: uploadForm,
         })
 
         if (!uploadRes.ok) {
@@ -201,8 +224,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
         setUploading(false)
       }
 
-      // Submit expense
-      await onSubmit({
+      const expensePayload = {
         amount: parseFloat(formData.amount),
         category: formData.category,
         description: formData.description,
@@ -210,32 +232,59 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
         isShared: formData.isShared,
         receiptUrl: uploadedReceiptUrl,
         userId: formData.userId,
-      })
+      }
 
-      // Only reset form and close dialog on SUCCESS
-      if (!expense) {
-        setFormData({
+      // Route to the appropriate caller hook based on submit mode
+      if (mode === 'add-another' && onSaveAndAddAnother) {
+        await onSaveAndAddAnother(expensePayload)
+      } else {
+        await onSubmit(expensePayload)
+      }
+
+      // SUCCESS branch
+      if (mode === 'add-another') {
+        // Partial reset: clear what typically changes per expense, keep what doesn't.
+        setFormData(prev => ({
+          ...prev,
           amount: '',
           category: 'groceries',
           description: '',
-          date: (() => {
-            const now = new Date()
-            const year = now.getFullYear()
-            const month = String(now.getMonth() + 1).padStart(2, '0')
-            const day = String(now.getDate()).padStart(2, '0')
-            return `${year}-${month}-${day}`
-          })(),
-          isShared: false,
-          userId: users[0]?.id || '',
-        })
+          // date, userId, isShared remain sticky for fast batch entry
+        }))
         setSelectedFile(null)
         setReceiptUrl(null)
-      }
+        setPreviewUrl(null)
 
-      setOpen(false)
+        const nextCount = addedCount + 1
+        setAddedCount(nextCount)
+        toast.success(`Expense added — ${nextCount} this session`)
+
+        // Focus the amount input on the next tick so the user can immediately type
+        setTimeout(() => amountInputRef.current?.focus(), 50)
+      } else {
+        // Existing behavior: full reset on add, then close
+        if (!expense) {
+          setFormData({
+            amount: '',
+            category: 'groceries',
+            description: '',
+            date: (() => {
+              const now = new Date()
+              const year = now.getFullYear()
+              const month = String(now.getMonth() + 1).padStart(2, '0')
+              const day = String(now.getDate()).padStart(2, '0')
+              return `${year}-${month}-${day}`
+            })(),
+            isShared: false,
+            userId: users[0]?.id || '',
+          })
+          setSelectedFile(null)
+          setReceiptUrl(null)
+        }
+        setOpen(false)
+      }
     } catch (error) {
       console.error('Failed to submit expense:', error)
-      // Show user-friendly error message
       const errorMessage = error instanceof Error ? error.message : 'Failed to submit expense. Please try again.'
       toast.error(errorMessage)
       // Don't close the form on error - let user retry
@@ -243,6 +292,21 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
       setLoading(false)
       setUploading(false)
     }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    await processSubmit('save')
+  }
+
+  const handleSaveAndAddAnother = async () => {
+    // Manually check HTML5 validity since this isn't a true submit
+    const form = amountInputRef.current?.form
+    if (form && !form.checkValidity()) {
+      form.reportValidity()
+      return
+    }
+    await processSubmit('add-another')
   }
 
   return (
@@ -254,7 +318,7 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl text-stone-900 dark:text-stone-100">
             {expense ? (
@@ -263,6 +327,11 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
               <>
                 <Plus className="h-5 w-5 text-amber-600" />
                 Add New Expense
+                {addedCount > 0 && (
+                  <span className="ml-auto text-sm font-normal tabular-nums text-stone-500 dark:text-stone-400">
+                    {addedCount} added this session
+                  </span>
+                )}
               </>
             )}
           </DialogTitle>
@@ -315,12 +384,19 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-4 mt-2 sm:mt-4 min-w-0 overflow-hidden">
+        {/*
+          NOTE: do NOT add `overflow-hidden` here. Inputs sit flush against
+          the form's edge and their box-shadow focus ring extends 4px outward
+          — overflow-hidden clips that slice, making the ring look uneven.
+          The Dialog wrapper above already handles overflow at its own level.
+        */}
+        <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-4 mt-2 sm:mt-4 min-w-0">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="amount" className="text-stone-900 dark:text-stone-100 font-semibold">Amount</Label>
               <Input
                 id="amount"
+                ref={amountInputRef}
                 type="number"
                 step="0.01"
                 min="0.01"
@@ -496,22 +572,40 @@ export function ExpenseForm({ users, expense, onSubmit, trigger, open: controlle
             </Label>
           </div>
 
-          <div className="flex gap-2 sm:gap-3 justify-end pt-4">
+          {/*
+            Footer pattern: Cancel left, primary actions right. Common dialog
+            convention that separates "back out" from "confirm" and keeps the
+            three buttons on one row.
+          */}
+          <div className="flex items-center gap-2 pt-4">
             <Button
               type="button"
-              variant="outline"
+              variant="ghost"
               onClick={() => setOpen(false)}
-              className="border border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 hover:bg-amber-100 dark:hover:bg-amber-950/40 font-semibold"
+              className="text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100"
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={loading || uploading || users.length === 0}
-              className="toast-gradient-golden hover:toast-gradient-dark text-white font-semibold shadow-lg"
-            >
-              {users.length === 0 ? 'Loading users...' : uploading ? 'Uploading...' : loading ? 'Saving...' : expense ? 'Update' : 'Add Expense'}
-            </Button>
+            <div className="ml-auto flex items-center gap-2">
+              {onSaveAndAddAnother && !expense && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleSaveAndAddAnother}
+                  disabled={loading || uploading || users.length === 0}
+                  className="border-amber-500 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 font-medium"
+                >
+                  Save & add another
+                </Button>
+              )}
+              <Button
+                type="submit"
+                disabled={loading || uploading || users.length === 0}
+                className="bg-amber-500 hover:bg-amber-600 text-white font-medium shadow-sm dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-amber-950"
+              >
+                {users.length === 0 ? 'Loading users...' : uploading ? 'Uploading...' : loading ? 'Saving...' : expense ? 'Update' : 'Add Expense'}
+              </Button>
+            </div>
           </div>
         </form>
       </DialogContent>

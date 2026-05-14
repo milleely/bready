@@ -33,12 +33,12 @@ export function IncomeSection({ incomeSources, onAdd, onEdit, onDelete }: Income
         {/* Header */}
         <div className="flex items-center justify-between gap-3 mb-4">
           <div className="flex items-center gap-2 min-w-0">
-            <div className="p-2 rounded-lg bg-emerald-100">
-              <DollarSign className="h-5 w-5 text-emerald-600" />
+            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/40">
+              <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base md:text-lg font-semibold text-stone-900">Income Sources</h2>
-              <p className="text-xs md:text-sm text-stone-600 truncate">
+              <h2 className="text-base md:text-lg font-semibold text-stone-900 dark:text-stone-100">Income Sources</h2>
+              <p className="text-xs md:text-sm text-stone-600 dark:text-stone-400 truncate">
                 Total: ${totalMonthlyIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}/month
               </p>
             </div>
@@ -55,7 +55,7 @@ export function IncomeSection({ incomeSources, onAdd, onEdit, onDelete }: Income
 
         {/* Income List */}
         {incomeSources.length === 0 ? (
-          <div className="text-center py-8 text-stone-500">
+          <div className="text-center py-8 text-stone-500 dark:text-stone-400">
             <p className="text-sm">No income sources added yet</p>
             <p className="text-xs mt-1">Click "Add Income" to get started</p>
           </div>
@@ -66,14 +66,14 @@ export function IncomeSection({ incomeSources, onAdd, onEdit, onDelete }: Income
               return (
                 <div
                   key={income.id}
-                  className="flex items-center justify-between gap-3 p-3 rounded-lg bg-white border border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:border-stone-700 transition-colors"
+                  className="flex items-center justify-between gap-3 p-3 rounded-lg bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800 hover:border-stone-300 dark:hover:border-stone-700 transition-colors"
                 >
                   <div className="flex-1 min-w-0 mr-3">
-                    <p className="font-medium text-stone-900 truncate">{income.name}</p>
-                    <p className="text-sm text-stone-600 truncate">
+                    <p className="font-medium text-stone-900 dark:text-stone-100 truncate">{income.name}</p>
+                    <p className="text-sm text-stone-600 dark:text-stone-400 truncate">
                       ${income.amount.toLocaleString("en-US", { minimumFractionDigits: 2 })} {getIncomeFrequencyLabel(income.frequency)}
                       {" → "}
-                      <span className="font-medium text-emerald-600">
+                      <span className="font-medium text-emerald-600 dark:text-emerald-400">
                         ${monthlyAmount.toLocaleString("en-US", { minimumFractionDigits: 2 })}/month
                       </span>
                     </p>
@@ -81,14 +81,14 @@ export function IncomeSection({ incomeSources, onAdd, onEdit, onDelete }: Income
                   <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
                     <button
                       onClick={() => onEdit(income)}
-                      className="p-2.5 md:p-2 rounded-lg hover:bg-stone-100 text-stone-600 hover:text-stone-900 transition-colors"
+                      className="p-2.5 md:p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors"
                       aria-label={`Edit ${income.name}`}
                     >
                       <Pencil className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => onDelete(income.id)}
-                      className="p-2.5 md:p-2 rounded-lg hover:bg-red-50 text-stone-600 hover:text-red-600 transition-colors"
+                      className="p-2.5 md:p-2 rounded-lg hover:bg-red-50 dark:bg-red-950/30 text-stone-600 dark:text-stone-400 hover:text-red-600 dark:text-red-400 transition-colors"
                       aria-label={`Delete ${income.name}`}
                     >
                       <Trash2 className="h-4 w-4" />

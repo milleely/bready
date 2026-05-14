@@ -496,7 +496,7 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-stone-900">Net Worth Dashboard</h1>
+          <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">Net Worth Dashboard</h1>
         </div>
 
         {isLoading ? (
@@ -538,15 +538,15 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-stone-900">
+          <h1 className="text-2xl md:text-3xl font-bold text-stone-900 dark:text-stone-100">
             {dashboardData.user.name.trim()}'s Net Worth
           </h1>
-          <p className="hidden md:block text-sm text-stone-600 mt-1">Track your financial health in one place</p>
+          <p className="hidden md:block text-sm text-stone-600 dark:text-stone-400 mt-1">Track your financial health in one place</p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={handleCopyToNextMonth}
-            className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-950/40 transition-colors"
+            className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 dark:border-amber-800 rounded-lg hover:bg-amber-100 dark:hover:bg-amber-950/40 transition-colors"
             title="Copy all data to next month"
           >
             <Copy className="h-4 w-4" />
@@ -554,7 +554,7 @@ export function NetWorthPageContent({ initialUsers, authenticated: initialAuth, 
           </button>
           <button
             onClick={handleLogout}
-            className="px-4 py-2 text-sm font-medium text-stone-700 bg-white border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
           >
             Switch User
           </button>

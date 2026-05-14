@@ -23,7 +23,7 @@ interface NetWorthHeroProps {
 
 export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWorthHeroProps) {
   const isPositiveSavings = summary.monthlySavingsRate >= 0
-  const savingsRateColor = isPositiveSavings ? "text-emerald-600" : "text-red-600"
+  const savingsRateColor = isPositiveSavings ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"
 
   // Trend calculations for Net Worth
   const hasPreviousData = previousSummary !== null && previousSummary !== undefined
@@ -38,10 +38,10 @@ export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWo
       <CardContent className="pt-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-3 rounded-lg bg-amber-100">
-            <DollarSign className="h-6 w-6 text-amber-600" />
+            <DollarSign className="h-6 w-6 text-amber-600 dark:text-amber-400" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-stone-900">
+            <h2 className="text-2xl font-bold text-stone-900 dark:text-stone-100">
               {summary.netWorth >= 0 ? "$" : "-$"}
               {Math.abs(summary.netWorth).toLocaleString("en-US", {
                 minimumFractionDigits: 2,
@@ -50,28 +50,28 @@ export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWo
             </h2>
             {/* Total Net Worth label + trend indicator on same line */}
             <div className="flex items-center gap-3">
-              <p className="text-sm text-stone-600">Total Net Worth</p>
+              <p className="text-sm text-stone-600 dark:text-stone-400">Total Net Worth</p>
               <div className="flex items-center gap-2">
                 {hasPreviousData ? (
                   <>
                     {isNetWorthUp ? (
-                      <TrendingUp className="h-4 w-4 text-emerald-600" />
+                      <TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     ) : (
-                      <TrendingDown className="h-4 w-4 text-red-600" />
+                      <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
                     )}
-                    <span className={`text-sm font-medium ${isNetWorthUp ? "text-emerald-600" : "text-red-600"}`}>
+                    <span className={`text-sm font-medium ${isNetWorthUp ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
                       {isNetWorthUp ? "+" : "-"}$
                       {Math.abs(netWorthChange).toLocaleString("en-US", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}
                     </span>
-                    <span className="text-xs text-stone-500">
+                    <span className="text-xs text-stone-500 dark:text-stone-400">
                       ({isNetWorthUp ? "+" : ""}{netWorthChangePercent}% vs last month)
                     </span>
                   </>
                 ) : (
-                  <span className="text-xs text-stone-500">No data from last month</span>
+                  <span className="text-xs text-stone-500 dark:text-stone-400">No data from last month</span>
                 )}
               </div>
             </div>
@@ -81,23 +81,23 @@ export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWo
         {/* Financial Breakdown */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Total Assets */}
-          <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-emerald-50">
+          <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-emerald-50 dark:bg-emerald-950/30">
             <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="h-4 w-4 text-emerald-600" />
-              <span className="text-sm font-medium text-stone-700">Assets</span>
+              <TrendingUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              <span className="text-sm font-medium text-stone-700 dark:text-stone-300">Assets</span>
             </div>
-            <p className="text-2xl font-bold text-emerald-600">
+            <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
               ${summary.totalAssets.toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </p>
           </div>
 
           {/* Total Liabilities */}
-          <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-red-50">
+          <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-red-50 dark:bg-red-950/30">
             <div className="flex items-center gap-2 mb-2">
-              <TrendingDown className="h-4 w-4 text-red-600" />
-              <span className="text-sm font-medium text-stone-700">Liabilities</span>
+              <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
+              <span className="text-sm font-medium text-stone-700 dark:text-stone-300">Liabilities</span>
             </div>
-            <p className="text-2xl font-bold text-red-600">
+            <p className="text-2xl font-bold text-red-600 dark:text-red-400">
               ${summary.totalLiabilities.toLocaleString("en-US", { minimumFractionDigits: 2 })}
             </p>
           </div>
@@ -105,13 +105,13 @@ export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWo
           {/* Monthly Savings Rate */}
           <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-amber-50 dark:bg-amber-950/30">
             <div className="flex items-center gap-2 mb-2">
-              <PiggyBank className="h-4 w-4 text-amber-600" />
-              <span className="text-sm font-medium text-stone-700">Savings Rate</span>
+              <PiggyBank className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+              <span className="text-sm font-medium text-stone-700 dark:text-stone-300">Savings Rate</span>
             </div>
             <p className={`text-2xl font-bold ${savingsRateColor}`}>
               {summary.monthlySavingsRate.toFixed(1)}%
             </p>
-            <p className="text-xs text-stone-600 mt-1">
+            <p className="text-xs text-stone-600 dark:text-stone-400 mt-1">
               {isPositiveSavings ? "Saving" : "Spending"} $
               {Math.abs(summary.monthlyIncome - summary.monthlyExpenses).toLocaleString("en-US", {
                 minimumFractionDigits: 2,
@@ -125,16 +125,16 @@ export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWo
         <div className="mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Monthly Income */}
-            <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-emerald-50">
-              <p className="text-sm font-medium text-stone-700 mb-2">Monthly Income</p>
-              <p className="text-2xl font-bold text-emerald-600">
+            <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-emerald-50 dark:bg-emerald-950/30">
+              <p className="text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">Monthly Income</p>
+              <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                 ${summary.monthlyIncome.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </p>
             </div>
             {/* Monthly Expenses */}
-            <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-red-50">
+            <div className="p-4 rounded-lg border border-stone-200 dark:border-stone-800 bg-red-50 dark:bg-red-950/30">
               <div className="flex items-center gap-2 mb-2">
-                <p className="text-sm font-medium text-stone-700">Monthly Expenses</p>
+                <p className="text-sm font-medium text-stone-700 dark:text-stone-300">Monthly Expenses</p>
                 {onEditExpenses && (
                   <Button
                     onClick={onEditExpenses}
@@ -147,7 +147,7 @@ export function NetWorthHero({ summary, previousSummary, onEditExpenses }: NetWo
                   </Button>
                 )}
               </div>
-              <p className="text-2xl font-bold text-red-600">
+              <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                 ${summary.monthlyExpenses.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </p>
             </div>

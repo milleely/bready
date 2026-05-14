@@ -369,26 +369,36 @@ export function SidebarLayout({ children, selectedMonth, onMonthChange }: Sideba
       {expenseFormOpen && (
         <ExpenseForm
           users={users}
+          /**
+           * Both onSubmit (Save) and onSaveAndAddAnother (batch entry) share
+           * the same persistence path. The form differentiates close-vs-stay-
+           * open behavior internally based on which button was clicked.
+           * Throwing on !response.ok lets the form's catch keep the dialog
+           * open with form state intact, instead of swallowing the error.
+           */
           onSubmit={async (expense) => {
-            try {
-              const response = await fetch('/api/expenses', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(expense),
-              })
-
-              if (response.ok) {
-                setExpenseFormOpen(false)
-                // Dispatch custom event to notify pages to refresh
-                window.dispatchEvent(new CustomEvent('expenseAdded'))
-              } else {
-                const error = await response.json()
-                toast.error(error.error || 'Failed to add expense. Please try again.')
-              }
-            } catch (error) {
-              console.error('Failed to add expense:', error)
-              toast.error('Failed to add expense. Please try again.')
+            const response = await fetch('/api/expenses', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(expense),
+            })
+            if (!response.ok) {
+              const error = await response.json()
+              throw new Error(error.error || 'Failed to add expense. Please try again.')
             }
+            window.dispatchEvent(new CustomEvent('expenseAdded'))
+          }}
+          onSaveAndAddAnother={async (expense) => {
+            const response = await fetch('/api/expenses', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(expense),
+            })
+            if (!response.ok) {
+              const error = await response.json()
+              throw new Error(error.error || 'Failed to add expense. Please try again.')
+            }
+            window.dispatchEvent(new CustomEvent('expenseAdded'))
           }}
           open={expenseFormOpen}
           onOpenChange={setExpenseFormOpen}

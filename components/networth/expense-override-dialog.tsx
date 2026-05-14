@@ -89,12 +89,12 @@ export function ExpenseOverrideDialog({
 
         <div className="space-y-4 mt-4">
           {/* Manual Override Toggle */}
-          <div className="flex items-center justify-between p-4 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+          <div className="flex items-center justify-between p-4 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 dark:border-amber-800">
             <div>
               <Label htmlFor="use-override" className="text-sm font-medium">
                 Use Manual Override
               </Label>
-              <p className="text-xs text-stone-500 mt-1">
+              <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
                 Override auto-calculated expenses with a custom amount
               </p>
             </div>
@@ -110,7 +110,7 @@ export function ExpenseOverrideDialog({
             <div className="space-y-2">
               <Label htmlFor="override-amount">Monthly Expense Amount</Label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">$</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400">$</span>
                 <Input
                   id="override-amount"
                   type="number"
@@ -122,7 +122,7 @@ export function ExpenseOverrideDialog({
                   placeholder="0.00"
                 />
               </div>
-              <p className="text-xs text-stone-500">
+              <p className="text-xs text-stone-500 dark:text-stone-400">
                 Auto-calculated: ${monthlyExpenses.toLocaleString("en-US", { minimumFractionDigits: 2 })}
               </p>
             </div>

@@ -18,10 +18,10 @@ interface UserSelectorProps {
 
 export function UserSelector({ users, selectedUserId, onSelectUser }: UserSelectorProps) {
   return (
-    <Card className="border-stone-200 dark:border-stone-800/50 bg-gradient-to-br from-stone-50 to-stone-100 shadow-xl">
+    <Card className="border border-stone-200 bg-card shadow-sm dark:border-stone-800">
       <CardContent className="pt-6">
-        <h2 className="text-lg font-semibold text-stone-900 mb-4">Select Household Member</h2>
-        <p className="text-sm text-stone-600 mb-4">
+        <h2 className="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-4">Select Household Member</h2>
+        <p className="text-sm text-stone-600 dark:text-stone-400 mb-4">
           Choose whose net worth you'd like to view
         </p>
 
@@ -35,7 +35,7 @@ export function UserSelector({ users, selectedUserId, onSelectUser }: UserSelect
                 ${
                   selectedUserId === user.id
                     ? "border-amber-500 bg-amber-50 dark:bg-amber-950/30 shadow-md"
-                    : "border-stone-200 dark:border-stone-800 bg-white hover:border-stone-300 dark:border-stone-700 hover:shadow-sm"
+                    : "border-stone-200 bg-stone-50 hover:border-stone-300 hover:bg-stone-100 dark:border-stone-800 dark:bg-stone-950/50 dark:hover:border-stone-700 dark:hover:bg-stone-900"
                 }
               `}
             >
@@ -48,11 +48,11 @@ export function UserSelector({ users, selectedUserId, onSelectUser }: UserSelect
               </div>
 
               {/* User Name */}
-              <span className="text-sm font-medium text-stone-900">{user.name}</span>
+              <span className="text-sm font-medium text-stone-900 dark:text-stone-100">{user.name}</span>
 
               {/* Selected Indicator */}
               {selectedUserId === user.id && (
-                <span className="text-xs text-amber-600 font-medium">Selected</span>
+                <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">Selected</span>
               )}
             </button>
           ))}

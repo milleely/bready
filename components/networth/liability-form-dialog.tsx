@@ -129,8 +129,8 @@ export function LiabilityFormDialog({
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
-            <div className="p-2 rounded-lg bg-red-100">
-              <TrendingDown className="h-5 w-5 text-red-600" />
+            <div className="p-2 rounded-lg bg-red-100 dark:bg-red-950/40">
+              <TrendingDown className="h-5 w-5 text-red-600 dark:text-red-400" />
             </div>
             <DialogTitle>{isEditing ? "Edit" : "Add"} Liability</DialogTitle>
           </div>
@@ -160,7 +160,7 @@ export function LiabilityFormDialog({
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-stone-500">
+            <p className="text-xs text-stone-500 dark:text-stone-400">
               {LIABILITY_CATEGORIES.find((c) => c.value === category)?.description}
             </p>
           </div>
@@ -182,7 +182,7 @@ export function LiabilityFormDialog({
           <div className="space-y-2">
             <Label htmlFor="liability-balance">Current Balance Owed</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400">$</span>
               <Input
                 id="liability-balance"
                 type="number"
@@ -210,16 +210,16 @@ export function LiabilityFormDialog({
                 onChange={(e) => setInterestRate(e.target.value)}
                 className="pr-8"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500">%</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400">%</span>
             </div>
-            <p className="text-xs text-stone-500">APR (Annual Percentage Rate)</p>
+            <p className="text-xs text-stone-500 dark:text-stone-400">APR (Annual Percentage Rate)</p>
           </div>
 
           {/* Minimum Payment (Optional) */}
           <div className="space-y-2">
             <Label htmlFor="liability-min-payment">Monthly Minimum Payment (Optional)</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 dark:text-stone-400">$</span>
               <Input
                 id="liability-min-payment"
                 type="number"
