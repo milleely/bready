@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { categories } from "@/lib/utils"
-import { Plus, Upload, X, Image as ImageIcon, Eye, FileText, Sparkles, Repeat } from "lucide-react"
+import { Plus, Repeat } from "lucide-react"
 import { toast } from "sonner"
 
 interface User {
@@ -26,7 +26,6 @@ interface Expense {
   description: string
   date: Date | string
   isShared: boolean
-  receiptUrl?: string | null
   userId: string
   recurringExpenseId?: string | null
 }
@@ -66,12 +65,6 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
     userId: expense?.userId || users[0]?.id || '',
   })
   const [loading, setLoading] = useState(false)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [receiptUrl, setReceiptUrl] = useState<string | null>(expense?.receiptUrl || null)
-  const [uploading, setUploading] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const [showPreview, setShowPreview] = useState(false)
-  const [scanning, setScanning] = useState(false)
   const [addedCount, setAddedCount] = useState(0)
   const amountInputRef = useRef<HTMLInputElement>(null)
 
@@ -96,90 +89,11 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
         isShared: expense.isShared,
         userId: expense.userId,
       })
-      setReceiptUrl(expense.receiptUrl || null)
 
       // Auto-open dialog when editing
       setOpen(true)
     }
   }, [expense])
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      // Validate file size (5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('File too large. Maximum size is 5MB.')
-        return
-      }
-      // Validate file type
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf']
-      if (!allowedTypes.includes(file.type)) {
-        toast.error('Invalid file type. Only JPG, PNG, and PDF are allowed.')
-        return
-      }
-      setSelectedFile(file)
-
-      // Create preview URL for images (not PDFs)
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          setPreviewUrl(reader.result as string)
-        }
-        reader.readAsDataURL(file)
-      } else {
-        setPreviewUrl(null) // PDF - no preview
-      }
-    }
-  }
-
-  const removeReceipt = () => {
-    setSelectedFile(null)
-    setReceiptUrl(null)
-    setPreviewUrl(null)
-  }
-
-  const handleScanReceipt = async () => {
-    if (!selectedFile) return
-
-    setScanning(true)
-    try {
-      const formData = new FormData()
-      formData.append('file', selectedFile)
-
-      const response = await fetch('/api/ocr', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        toast.error(error.error || 'Failed to scan receipt')
-        return
-      }
-
-      const ocrResult = await response.json()
-
-      // Auto-fill form fields with OCR data
-      setFormData(prev => ({
-        ...prev,
-        amount: ocrResult.amount ? ocrResult.amount.toString() : prev.amount,
-        date: ocrResult.date || prev.date,
-        description: ocrResult.description || prev.description,
-        category: ocrResult.category || prev.category,
-      }))
-
-      // Show success message with confidence
-      const confidence = ocrResult.confidence || 'medium'
-      toast.success(`Receipt scanned (${confidence} confidence)`, {
-        description: 'Please review the extracted data before submitting.',
-      })
-    } catch (error) {
-      console.error('Failed to scan receipt:', error)
-      toast.error('Failed to scan receipt. Please try again or enter manually.')
-    } finally {
-      setScanning(false)
-    }
-  }
 
   /**
    * Core submit pipeline shared by Save and "Save & add another".
@@ -198,39 +112,12 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
     setLoading(true)
 
     try {
-      let uploadedReceiptUrl = receiptUrl // Keep existing if editing
-
-      // Upload new file if selected
-      if (selectedFile) {
-        setUploading(true)
-        const uploadForm = new FormData()
-        uploadForm.append('file', selectedFile)
-
-        const uploadRes = await fetch('/api/upload', {
-          method: 'POST',
-          body: uploadForm,
-        })
-
-        if (!uploadRes.ok) {
-          const errorData = await uploadRes.json()
-          toast.error(errorData.error || 'Failed to upload receipt')
-          setUploading(false)
-          setLoading(false)
-          return
-        }
-
-        const { receiptUrl: newReceiptUrl } = await uploadRes.json()
-        uploadedReceiptUrl = newReceiptUrl
-        setUploading(false)
-      }
-
       const expensePayload = {
         amount: parseFloat(formData.amount),
         category: formData.category,
         description: formData.description,
         date: new Date(formData.date),
         isShared: formData.isShared,
-        receiptUrl: uploadedReceiptUrl,
         userId: formData.userId,
       }
 
@@ -251,9 +138,6 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
           description: '',
           // date, userId, isShared remain sticky for fast batch entry
         }))
-        setSelectedFile(null)
-        setReceiptUrl(null)
-        setPreviewUrl(null)
 
         const nextCount = addedCount + 1
         setAddedCount(nextCount)
@@ -278,8 +162,6 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
             isShared: false,
             userId: users[0]?.id || '',
           })
-          setSelectedFile(null)
-          setReceiptUrl(null)
         }
         setOpen(false)
       }
@@ -290,7 +172,6 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
       // Don't close the form on error - let user retry
     } finally {
       setLoading(false)
-      setUploading(false)
     }
   }
 
@@ -471,96 +352,6 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="receipt" className="text-stone-900 dark:text-stone-100 font-semibold">Receipt (Optional)</Label>
-            <div className="space-y-2">
-              {/* Hidden file input */}
-              <input
-                id="receipt"
-                type="file"
-                accept="image/jpeg,image/jpg,image/png,application/pdf"
-                onChange={handleFileChange}
-                className="hidden"
-              />
-
-              {/* Fixed-dimension container - same size whether empty or with receipt */}
-              <div className="min-h-[48px] sm:min-h-[60px] flex items-center gap-2 p-2 sm:p-3 bg-stone-50 dark:bg-stone-900/50 border border-stone-200 dark:border-stone-800 rounded-md">
-                {(selectedFile || receiptUrl) ? (
-                  <>
-                    {/* Thumbnail preview for images */}
-                    {previewUrl ? (
-                      <img
-                        src={previewUrl}
-                        alt="Receipt preview"
-                        className="h-12 w-12 object-cover rounded border border-stone-200 dark:border-stone-800 flex-shrink-0"
-                      />
-                    ) : selectedFile?.type === 'application/pdf' ? (
-                      <FileText className="h-12 w-12 text-amber-700 dark:text-amber-400 flex-shrink-0" />
-                    ) : (
-                      <ImageIcon className="h-12 w-12 text-amber-700 dark:text-amber-400 flex-shrink-0" />
-                    )}
-
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-stone-900 dark:text-stone-100 font-medium truncate">
-                        {selectedFile ? selectedFile.name : 'Receipt attached'}
-                      </p>
-                      <p className="text-xs text-stone-900 dark:text-stone-100/60">
-                        {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB` : 'Click view to see'}
-                      </p>
-                    </div>
-
-                    {/* View button for preview */}
-                    {(previewUrl || receiptUrl) && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowPreview(true)}
-                        className="border-stone-200 dark:border-stone-800 hover:bg-amber-100 dark:hover:bg-amber-950/40"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    )}
-
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={removeReceipt}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </>
-                ) : (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    onClick={() => document.getElementById('receipt')?.click()}
-                    className="w-full h-full text-stone-900 dark:text-stone-100 hover:bg-amber-100 dark:hover:bg-amber-950/40"
-                  >
-                    <Upload className="mr-2 h-4 w-4" />
-                    Upload Receipt (JPG, PNG, or PDF)
-                  </Button>
-                )}
-              </div>
-
-              {/* Scan Receipt button - only show for images (not PDFs) */}
-              {selectedFile && selectedFile.type.startsWith('image/') && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleScanReceipt}
-                  disabled={scanning}
-                  className="w-full border-2 border-amber-500 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/40 text-amber-700 font-semibold toast-texture-subtle"
-                >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  {scanning ? 'Analyzing Receipt...' : 'Scan Receipt with AI'}
-                </Button>
-              )}
-            </div>
-          </div>
-
           <div className="flex items-center space-x-2">
             <Checkbox
               id="shared"
@@ -592,7 +383,7 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
                   type="button"
                   variant="outline"
                   onClick={handleSaveAndAddAnother}
-                  disabled={loading || uploading || users.length === 0}
+                  disabled={loading || users.length === 0}
                   className="border-amber-500 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40 font-medium"
                 >
                   Save & add another
@@ -600,41 +391,15 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
               )}
               <Button
                 type="submit"
-                disabled={loading || uploading || users.length === 0}
+                disabled={loading || users.length === 0}
                 className="bg-amber-500 hover:bg-amber-600 text-white font-medium shadow-sm dark:bg-amber-500 dark:hover:bg-amber-400 dark:text-amber-950"
               >
-                {users.length === 0 ? 'Loading users...' : uploading ? 'Uploading...' : loading ? 'Saving...' : expense ? 'Update' : 'Add Expense'}
+                {users.length === 0 ? 'Loading users...' : loading ? 'Saving...' : expense ? 'Update' : 'Add Expense'}
               </Button>
             </div>
           </div>
         </form>
       </DialogContent>
-
-      {/* Preview Dialog */}
-      <Dialog open={showPreview} onOpenChange={setShowPreview}>
-        <DialogContent className="max-w-3xl">
-          <DialogHeader>
-            <DialogTitle>Receipt Preview</DialogTitle>
-          </DialogHeader>
-          <div className="mt-4">
-            {previewUrl ? (
-              <img
-                src={previewUrl}
-                alt="Receipt full preview"
-                className="w-full h-auto max-h-[70vh] object-contain rounded-md border border-stone-200 dark:border-stone-800"
-              />
-            ) : receiptUrl ? (
-              <img
-                src={receiptUrl}
-                alt="Receipt full preview"
-                className="w-full h-auto max-h-[70vh] object-contain rounded-md border border-stone-200 dark:border-stone-800"
-              />
-            ) : (
-              <p className="text-center text-gray-500">No preview available</p>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </Dialog>
   )
 }

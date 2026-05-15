@@ -53,7 +53,6 @@ export async function PUT(
         description: body.description,
         date: new Date(body.date),
         isShared: body.isShared,
-        receiptUrl: body.receiptUrl || null, // Optional receipt URL
         userId: body.userId,
       },
       include: { user: true },

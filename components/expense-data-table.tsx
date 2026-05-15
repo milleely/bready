@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, FileImage, Loader2, MoreHorizontal, Pencil, Repeat, Trash2 } from "lucide-react"
+import { ArrowUpDown, ChevronDown, Loader2, MoreHorizontal, Pencil, Repeat, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -36,7 +36,6 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { formatCurrency, formatDate, categories } from "@/lib/utils"
-import { ReceiptLightbox } from "@/components/receipt-lightbox"
 
 interface User {
   id: string
@@ -52,7 +51,6 @@ interface Expense {
   description: string
   date: Date | string
   isShared: boolean
-  receiptUrl?: string | null
   userId: string
   recurringExpenseId?: string | null
   recurringExpense?: {
@@ -79,8 +77,6 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-  const [lightboxOpen, setLightboxOpen] = React.useState(false)
-  const [selectedReceiptUrl, setSelectedReceiptUrl] = React.useState<string | null>(null)
 
   const getCategoryLabel = (value: string) => {
     return categories.find(c => c.value === value)?.label || value
@@ -148,34 +144,6 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
                 <Repeat className="h-3 w-3 mr-1" />
                 {getFrequencyLabel(expense.recurringExpense.frequency)}
               </Badge>
-            )}
-          </div>
-        )
-      },
-    },
-    {
-      accessorKey: "receiptUrl",
-      header: () => <div className="text-center">Receipt</div>,
-      cell: ({ row }) => {
-        const expense = row.original
-        return (
-          <div className="flex justify-center">
-            {expense.receiptUrl ? (
-              <Button
-                variant="ghost"
-                size="sm"
-                aria-label="View receipt"
-                className="h-11 w-11 p-0 hover:bg-stone-100 dark:bg-stone-800"
-                onClick={() => {
-                  setSelectedReceiptUrl(expense.receiptUrl!)
-                  setLightboxOpen(true)
-                }}
-                title="View receipt"
-              >
-                <FileImage className="h-5 w-5 text-amber-700 dark:text-amber-400" />
-              </Button>
-            ) : (
-              <span className="text-gray-400" title="No receipt">-</span>
             )}
           </div>
         )
@@ -378,7 +346,7 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:bg-stone-800">
+            <Button variant="outline" className="ml-auto border-stone-200 hover:bg-stone-100 dark:border-stone-800 dark:hover:bg-stone-800">
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -403,11 +371,11 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border border-stone-200 dark:border-stone-800 bg-white/50 overflow-x-auto">
+      <div className="rounded-md border border-stone-200 bg-card overflow-x-auto dark:border-stone-800">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:bg-stone-800">
+              <TableRow key={headerGroup.id} className="border-stone-200 hover:bg-transparent dark:border-stone-800">
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id} className="text-stone-900 dark:text-stone-100">
@@ -433,7 +401,7 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className={`border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:bg-stone-800 ${isOptimistic ? 'opacity-70' : ''} ${isRecurring ? 'bg-purple-50/30 hover:bg-purple-50/50' : ''}`}
+                    className={`border-stone-200 hover:bg-stone-50 dark:border-stone-800 dark:hover:bg-stone-800/60 ${isOptimistic ? 'opacity-70' : ''} ${isRecurring ? 'bg-purple-50/30 hover:bg-purple-50/50 dark:bg-purple-950/15 dark:hover:bg-purple-950/30' : ''}`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
@@ -470,7 +438,7 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
-            className="border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:bg-stone-800"
+            className="border-stone-200 hover:bg-stone-100 dark:border-stone-800 dark:hover:bg-stone-800"
           >
             Previous
           </Button>
@@ -479,19 +447,12 @@ function ExpenseDataTableComponent({ expenses, onEdit, onDelete, onDeleteRecurri
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
-            className="border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:bg-stone-800"
+            className="border-stone-200 hover:bg-stone-100 dark:border-stone-800 dark:hover:bg-stone-800"
           >
             Next
           </Button>
         </div>
       </div>
-
-      {/* Receipt Lightbox */}
-      <ReceiptLightbox
-        receiptUrl={selectedReceiptUrl}
-        open={lightboxOpen}
-        onOpenChange={setLightboxOpen}
-      />
     </div>
   )
 }
