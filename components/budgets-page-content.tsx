@@ -206,11 +206,6 @@ export function BudgetsPageContent({ month }: BudgetsPageContentProps) {
           icon={Target}
           title="No budgets yet"
           description="Set a limit on any category to see how the month is breathing."
-          action={
-            <Suspense fallback={null}>
-              <BudgetDialog users={users} onBudgetSet={fetchData} />
-            </Suspense>
-          }
           className="rounded-xl border-2 border-dashed border-stone-200 bg-card dark:border-stone-700"
         />
       ) : (

@@ -111,7 +111,7 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
             const StatusIcon = status.icon
 
             return (
-              <div key={budget.id} className="bg-white rounded-xl p-4 shadow-md border border-gray-100">
+              <div key={budget.id} className="rounded-xl p-4 shadow-sm border border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-950/50">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div
@@ -123,13 +123,13 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
                       </span>
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900 text-base">
+                      <h3 className="font-semibold text-stone-900 dark:text-stone-100 text-base">
                         {categoryInfo?.label || budget.category}
                       </h3>
                       {/* User/Shared indicator badge */}
                       <div className="mt-1 mb-1">
                         {budgetUser ? (
-                          <Badge variant="outline" className="text-xs px-2 py-0.5 border-gray-300 bg-white inline-flex items-center">
+                          <Badge variant="outline" className="text-xs px-2 py-0.5 border-stone-300 bg-white text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 inline-flex items-center">
                             <div
                               className="h-2 w-2 rounded-full mr-1.5"
                               style={{ backgroundColor: budgetUser.color }}
@@ -137,12 +137,12 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
                             {budgetUser.name}
                           </Badge>
                         ) : (
-                          <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 inline-flex items-center">
+                          <Badge variant="secondary" className="text-xs px-2 py-0.5 bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300 inline-flex items-center">
                             Shared
                           </Badge>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 mt-0.5">
+                      <p className="text-sm text-stone-600 dark:text-stone-400 mt-0.5">
                         {formatCurrency(spent)} / {formatCurrency(budget.amount)}
                       </p>
                     </div>
@@ -152,7 +152,7 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
                       variant="ghost"
                       size="icon"
                       onClick={() => onEdit(budget)}
-                      className="h-11 w-11 hover:bg-amber-100 dark:hover:bg-amber-950/40 text-amber-700 dark:text-amber-400 hover:text-stone-900 dark:text-stone-100"
+                      className="h-11 w-11 hover:bg-amber-100 dark:hover:bg-amber-950/40 text-amber-700 dark:text-amber-400"
                       aria-label={`Edit ${categoryInfo?.label || budget.category} budget`}
                     >
                       <Pencil className="h-5 w-5" />
@@ -161,7 +161,7 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
                       variant="ghost"
                       size="icon"
                       onClick={() => onDelete(budget.id)}
-                      className="h-11 w-11 hover:bg-red-100 text-red-600 hover:text-red-700"
+                      className="h-11 w-11 hover:bg-red-100 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 hover:text-red-700"
                       aria-label={`Delete ${categoryInfo?.label || budget.category} budget`}
                     >
                       <Trash2 className="h-5 w-5" />
@@ -171,7 +171,7 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
 
                 <div className="space-y-2">
                   <div className="relative">
-                    <div className="h-6 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-6 bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
                       <div
                         className="h-full transition-all duration-500 ease-out rounded-full"
                         style={{
@@ -182,15 +182,15 @@ export function EnhancedBudgetProgress({ budgets, expenses, spendingByCategory, 
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-gray-600">
+                    <span className="text-xs font-medium text-stone-600 dark:text-stone-400">
                       {percentage.toFixed(0)}% used
                     </span>
                     {isOverBudget ? (
-                      <span className="text-xs font-semibold text-red-600 flex items-center gap-1">
+                      <span className="text-xs font-semibold text-red-600 dark:text-red-400 flex items-center gap-1">
                         {formatCurrency(Math.abs(remaining))} over budget
                       </span>
                     ) : (
-                      <span className="text-xs font-medium text-green-600">
+                      <span className="text-xs font-medium text-green-600 dark:text-green-400">
                         {formatCurrency(remaining)} remaining
                       </span>
                     )}
