@@ -8,7 +8,8 @@
 - ✅ Net Worth dashboard (50/30/20 budget, PIN auth, httpOnly cookie sessions, full month isolation, one-time income frequency) — see `/docs/CHANGELOG_NET_WORTH.md`.
 - ✅ Notification System infrastructure (Resend client, email templates, budget-alert trigger on expense create) — currently behind a "Coming Soon" preview pending Resend domain verification.
 - ✅ Performance pass (cron N+1 fix, composite index, debounced listeners, parallel budget-alert queries, paginated expenses API).
-- ✅ Recurring expense carry-forward bug fix + May 2026 backfill (commit pending).
+- ✅ Fixed dashboard empty-state "Add expense" button (2026-06-01): both `ExpenseForm` instances in `dashboard-page-content.tsx` had `onSubmit` stubs that closed the dialog + refetched but never POSTed to `/api/expenses`, so adds silently did nothing on an empty month. Added a `handleAddExpense` handler that POSTs (and throws on failure so the form shows the error), wired to both instances.
+- ✅ Recurring expense feature deactivated (2026-05-30): all 9 blueprints set `isActive=false` after recurring round-3 bugs (May rent over-count, missing June/July). Code/cron/UI remain; all entry is manual going forward. See `scripts/deactivate-all-recurring.ts`.
 
 ---
 

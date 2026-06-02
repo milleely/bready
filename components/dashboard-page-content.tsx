@@ -165,6 +165,30 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
     }
   }
 
+  // Persist a new expense, then close the dialog and refresh the dashboard.
+  // ExpenseForm builds the payload and delegates the actual POST to this handler.
+  // Throwing on failure lets ExpenseForm surface the API error to the user.
+  const handleAddExpense = async (expense: {
+    amount: number
+    category: string
+    description: string
+    date: Date | string
+    isShared: boolean
+    userId: string
+  }) => {
+    const res = await fetch('/api/expenses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(expense),
+    })
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}))
+      throw new Error(errorData.error || `Server error (${res.status})`)
+    }
+    setExpenseFormOpen(false)
+    await fetchData()
+  }
+
   useEffect(() => {
     fetchData()
   }, [selectedMonth])
@@ -403,10 +427,7 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
         {expenseFormOpen && (
           <ExpenseForm
             users={users}
-            onSubmit={async () => {
-              setExpenseFormOpen(false)
-              await fetchData()
-            }}
+            onSubmit={handleAddExpense}
             open={expenseFormOpen}
             onOpenChange={setExpenseFormOpen}
           />
@@ -663,10 +684,7 @@ export function DashboardPageContent({ month }: DashboardPageContentProps) {
       {expenseFormOpen && (
         <ExpenseForm
           users={users}
-          onSubmit={async () => {
-            setExpenseFormOpen(false)
-            await fetchData()
-          }}
+          onSubmit={handleAddExpense}
           open={expenseFormOpen}
           onOpenChange={setExpenseFormOpen}
         />
