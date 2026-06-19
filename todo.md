@@ -4,6 +4,11 @@
 
 ## Shipped (one-line recap)
 
+- ✅ Category cleanup + adaptive picker (2026-06-19): removed `personal-care`/`gifts`/`pets`/`home-maintenance` from `lib/utils.ts`; reassigned 63 expenses + 2 recurring blueprints to `other` via `scripts/reassign-removed-categories.ts`. Expense-form category dropdown now sorts by household usage (most-used on top, `other` pinned last) via new `GET /api/categories/usage`; counts come live from the DB so it keeps adapting.
+  - ⚠️ The reassignment was **not reversible**: `updateMany` overwrote each row's original category with `other`, and `prisma/dev.db` has no git history/backup — so the original personal-care/gifts/home-maintenance split (31/16/16) is unrecoverable. Per-row identity is lost (descriptions survive as the only hint).
+  - ↳ Net-worth 50/30/20 mapping (`lib/networth/category-mapping.ts`) updated to reflect this: dropped the four deleted categories and moved `other` into **wants**, so those reassigned rows now count as Wants (Discretionary) instead of an uncounted "other" bucket. Drives both the API math (`summary/route.ts`) and the chips (`monthly-progress-tracker.tsx`).
+- ✅ Dark-mode color fixes (2026-06-19): Settlements (pending row + Settlement History card/table) and Settings (member rows, keyboard-shortcut rows, notification-preview pill buttons) were painting `bg-white/*` with no dark variant → light-gray boxes; added matching `dark:bg-stone-950/50` fills + `dark:` text variants.
+
 - ✅ V2 Dashboard (sidebar, neutral-stone cards, URL month state, keyboard shortcuts, mobile bottom-sheet picker) — see `/docs/CHANGELOG_V2_DASHBOARD.md`.
 - ✅ Net Worth dashboard (50/30/20 budget, PIN auth, httpOnly cookie sessions, full month isolation, one-time income frequency) — see `/docs/CHANGELOG_NET_WORTH.md`.
 - ✅ Notification System infrastructure (Resend client, email templates, budget-alert trigger on expense create) — currently behind a "Coming Soon" preview pending Resend domain verification.

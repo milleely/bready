@@ -50,7 +50,7 @@ export function KeyboardShortcutsCard() {
                 {categoryShortcuts.map((shortcut, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between py-2 px-3 bg-white/60 backdrop-blur-sm border-2 border-stone-200 dark:border-stone-800 rounded-lg hover:shadow-md transition-shadow"
+                    className="flex items-center justify-between py-2 px-3 bg-white/60 dark:bg-stone-950/50 backdrop-blur-sm border-2 border-stone-200 dark:border-stone-800 rounded-lg hover:shadow-md transition-shadow"
                   >
                     <span className="text-sm text-stone-900 dark:text-stone-100">{shortcut.description}</span>
                     <div className="flex items-center gap-1 flex-shrink-0 ml-2">

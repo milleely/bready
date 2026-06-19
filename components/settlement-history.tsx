@@ -90,22 +90,22 @@ export function SettlementHistory({ history, onUnmark }: SettlementHistoryProps)
 
   return (
     <Collapsible open={historyOpen} onOpenChange={setHistoryOpen}>
-      <Card className="border-stone-200 dark:border-stone-800 bg-gradient-to-br from-stone-50/50 to-stone-100/50 shadow-xl">
+      <Card className="border-stone-200 dark:border-stone-800 bg-gradient-to-br from-stone-50/50 to-stone-100/50 dark:from-stone-900 dark:to-stone-900 shadow-xl">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <History className="h-5 w-5 text-stone-600" />
-              <CardTitle className="text-stone-700">
+              <History className="h-5 w-5 text-stone-600 dark:text-stone-400" />
+              <CardTitle className="text-stone-700 dark:text-stone-300">
                 Settlement History
                 {hasHistory && (
-                  <span className="ml-2 text-sm font-normal text-stone-500">
+                  <span className="ml-2 text-sm font-normal text-stone-500 dark:text-stone-400">
                     ({history.length} {history.length === 1 ? 'payment' : 'payments'})
                   </span>
                 )}
               </CardTitle>
             </div>
             <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="sm" className="hover:bg-stone-100">
+              <Button variant="ghost" size="sm" className="hover:bg-stone-100 dark:hover:bg-stone-800">
                 {historyOpen ? (
                   <>
                     <ChevronUp className="h-4 w-4 mr-2" />
@@ -124,20 +124,20 @@ export function SettlementHistory({ history, onUnmark }: SettlementHistoryProps)
         <CollapsibleContent>
           <CardContent>
             {hasHistory ? (
-              <div className="rounded-lg border border-stone-200 dark:border-stone-800 bg-white/60 backdrop-blur-sm">
+              <div className="rounded-lg border border-stone-200 dark:border-stone-800 bg-white/60 dark:bg-stone-950/50 backdrop-blur-sm">
                 <Table>
                   <TableHeader>
                     <TableRow className="hover:bg-transparent border-stone-200 dark:border-stone-800">
-                      <TableHead className="text-stone-700">Date Paid</TableHead>
-                      <TableHead className="text-stone-700">From → To</TableHead>
-                      <TableHead className="text-right text-stone-700">Amount</TableHead>
-                      <TableHead className="text-right text-stone-700">Actions</TableHead>
+                      <TableHead className="text-stone-700 dark:text-stone-300">Date Paid</TableHead>
+                      <TableHead className="text-stone-700 dark:text-stone-300">From → To</TableHead>
+                      <TableHead className="text-right text-stone-700 dark:text-stone-300">Amount</TableHead>
+                      <TableHead className="text-right text-stone-700 dark:text-stone-300">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {history.map((settlement) => (
-                      <TableRow key={settlement.id} className="hover:bg-stone-50/50 border-stone-200 dark:border-stone-800">
-                        <TableCell className="text-stone-600 font-medium">
+                      <TableRow key={settlement.id} className="hover:bg-stone-50/50 dark:hover:bg-stone-800/50 border-stone-200 dark:border-stone-800">
+                        <TableCell className="text-stone-600 dark:text-stone-400 font-medium">
                           {formatDate(settlement.date)}
                         </TableCell>
                         <TableCell>
@@ -149,7 +149,7 @@ export function SettlementHistory({ history, onUnmark }: SettlementHistoryProps)
                               >
                                 {settlement.from.name.charAt(0).toUpperCase()}
                               </div>
-                              <span className="text-stone-700 font-medium">
+                              <span className="text-stone-700 dark:text-stone-300 font-medium">
                                 {settlement.from.name}
                               </span>
                             </div>
@@ -161,13 +161,13 @@ export function SettlementHistory({ history, onUnmark }: SettlementHistoryProps)
                               >
                                 {settlement.to.name.charAt(0).toUpperCase()}
                               </div>
-                              <span className="text-stone-700 font-medium">
+                              <span className="text-stone-700 dark:text-stone-300 font-medium">
                                 {settlement.to.name}
                               </span>
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="text-right text-stone-700 font-semibold">
+                        <TableCell className="text-right text-stone-700 dark:text-stone-300 font-semibold">
                           {formatCurrency(settlement.amount)}
                         </TableCell>
                         <TableCell className="text-right">
@@ -194,10 +194,10 @@ export function SettlementHistory({ history, onUnmark }: SettlementHistoryProps)
                 </Table>
               </div>
             ) : (
-              <div className="text-center py-8 bg-white/40 rounded-lg border border-stone-200 dark:border-stone-800">
+              <div className="text-center py-8 bg-white/40 dark:bg-stone-950/50 rounded-lg border border-stone-200 dark:border-stone-800">
                 <History className="h-12 w-12 text-stone-400 mx-auto mb-3" />
-                <p className="text-stone-600 font-medium mb-1">No settlement history</p>
-                <p className="text-sm text-stone-500">
+                <p className="text-stone-600 dark:text-stone-400 font-medium mb-1">No settlement history</p>
+                <p className="text-sm text-stone-500 dark:text-stone-500">
                   Completed settlements for this month will appear here
                 </p>
               </div>

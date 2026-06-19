@@ -75,7 +75,7 @@ export function SettlementCard({ settlements, onMarkAsPaid }: SettlementCardProp
               return (
                 <div
                   key={`${settlement.from.id}-${settlement.to.id}-${index}`}
-                  className="bg-white/60 backdrop-blur-sm border-2 border-stone-200 dark:border-stone-800 rounded-lg p-4 hover:shadow-md transition-shadow"
+                  className="bg-white/60 dark:bg-stone-950/50 backdrop-blur-sm border-2 border-stone-200 dark:border-stone-800 rounded-lg p-4 hover:shadow-md transition-shadow"
                 >
                   <div className="flex flex-col sm:grid sm:grid-cols-3 items-center gap-4">
                     {/* From User */}

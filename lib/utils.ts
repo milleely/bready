@@ -14,12 +14,8 @@ export const categories = [
   { value: 'entertainment', label: 'Entertainment', color: '#f39c12', icon: '🎬' }, // Spotlight Gold - Shows/fun/excitement (4.0:1 contrast)
   { value: 'healthcare', label: 'Healthcare', color: '#16a085', icon: '💊' }, // Medical Teal - Clinical/wellness/trust (3.5:1 contrast)
   { value: 'rent', label: 'Rent', color: '#92400e', icon: '🏠' }, // Hearth Brown - Housing/rent payments (9.9:1 contrast)
-  { value: 'personal-care', label: 'Personal Care', color: '#e91e63', icon: '✨' }, // Beauty Pink - Self-care/cosmetics (4.5:1 contrast)
   { value: 'shopping', label: 'Shopping', color: '#ff6f3c', icon: '👕' }, // Retail Orange - Bright stores/sales (3.4:1 contrast)
-  { value: 'pets', label: 'Pets', color: '#b45309', icon: '🐾' }, // Caramel - Loyalty/warmth (RETAINED - 7.2:1 contrast)
-  { value: 'gifts', label: 'Gifts', color: '#ec407a', icon: '🎁' }, // Celebration Magenta - Special occasions/love (3.8:1 contrast)
   { value: 'travel', label: 'Travel', color: '#3b82f6', icon: '✈️' }, // Sky Blue - Adventure/flights/ocean (3.1:1 contrast)
-  { value: 'home-maintenance', label: 'Home Maintenance', color: '#757575', icon: '🔧' }, // Tool Steel - Metal/utility/repairs (5.2:1 contrast)
   { value: 'other', label: 'Other', color: '#9e9e9e', icon: '📦' }, // Neutral Gray - Miscellaneous/default (3.3:1 contrast)
 ] as const
 

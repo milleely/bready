@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -37,8 +37,8 @@ interface ExpenseFormProps {
   /**
    * Optional: enables the "Save & add another" button.
    * When provided, ExpenseForm renders a third button next to Cancel/Save that
-   * persists the expense, keeps the dialog open, resets only amount/category/
-   * description/receipt (date, user, and isShared stay sticky), and focuses
+   * persists the expense, keeps the dialog open, resets only amount and
+   * description (category, date, user, and isShared stay sticky), and focuses
    * the amount input for the next entry. Caller MUST NOT close the dialog
    * from inside this callback.
    */
@@ -66,6 +66,7 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
   })
   const [loading, setLoading] = useState(false)
   const [addedCount, setAddedCount] = useState(0)
+  const [categoryUsage, setCategoryUsage] = useState<Record<string, number>>({})
   const amountInputRef = useRef<HTMLInputElement>(null)
 
   // Use controlled open state if provided, otherwise use internal state
@@ -78,6 +79,27 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
       setAddedCount(0)
     }
   }, [open])
+
+  // Adaptive ordering: pull this household's category usage each time the dialog
+  // opens, so the categories you use most float to the top of the picker. Counts
+  // come straight from the DB, so it keeps learning as you add more expenses.
+  useEffect(() => {
+    if (!open) return
+    fetch('/api/categories/usage')
+      .then((res) => (res.ok ? res.json() : {}))
+      .then((data) => setCategoryUsage(data))
+      .catch(() => setCategoryUsage({}))
+  }, [open])
+
+  // Sort by usage (desc), keeping "Other" pinned last. Array.sort is stable, so
+  // ties — and the initial state before usage loads — keep the default order.
+  const orderedCategories = useMemo(() => {
+    return [...categories].sort((a, b) => {
+      if (a.value === 'other') return 1
+      if (b.value === 'other') return -1
+      return (categoryUsage[b.value] ?? 0) - (categoryUsage[a.value] ?? 0)
+    })
+  }, [categoryUsage])
 
   useEffect(() => {
     if (expense) {
@@ -134,9 +156,8 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
         setFormData(prev => ({
           ...prev,
           amount: '',
-          category: 'groceries',
           description: '',
-          // date, userId, isShared remain sticky for fast batch entry
+          // category, date, userId, isShared remain sticky for fast batch entry
         }))
 
         const nextCount = addedCount + 1
@@ -308,7 +329,7 @@ export function ExpenseForm({ users, expense, onSubmit, onSaveAndAddAnother, tri
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="max-h-[280px]">
-                {categories.map((cat) => (
+                {orderedCategories.map((cat) => (
                   <SelectItem key={cat.value} value={cat.value}>
                     <div className="flex items-center gap-2">
                       <span className="text-base">{cat.icon}</span>

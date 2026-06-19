@@ -75,7 +75,7 @@ export function NotificationSettingsPreview({ userEmail }: NotificationSettingsP
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="max-w-xs w-full justify-between bg-white hover:bg-stone-50"
+                    className="max-w-xs w-full justify-between bg-white hover:bg-stone-50 dark:bg-stone-950/50 dark:hover:bg-stone-800"
                     disabled
                   >
                     <div className="flex gap-1 flex-wrap">
@@ -118,7 +118,7 @@ export function NotificationSettingsPreview({ userEmail }: NotificationSettingsP
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="max-w-xs w-full justify-between bg-white hover:bg-stone-50"
+                    className="max-w-xs w-full justify-between bg-white hover:bg-stone-50 dark:bg-stone-950/50 dark:hover:bg-stone-800"
                     disabled
                   >
                     <div className="flex gap-1 flex-wrap">
@@ -161,7 +161,7 @@ export function NotificationSettingsPreview({ userEmail }: NotificationSettingsP
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="max-w-xs w-full justify-between bg-white hover:bg-stone-50"
+                    className="max-w-xs w-full justify-between bg-white hover:bg-stone-50 dark:bg-stone-950/50 dark:hover:bg-stone-800"
                     disabled
                   >
                     <div className="flex gap-1 flex-wrap">

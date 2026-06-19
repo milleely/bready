@@ -97,7 +97,7 @@ export function UserManagement({ users, onRefresh }: UserManagementProps) {
           {users.map((user) => (
             <div
               key={user.id}
-              className="bg-white/60 backdrop-blur-sm border-2 border-stone-200 dark:border-stone-800 rounded-lg p-4 hover:shadow-md transition-shadow"
+              className="bg-white/60 dark:bg-stone-950/50 backdrop-blur-sm border-2 border-stone-200 dark:border-stone-800 rounded-lg p-4 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
