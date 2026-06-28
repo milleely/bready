@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
         .filter(exp => exp.isShared)
         .reduce((sum, exp) => sum + exp.amount, 0)
       const personal = total - shared
-      const recurringCount = userExpenses.filter(exp => exp.recurringExpenseId !== null).length
+      const subscriptionCount = userExpenses.filter(exp => exp.category === 'subscriptions').length
 
       return {
         userId: user.id,
@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
         total,
         shared,
         personal,
-        recurringCount,
+        subscriptionCount,
       }
     })
 

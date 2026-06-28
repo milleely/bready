@@ -21,7 +21,7 @@ interface SpendingChartsProps {
     shared: number
     personal: number
     color: string
-    recurringCount: number
+    subscriptionCount: number
   }>
 }
 
@@ -162,10 +162,10 @@ export const EnhancedSpendingCharts = React.memo(function EnhancedSpendingCharts
                 <div>
                   <dt className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">
                     <Repeat className="h-3 w-3" aria-hidden="true" />
-                    Recurring
+                    Subscriptions
                   </dt>
                   <dd className="mt-0.5 text-sm font-semibold tabular-nums text-stone-900 dark:text-stone-100">
-                    {person.recurringCount}
+                    {person.subscriptionCount}
                   </dd>
                 </div>
               </dl>

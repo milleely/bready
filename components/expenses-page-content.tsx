@@ -47,7 +47,7 @@ interface Stats {
     total: number
     shared: number
     personal: number
-    recurringCount: number
+    subscriptionCount: number
   }>
   spendingByCategory: Array<{ category: string; amount: number }>
 }
